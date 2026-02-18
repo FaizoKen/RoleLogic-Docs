@@ -102,7 +102,7 @@ RoleLogic automatically manages Discord server roles. Users create IF-THEN rules
 | DELETE | /api/role-link/:guildId/:roleId/users/:userId | Remove a user (idempotent) |
 
 - Auth: `Authorization: Token rl_...` (not Bearer)
-- Base URL: https://apirolelogic.faizo.net
+- Base URL: https://api-rolelogic.faizo.net
 - Tokens scoped per role link (guild + role pair)
 - Free: 100 users/role link, Premium: 1,000,000 users/role link
 - 10 role links per server

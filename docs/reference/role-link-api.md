@@ -32,13 +32,13 @@ The RoleLogic Role Link external API lets you manage users linked to a Discord r
 
 ## Quick Reference
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | [`/api/role-link/:guildId/:roleId/users`](#list-users) | Get all user IDs linked to this role |
-| `PUT` | [`/api/role-link/:guildId/:roleId/users`](#replace-users-batch-set) | Replace entire user list atomically |
-| `GET` | [`/api/role-link/:guildId/:roleId/users/:userId`](#check-user) | Check if a specific user exists |
-| `POST` | [`/api/role-link/:guildId/:roleId/users/:userId`](#add-user) | Add a single user (idempotent) |
-| `DELETE` | [`/api/role-link/:guildId/:roleId/users/:userId`](#remove-user) | Remove a single user (idempotent) |
+| Method   | Endpoint                                                            | Description                          |
+| -------- | ------------------------------------------------------------------- | ------------------------------------ |
+| `GET`    | [`/api/role-link/:guildId/:roleId/users`](#list-users)              | Get all user IDs linked to this role |
+| `PUT`    | [`/api/role-link/:guildId/:roleId/users`](#replace-users-batch-set) | Replace entire user list atomically  |
+| `GET`    | [`/api/role-link/:guildId/:roleId/users/:userId`](#check-user)      | Check if a specific user exists      |
+| `POST`   | [`/api/role-link/:guildId/:roleId/users/:userId`](#add-user)        | Add a single user (idempotent)       |
+| `DELETE` | [`/api/role-link/:guildId/:roleId/users/:userId`](#remove-user)     | Remove a single user (idempotent)    |
 
 ---
 
@@ -72,7 +72,7 @@ Each token is scoped to a **single role link** — a specific `guildId` + `roleI
 ## Base URL
 
 ```
-https://apirolelogic.faizo.net
+https://api-rolelogic.faizo.net
 ```
 
 All endpoint paths below are relative to this base URL.
@@ -83,11 +83,11 @@ All endpoint paths below are relative to this base URL.
 
 These URL parameters are used across all endpoints:
 
-| Parameter | Type | Format | Description |
-|-----------|------|--------|-------------|
-| `guildId` | string | Numeric (Discord snowflake) | The Discord server (guild) ID |
-| `roleId` | string | Numeric (Discord snowflake) | The Discord role ID |
-| `userId` | string | 17–20 digit numeric string | A Discord user ID (snowflake format) |
+| Parameter | Type   | Format                      | Description                          |
+| --------- | ------ | --------------------------- | ------------------------------------ |
+| `guildId` | string | Numeric (Discord snowflake) | The Discord server (guild) ID        |
+| `roleId`  | string | Numeric (Discord snowflake) | The Discord role ID                  |
+| `userId`  | string | 17–20 digit numeric string  | A Discord user ID (snowflake format) |
 
 You can find guild, role, and user IDs by enabling **Developer Mode** in Discord Settings > Advanced, then right-clicking on a server, role, or user and selecting "Copy ID".
 
@@ -105,18 +105,15 @@ GET /api/role-link/:guildId/:roleId/users
 
 **Headers**
 
-| Header | Value |
-|--------|-------|
+| Header          | Value                      |
+| --------------- | -------------------------- |
 | `Authorization` | `Token rl_your_token_here` |
 
 **Response `200 OK`**
 
 ```json
 {
-  "data": [
-    "123456789012345678",
-    "234567890123456789"
-  ]
+  "data": ["123456789012345678", "234567890123456789"]
 }
 ```
 
@@ -134,21 +131,17 @@ PUT /api/role-link/:guildId/:roleId/users
 
 **Headers**
 
-| Header | Value |
-|--------|-------|
+| Header          | Value                      |
+| --------------- | -------------------------- |
 | `Authorization` | `Token rl_your_token_here` |
-| `Content-Type` | `application/json` |
+| `Content-Type`  | `application/json`         |
 
 **Request Body**
 
 A JSON array of Discord user ID strings (snowflake format, 17–20 digits each):
 
 ```json
-[
-  "123456789012345678",
-  "234567890123456789",
-  "345678901234567890"
-]
+["123456789012345678", "234567890123456789", "345678901234567890"]
 ```
 
 - Each ID must be a valid Discord snowflake (17–20 digits).
@@ -180,8 +173,8 @@ GET /api/role-link/:guildId/:roleId/users/:userId
 
 **Headers**
 
-| Header | Value |
-|--------|-------|
+| Header          | Value                      |
+| --------------- | -------------------------- |
 | `Authorization` | `Token rl_your_token_here` |
 
 **Response `200 OK`**
@@ -194,9 +187,9 @@ GET /api/role-link/:guildId/:roleId/users/:userId
 }
 ```
 
-| Value | Meaning |
-|-------|---------|
-| `exists: true` | The user is in the linked user list |
+| Value           | Meaning                                 |
+| --------------- | --------------------------------------- |
+| `exists: true`  | The user is in the linked user list     |
 | `exists: false` | The user is not in the linked user list |
 
 ---
@@ -211,8 +204,8 @@ POST /api/role-link/:guildId/:roleId/users/:userId
 
 **Headers**
 
-| Header | Value |
-|--------|-------|
+| Header          | Value                      |
+| --------------- | -------------------------- |
 | `Authorization` | `Token rl_your_token_here` |
 
 **Response `200 OK`**
@@ -225,9 +218,9 @@ POST /api/role-link/:guildId/:roleId/users/:userId
 }
 ```
 
-| Value | Meaning |
-|-------|---------|
-| `added: true` | User was newly added to the list |
+| Value          | Meaning                               |
+| -------------- | ------------------------------------- |
+| `added: true`  | User was newly added to the list      |
 | `added: false` | User already existed — no change made |
 
 ---
@@ -242,8 +235,8 @@ DELETE /api/role-link/:guildId/:roleId/users/:userId
 
 **Headers**
 
-| Header | Value |
-|--------|-------|
+| Header          | Value                      |
+| --------------- | -------------------------- |
 | `Authorization` | `Token rl_your_token_here` |
 
 **Response `200 OK`**
@@ -256,19 +249,19 @@ DELETE /api/role-link/:guildId/:roleId/users/:userId
 }
 ```
 
-| Value | Meaning |
-|-------|---------|
-| `removed: true` | User was removed from the list |
+| Value            | Meaning                                   |
+| ---------------- | ----------------------------------------- |
+| `removed: true`  | User was removed from the list            |
 | `removed: false` | User was not in the list — no change made |
 
 ---
 
 ## Limits
 
-| Resource | Free Plan | Premium |
-|----------|-----------|---------|
-| Users per role link | 100 | 1,000,000 |
-| Role links per server | 10 | 10 |
+| Resource              | Free Plan | Premium   |
+| --------------------- | --------- | --------- |
+| Users per role link   | 100       | 1,000,000 |
+| Role links per server | 10        | 10        |
 
 - Exceeding the user limit on **Add User** or **Replace Users** returns a `400` error.
 - The **Replace Users** endpoint has a 2-minute timeout for very large payloads.
@@ -289,15 +282,15 @@ All errors return a JSON object with `statusCode` and `message`:
 
 ### Error Reference
 
-| Status Code | Message | Cause |
-|-------------|---------|-------|
-| `401` | Authorization header required | Missing `Authorization` header |
-| `401` | Invalid authorization scheme. Use: Token \<token\> | Wrong scheme (e.g., `Bearer` instead of `Token`) |
-| `403` | Invalid or revoked token | Token doesn't match the guild/role pair, or was reset |
-| `403` | This role link is disabled | Role link exists but is disabled in the dashboard |
-| `400` | Maximum N users per role link | User limit exceeded (see [Limits](#limits)) |
-| `400` | Validation error | Invalid request body (e.g., user ID not in snowflake format) |
-| `404` | Role link not found | No role link exists for this guild/role combination |
+| Status Code | Message                                            | Cause                                                        |
+| ----------- | -------------------------------------------------- | ------------------------------------------------------------ |
+| `401`       | Authorization header required                      | Missing `Authorization` header                               |
+| `401`       | Invalid authorization scheme. Use: Token \<token\> | Wrong scheme (e.g., `Bearer` instead of `Token`)             |
+| `403`       | Invalid or revoked token                           | Token doesn't match the guild/role pair, or was reset        |
+| `403`       | This role link is disabled                         | Role link exists but is disabled in the dashboard            |
+| `400`       | Maximum N users per role link                      | User limit exceeded (see [Limits](#limits))                  |
+| `400`       | Validation error                                   | Invalid request body (e.g., user ID not in snowflake format) |
+| `404`       | Role link not found                                | No role link exists for this guild/role combination          |
 
 ---
 
@@ -308,31 +301,31 @@ All errors return a JSON object with `statusCode` and `message`:
 ```bash
 # List all users linked to a role
 curl -H "Authorization: Token rl_your_token_here" \
-  https://apirolelogic.faizo.net/api/role-link/123456789/987654321/users
+  https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users
 
 # Add a user
 curl -X POST -H "Authorization: Token rl_your_token_here" \
-  https://apirolelogic.faizo.net/api/role-link/123456789/987654321/users/111222333444555666
+  https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users/111222333444555666
 
 # Replace all users (batch set)
 curl -X PUT -H "Authorization: Token rl_your_token_here" \
   -H "Content-Type: application/json" \
   -d '["111222333444555666", "222333444555666777"]' \
-  https://apirolelogic.faizo.net/api/role-link/123456789/987654321/users
+  https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users
 
 # Check if a user exists
 curl -H "Authorization: Token rl_your_token_here" \
-  https://apirolelogic.faizo.net/api/role-link/123456789/987654321/users/111222333444555666
+  https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users/111222333444555666
 
 # Remove a user
 curl -X DELETE -H "Authorization: Token rl_your_token_here" \
-  https://apirolelogic.faizo.net/api/role-link/123456789/987654321/users/111222333444555666
+  https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users/111222333444555666
 ```
 
 ### JavaScript (fetch)
 
 ```javascript
-const API_BASE = "https://apirolelogic.faizo.net";
+const API_BASE = "https://api-rolelogic.faizo.net";
 const TOKEN = "rl_your_token_here";
 const GUILD_ID = "123456789";
 const ROLE_ID = "987654321";
@@ -342,15 +335,15 @@ const headers = { Authorization: `Token ${TOKEN}` };
 // List all users
 const users = await fetch(
   `${API_BASE}/api/role-link/${GUILD_ID}/${ROLE_ID}/users`,
-  { headers }
-).then(r => r.json());
+  { headers },
+).then((r) => r.json());
 // → { data: ["123456789012345678", ...] }
 
 // Add a user
 const addResult = await fetch(
   `${API_BASE}/api/role-link/${GUILD_ID}/${ROLE_ID}/users/111222333444555666`,
-  { method: "POST", headers }
-).then(r => r.json());
+  { method: "POST", headers },
+).then((r) => r.json());
 // → { data: { added: true } }
 
 // Replace all users
@@ -360,8 +353,8 @@ const setResult = await fetch(
     method: "PUT",
     headers: { ...headers, "Content-Type": "application/json" },
     body: JSON.stringify(["111222333444555666", "222333444555666777"]),
-  }
-).then(r => r.json());
+  },
+).then((r) => r.json());
 // → { data: { user_count: 2 } }
 ```
 
@@ -370,7 +363,7 @@ const setResult = await fetch(
 ```python
 import requests
 
-API_BASE = "https://apirolelogic.faizo.net"
+API_BASE = "https://api-rolelogic.faizo.net"
 TOKEN = "rl_your_token_here"
 GUILD_ID = "123456789"
 ROLE_ID = "987654321"

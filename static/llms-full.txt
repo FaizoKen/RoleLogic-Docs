@@ -935,7 +935,7 @@ The Role Link external API lets external applications manage users linked to a D
 
 ## Base URL
 
-https://apirolelogic.faizo.net
+https://api-rolelogic.faizo.net
 
 ## Authentication
 
