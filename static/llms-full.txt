@@ -942,7 +942,7 @@ https://api-rolelogic.faizo.net
 Every request requires an `Authorization` header using the `Token` scheme (NOT `Bearer`):
 
 ```
-Authorization: Token rl_your_token_here
+Authorization: Token your_token_here
 ```
 
 Tokens start with `rl_` prefix. Each token is scoped to one role link (one guild + one role pair). Generate tokens from the RoleLogic Dashboard under Role Links > Reset Token. Tokens are shown only once; resetting generates a new token and immediately invalidates the old one.

@@ -47,7 +47,7 @@ The RoleLogic Role Link external API lets you manage users linked to a Discord r
 Every request must include an `Authorization` header using the **`Token`** scheme (not `Bearer`):
 
 ```http
-Authorization: Token rl_your_token_here
+Authorization: Token your_token_here
 ```
 
 Tokens always start with the `rl_` prefix.
@@ -105,9 +105,9 @@ GET /api/role-link/:guildId/:roleId/users
 
 **Headers**
 
-| Header          | Value                      |
-| --------------- | -------------------------- |
-| `Authorization` | `Token rl_your_token_here` |
+| Header          | Value                   |
+| --------------- | ----------------------- |
+| `Authorization` | `Token your_token_here` |
 
 **Response `200 OK`**
 
@@ -131,10 +131,10 @@ PUT /api/role-link/:guildId/:roleId/users
 
 **Headers**
 
-| Header          | Value                      |
-| --------------- | -------------------------- |
-| `Authorization` | `Token rl_your_token_here` |
-| `Content-Type`  | `application/json`         |
+| Header          | Value                   |
+| --------------- | ----------------------- |
+| `Authorization` | `Token your_token_here` |
+| `Content-Type`  | `application/json`      |
 
 **Request Body**
 
@@ -173,9 +173,9 @@ GET /api/role-link/:guildId/:roleId/users/:userId
 
 **Headers**
 
-| Header          | Value                      |
-| --------------- | -------------------------- |
-| `Authorization` | `Token rl_your_token_here` |
+| Header          | Value                   |
+| --------------- | ----------------------- |
+| `Authorization` | `Token your_token_here` |
 
 **Response `200 OK`**
 
@@ -204,9 +204,9 @@ POST /api/role-link/:guildId/:roleId/users/:userId
 
 **Headers**
 
-| Header          | Value                      |
-| --------------- | -------------------------- |
-| `Authorization` | `Token rl_your_token_here` |
+| Header          | Value                   |
+| --------------- | ----------------------- |
+| `Authorization` | `Token your_token_here` |
 
 **Response `200 OK`**
 
@@ -235,9 +235,9 @@ DELETE /api/role-link/:guildId/:roleId/users/:userId
 
 **Headers**
 
-| Header          | Value                      |
-| --------------- | -------------------------- |
-| `Authorization` | `Token rl_your_token_here` |
+| Header          | Value                   |
+| --------------- | ----------------------- |
+| `Authorization` | `Token your_token_here` |
 
 **Response `200 OK`**
 
@@ -300,25 +300,25 @@ All errors return a JSON object with `statusCode` and `message`:
 
 ```bash
 # List all users linked to a role
-curl -H "Authorization: Token rl_your_token_here" \
+curl -H "Authorization: Token your_token_here" \
   https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users
 
 # Add a user
-curl -X POST -H "Authorization: Token rl_your_token_here" \
+curl -X POST -H "Authorization: Token your_token_here" \
   https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users/111222333444555666
 
 # Replace all users (batch set)
-curl -X PUT -H "Authorization: Token rl_your_token_here" \
+curl -X PUT -H "Authorization: Token your_token_here" \
   -H "Content-Type: application/json" \
   -d '["111222333444555666", "222333444555666777"]' \
   https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users
 
 # Check if a user exists
-curl -H "Authorization: Token rl_your_token_here" \
+curl -H "Authorization: Token your_token_here" \
   https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users/111222333444555666
 
 # Remove a user
-curl -X DELETE -H "Authorization: Token rl_your_token_here" \
+curl -X DELETE -H "Authorization: Token your_token_here" \
   https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users/111222333444555666
 ```
 
@@ -326,7 +326,7 @@ curl -X DELETE -H "Authorization: Token rl_your_token_here" \
 
 ```javascript
 const API_BASE = "https://api-rolelogic.faizo.net";
-const TOKEN = "rl_your_token_here";
+const TOKEN = "your_token_here";
 const GUILD_ID = "123456789";
 const ROLE_ID = "987654321";
 
@@ -364,7 +364,7 @@ const setResult = await fetch(
 import requests
 
 API_BASE = "https://api-rolelogic.faizo.net"
-TOKEN = "rl_your_token_here"
+TOKEN = "your_token_here"
 GUILD_ID = "123456789"
 ROLE_ID = "987654321"
 
