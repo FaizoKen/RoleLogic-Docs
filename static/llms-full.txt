@@ -1011,6 +1011,9 @@ Response:
 | Users per role link | 100 | 1,000,000 |
 | Role links per server | 10 | 10 |
 
+- Exceeding the user limit on Add User or Replace Users returns a `400` error.
+- If the user count in the database exceeds the allowed limit (e.g., due to a plan downgrade), the bot will stop syncing the role link entirely until the user count is reduced below the limit. No role assignments or removals will be processed.
+
 ## Error Responses
 
 | Status | Message | Cause |
@@ -1032,7 +1035,10 @@ Q: Are endpoints idempotent?
 A: Yes. Add returns added:false if exists. Remove returns removed:false if not found. Safe to retry.
 
 Q: Does modifying users trigger Discord role sync?
-A: Yes. The bot is notified automatically and syncs within seconds.
+A: Yes. The bot is notified automatically and syncs within seconds, provided the user count is within the allowed limit.
+
+Q: What happens if the user count exceeds the limit?
+A: The API rejects Add User or Replace Users requests that would exceed the limit with a 400 error. If the stored user count already exceeds the limit (e.g., after a plan downgrade), the bot will not sync the role link at all until the user count is reduced below the allowed limit.
 
 Q: What format are user IDs?
 A: Discord snowflake format: 17–20 digit numeric strings.

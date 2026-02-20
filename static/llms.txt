@@ -106,6 +106,8 @@ RoleLogic automatically manages Discord server roles. Users create IF-THEN rules
 - Tokens scoped per role link (guild + role pair)
 - Free: 100 users/role link, Premium: 1,000,000 users/role link
 - 10 role links per server
+- Exceeding the user limit returns a `400` error on Add User and Replace Users
+- If stored users exceed the limit (e.g., after downgrade), the bot stops syncing until the count is reduced
 
 ### Processing Timing
 | Process | Timing |

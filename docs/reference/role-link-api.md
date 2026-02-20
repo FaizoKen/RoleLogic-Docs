@@ -263,7 +263,8 @@ DELETE /api/role-link/:guildId/:roleId/users/:userId
 | Users per role link   | 100       | 1,000,000 |
 | Role links per server | 10        | 10        |
 
-- Exceeding the user limit on **Add User** or **Replace Users** returns a `400` error.
+- Exceeding the user limit on **Add User** or **Replace Users** returns a `400` error with a message indicating the maximum allowed.
+- If the user count in the database exceeds the allowed limit (e.g., due to a plan downgrade), the **bot will stop syncing** the role link entirely until the user count is reduced below the limit. No role assignments or removals will be processed.
 - The **Replace Users** endpoint has a 2-minute timeout for very large payloads.
 - Upgrade to a premium plan for higher user limits. See [Plans & Pricing](../plans).
 
@@ -423,9 +424,13 @@ Yes. Adding a user who already exists returns `added: false` (no error). Removin
 
 Free plan: 100 users per role link. Premium: 1,000,000 users per role link. The limit applies per individual role link, not per server.
 
+### What happens if the user count exceeds the limit?
+
+The API will reject any **Add User** or **Replace Users** request that would exceed the limit with a `400` error. Additionally, if the stored user count is already over the limit (for example, after a plan downgrade), the bot will **not sync** the role link at all — no role assignments or removals will be processed until the user count is reduced below the allowed limit.
+
 ### Does the API trigger role syncs?
 
-Yes. When you modify the user list (Add, Remove, or Replace), RoleLogic automatically notifies the bot to sync the role assignments on Discord. Changes typically apply within seconds.
+Yes. When you modify the user list (Add, Remove, or Replace), RoleLogic automatically notifies the bot to sync the role assignments on Discord. Changes typically apply within seconds, provided the user count is within the allowed limit.
 
 ---
 
