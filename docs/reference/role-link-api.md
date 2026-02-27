@@ -1,10 +1,12 @@
 ---
 sidebar_position: 4
-title: Role Link API Reference - External Token-Based REST API
-description: Complete REST API reference for the RoleLogic Role Link external API. Manage Discord role-linked users programmatically with token authentication. Endpoints for listing, adding, removing, and batch-replacing users.
+title: Role Link API Reference — Plugin Developer Guide
+description: Complete reference for building RoleLogic Role Link plugins. Covers the plugin server contract (schema, config, delete endpoints), the external REST API for managing users, authentication, field types, validation, error handling, and best practices.
 keywords:
   - RoleLogic API
   - RoleLogic Role Link API
+  - RoleLogic plugin development
+  - Role Link plugin
   - Role Link REST API
   - external API
   - token authentication
@@ -14,6 +16,8 @@ keywords:
   - role management API
   - manage Discord roles programmatically
   - Discord bot API
+  - plugin schema
+  - plugin configuration
   - role link users endpoint
   - add user to Discord role API
   - remove user from Discord role API
@@ -26,11 +30,451 @@ image: /img/social-preview.png
 
 # Role Link API Reference
 
-The RoleLogic Role Link external API lets you manage users linked to a Discord role programmatically over HTTP. Use it to integrate RoleLogic with your own applications, websites, or services — for example, granting a Discord role to users who complete a purchase, pass verification, or meet custom criteria on your platform.
+This reference covers everything you need to build a **Role Link plugin** for RoleLogic. A plugin is an external server that integrates with RoleLogic to control which Discord users receive a specific role — based on your own logic (purchases, verification, subscriptions, game stats, etc.).
 
-**All endpoints require token-based authentication.** Each token is scoped to exactly one role link (one guild + one role combination).
+## How It Works
 
-## Quick Reference
+A Role Link connects a **Discord role** to your **plugin server**. The flow is:
+
+1. A server admin creates a Role Link in the RoleLogic Dashboard, providing your plugin's HTTPS URL.
+2. RoleLogic calls your plugin's **schema endpoint** to fetch a configuration form.
+3. The admin fills out the form in the dashboard; RoleLogic validates it and sends it to your plugin's **config endpoint**.
+4. Your plugin uses the **User Management API** (token-authenticated REST API) to add or remove users from the role link.
+5. RoleLogic's bot syncs the user list to Discord role assignments automatically.
+
+As a plugin developer, you need to implement **two things**:
+
+- A **plugin server** that serves a configuration schema and accepts config submissions.
+- Logic that calls the **User Management API** to manage which users have the role.
+
+---
+
+## Table of Contents
+
+- [Plugin Server Contract](#plugin-server-contract) — Endpoints your plugin must implement
+  - [GET /schema](#get-schema) — Return a configuration form
+  - [POST /config](#post-config) — Receive configuration from the dashboard
+  - [DELETE /config](#delete-config) — Handle role link deletion
+- [Schema Reference](#schema-reference) — All field types and validation options
+- [User Management API](#user-management-api) — REST API to manage role-linked users
+  - [Authentication](#authentication)
+  - [List Users](#list-users)
+  - [Replace Users (Batch Set)](#replace-users-batch-set)
+  - [Check User](#check-user)
+  - [Add User](#add-user)
+  - [Remove User](#remove-user)
+- [Limits](#limits)
+- [Error Responses](#error-responses)
+- [Examples](#examples)
+- [Best Practices](#best-practices)
+- [FAQ](#faq)
+
+---
+
+## Plugin Server Contract
+
+Your plugin server must expose endpoints under the **plugin URL** that the admin provides when creating a Role Link. RoleLogic appends paths to this base URL:
+
+| Method   | Path      | Purpose                          | Called when                    |
+| -------- | --------- | -------------------------------- | ----------------------------- |
+| `GET`    | `/schema` | Return configuration form schema | Dashboard loads the role link  |
+| `POST`   | `/config` | Receive submitted configuration  | Admin saves config in dashboard |
+| `DELETE` | `/config` | Clean up on role link deletion   | Admin deletes the role link   |
+
+### Plugin URL Requirements
+
+- Must use **HTTPS** — HTTP URLs are rejected.
+- Must not point to private/internal addresses: `localhost`, `127.0.0.1`, `::1`, `0.0.0.0`, `10.*`, `192.168.*`, `172.16-31.*`, `*.internal`, `*.local`.
+- Maximum length: **500 characters**.
+
+### How RoleLogic Authenticates to Your Plugin
+
+RoleLogic includes the role link's API token in requests to your server:
+
+```http
+Authorization: Token rl_...
+User-Agent: RoleLogic/1.0
+```
+
+You can use this token to identify which role link the request belongs to. The same token is used for the User Management API, so you can verify it matches by calling the API with it.
+
+---
+
+### GET /schema
+
+RoleLogic calls `GET {plugin_url}/schema` to fetch the configuration form that admins see in the dashboard. The response defines sections, fields, validation rules, and optionally the current values.
+
+**Request headers from RoleLogic:**
+
+| Header          | Value               |
+| --------------- | ------------------- |
+| `Authorization` | `Token rl_...`      |
+| `Accept`        | `application/json`  |
+| `User-Agent`    | `RoleLogic/1.0`     |
+
+**Your server must respond with `200 OK` and a JSON body matching this structure:**
+
+```json
+{
+  "version": 1,
+  "name": "My Plugin",
+  "description": "Optional description shown in the dashboard",
+  "sections": [
+    {
+      "title": "Section Title",
+      "description": "Optional section description",
+      "fields": [
+        {
+          "type": "text",
+          "key": "api_key",
+          "label": "API Key",
+          "description": "Your platform API key",
+          "placeholder": "Enter your API key",
+          "validation": { "required": true, "max": 200 }
+        }
+      ]
+    }
+  ],
+  "values": {
+    "api_key": "sk_live_abc123"
+  }
+}
+```
+
+**Constraints:**
+
+| Property   | Limit             |
+| ---------- | ----------------- |
+| `version`  | Must be `1`       |
+| `name`     | Max 100 chars     |
+| `description` | Max 500 chars  |
+| `sections` | 1–10 sections     |
+| Fields per section | 1–30 fields |
+| Field keys | Unique across all sections, alphanumeric + underscores only (`^[a-zA-Z0-9_]+$`), max 100 chars |
+
+**Caching:** RoleLogic caches the schema structure (without `values`) for **5 minutes**. The `values` object is always fetched fresh. Admins can force a cache refresh from the dashboard.
+
+**Timeout:** 5 seconds. Response body capped at 50 KB.
+
+**Fallback behavior:** If your server is unreachable or returns an invalid schema, RoleLogic falls back to the cached schema (if available). Otherwise, it returns a `502 Bad Gateway` error to the dashboard.
+
+---
+
+### POST /config
+
+When an admin saves configuration in the dashboard, RoleLogic validates the data against your schema, then sends it to `POST {plugin_url}/config`.
+
+**Request from RoleLogic:**
+
+```http
+POST {plugin_url}/config
+Authorization: Token rl_...
+Content-Type: application/json
+User-Agent: RoleLogic/1.0
+```
+
+```json
+{
+  "guild_id": "123456789012345678",
+  "role_id": "987654321098765432",
+  "config": {
+    "api_key": "sk_live_abc123",
+    "sync_interval": 60,
+    "enable_notifications": true
+  }
+}
+```
+
+| Field      | Type   | Description                                  |
+| ---------- | ------ | -------------------------------------------- |
+| `guild_id` | string | Discord server (guild) ID                    |
+| `role_id`  | string | Discord role ID                              |
+| `config`   | object | Key-value pairs matching your schema fields. Only non-`display` fields with submitted values are included. |
+
+**Your server should:**
+1. Validate and store the configuration.
+2. Return a `200` response (the response body is forwarded to the dashboard).
+3. Begin using the configuration to manage users via the User Management API.
+
+**Error handling:** If your server returns a non-2xx response, RoleLogic shows the error to the admin. Include a meaningful error message in the response body:
+
+```json
+{ "error": "Invalid API key" }
+```
+
+or
+
+```json
+{ "message": "API key does not have required permissions" }
+```
+
+RoleLogic extracts the `error` or `message` field from your response and displays it.
+
+**Timeout:** 10 seconds. Response body capped at 50 KB.
+
+---
+
+### DELETE /config
+
+When an admin deletes a role link, RoleLogic notifies your plugin so you can clean up. This is a **fire-and-forget** call — failures are logged but do not block the deletion.
+
+**Request from RoleLogic:**
+
+```http
+DELETE {plugin_url}/config
+Authorization: Token rl_...
+Content-Type: application/json
+User-Agent: RoleLogic/1.0
+```
+
+```json
+{
+  "guild_id": "123456789012345678",
+  "role_id": "987654321098765432"
+}
+```
+
+**Your server should:** Remove any stored configuration and stop managing users for this role link. The API token included in the request will be invalidated after deletion.
+
+**Timeout:** 5 seconds. Failures do not affect the deletion.
+
+---
+
+## Schema Reference
+
+The schema defines the configuration form rendered in the RoleLogic Dashboard. Each field has a `type` that determines its appearance and validation behavior.
+
+### Field Types
+
+#### `text`
+
+Single-line text input.
+
+```json
+{
+  "type": "text",
+  "key": "webhook_url",
+  "label": "Webhook URL",
+  "description": "URL to receive events",
+  "placeholder": "https://example.com/webhook",
+  "default_value": "",
+  "validation": {
+    "required": true,
+    "min": 10,
+    "max": 500,
+    "pattern": "^https://",
+    "pattern_message": "Must start with https://"
+  }
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `placeholder` | string? | Placeholder text (max 200 chars) |
+| `default_value` | string? | Default value (max 1,000 chars) |
+| `validation.required` | boolean? | Whether the field must be filled |
+| `validation.min` | number? | Minimum string length |
+| `validation.max` | number? | Maximum string length |
+| `validation.pattern` | string? | Regex pattern the value must match |
+| `validation.pattern_message` | string? | Custom error message for pattern mismatch (max 200 chars) |
+
+#### `textarea`
+
+Multi-line text input.
+
+```json
+{
+  "type": "textarea",
+  "key": "welcome_message",
+  "label": "Welcome Message",
+  "rows": 5,
+  "default_value": "Welcome to the server!",
+  "validation": { "max": 2000 }
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `rows` | number? | Number of visible rows, 2–20 (default varies by UI) |
+| `default_value` | string? | Default value (max 5,000 chars) |
+| `validation` | object? | Same as `text` |
+
+#### `number`
+
+Numeric input.
+
+```json
+{
+  "type": "number",
+  "key": "sync_interval",
+  "label": "Sync Interval (seconds)",
+  "step": 5,
+  "default_value": 60,
+  "validation": { "required": true, "min": 10, "max": 3600 }
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `step` | number? | Step increment |
+| `default_value` | number? | Default value |
+| `validation.min` | number? | Minimum value |
+| `validation.max` | number? | Maximum value |
+
+#### `select`
+
+Dropdown selection.
+
+```json
+{
+  "type": "select",
+  "key": "region",
+  "label": "Region",
+  "options": [
+    { "label": "North America", "value": "na" },
+    { "label": "Europe", "value": "eu" },
+    { "label": "Asia Pacific", "value": "apac" }
+  ],
+  "default_value": "na",
+  "validation": { "required": true }
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `options` | array | 1–100 options, each with `label` (max 100 chars) and `value` (string max 500 chars, or number) |
+| `default_value` | string \| number? | Must match one of the option values |
+
+#### `radio`
+
+Radio button group.
+
+```json
+{
+  "type": "radio",
+  "key": "mode",
+  "label": "Sync Mode",
+  "options": [
+    { "label": "Automatic", "value": "auto" },
+    { "label": "Manual", "value": "manual" }
+  ],
+  "default_value": "auto"
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `options` | array | 1–50 options (same format as `select`) |
+| `default_value` | string \| number? | Must match one of the option values |
+
+#### `checkbox`
+
+Boolean checkbox.
+
+```json
+{
+  "type": "checkbox",
+  "key": "enable_logging",
+  "label": "Enable activity logging",
+  "default_value": false
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `default_value` | boolean? | Default checked state |
+
+#### `toggle`
+
+Boolean toggle switch. Functionally identical to `checkbox`, rendered differently.
+
+```json
+{
+  "type": "toggle",
+  "key": "auto_sync",
+  "label": "Auto-sync enabled",
+  "default_value": true
+}
+```
+
+#### `display`
+
+Read-only text displayed in the form. Not submitted as configuration data.
+
+```json
+{
+  "type": "display",
+  "key": "info_notice",
+  "label": "Important",
+  "value": "This plugin requires a premium API key. Visit https://example.com to get one."
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `value` | string | Text content to display (max 2,000 chars) |
+
+### Common Field Properties
+
+All field types share these base properties:
+
+| Property | Type | Required | Description |
+| --- | --- | --- | --- |
+| `type` | string | Yes | One of: `text`, `textarea`, `number`, `select`, `radio`, `checkbox`, `toggle`, `display` |
+| `key` | string | Yes | Unique identifier (`^[a-zA-Z0-9_]+$`, max 100 chars) |
+| `label` | string | Yes | Display label (max 200 chars) |
+| `description` | string? | No | Help text below the field (max 500 chars) |
+| `condition` | object? | No | Conditional visibility (see below) |
+
+### Conditional Fields
+
+Fields can be shown or hidden based on another field's value:
+
+```json
+{
+  "type": "text",
+  "key": "custom_endpoint",
+  "label": "Custom Endpoint URL",
+  "condition": {
+    "field": "region",
+    "equals": "custom"
+  }
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `condition.field` | string | The `key` of another field in the schema (max 100 chars) |
+| `condition.equals` | string \| number \| boolean | The value that field must have for this field to be visible |
+
+The referenced field must exist in the schema. Conditions referencing unknown fields cause a validation error.
+
+### The `values` Object
+
+Include a `values` key in your schema response to pre-populate the form with existing configuration:
+
+```json
+{
+  "version": 1,
+  "name": "My Plugin",
+  "sections": [ ... ],
+  "values": {
+    "api_key": "sk_live_abc123",
+    "sync_interval": 60,
+    "enable_logging": true
+  }
+}
+```
+
+Keys in `values` correspond to field `key` properties. RoleLogic always fetches `values` fresh (not cached) so admins see the latest configuration.
+
+---
+
+## User Management API
+
+The User Management API lets your plugin programmatically control which Discord users are linked to a role. When you add or remove users, the RoleLogic bot automatically syncs the corresponding Discord role assignments.
+
+### Quick Reference
 
 | Method   | Endpoint                                                            | Description                          |
 | -------- | ------------------------------------------------------------------- | ------------------------------------ |
@@ -40,48 +484,32 @@ The RoleLogic Role Link external API lets you manage users linked to a Discord r
 | `POST`   | [`/api/role-link/:guildId/:roleId/users/:userId`](#add-user)        | Add a single user (idempotent)       |
 | `DELETE` | [`/api/role-link/:guildId/:roleId/users/:userId`](#remove-user)     | Remove a single user (idempotent)    |
 
----
-
-## Authentication
-
-Every request must include an `Authorization` header using the **`Token`** scheme (not `Bearer`):
-
-```http
-Authorization: Token your_token_here
-```
-
-Tokens always start with the `rl_` prefix.
-
-### How to Generate a Token
-
-1. Open the **RoleLogic Dashboard** for your server
-2. Navigate to **Role Links**
-3. Select or create a role link for the desired role
-4. Click **Reset Token** to generate a new API token
-
-:::warning
-Tokens are shown **only once** when generated. Store your token securely — it cannot be retrieved later. If you lose it, generate a new one. Generating a new token **immediately invalidates** the previous token.
-:::
-
-### Token Scope
-
-Each token is scoped to a **single role link** — a specific `guildId` + `roleId` pair. A token for one role link cannot access another role link's users, even within the same guild. If you need to manage multiple role links, generate a separate token for each.
-
----
-
-## Base URL
+### Base URL
 
 ```
 https://api-rolelogic.faizo.net
 ```
 
-All endpoint paths below are relative to this base URL.
+### Authentication
 
----
+Every request must include an `Authorization` header using the **`Token`** scheme (not `Bearer`):
 
-## Path Parameters
+```http
+Authorization: Token rl_...
+```
 
-These URL parameters are used across all endpoints:
+Tokens start with the `rl_` prefix and are scoped to exactly **one role link** (one guild + one role combination). A token for one role link cannot access another, even within the same guild.
+
+#### How to Get a Token
+
+- **Dashboard users:** Open the RoleLogic Dashboard > Role Links > select a role link > click **Reset Token**. The token is shown once — store it securely.
+- **Plugin developers:** The token is sent to your plugin server in the `Authorization` header on schema/config requests. Your plugin can extract and store it during `POST /config`.
+
+:::warning
+Tokens are shown **only once** when generated. Generating a new token **immediately invalidates** the previous one. If you store the token in your plugin, it will stop working after a reset — you'll receive the new token on the next `POST /config` call.
+:::
+
+### Path Parameters
 
 | Parameter | Type   | Format                      | Description                          |
 | --------- | ------ | --------------------------- | ------------------------------------ |
@@ -89,15 +517,11 @@ These URL parameters are used across all endpoints:
 | `roleId`  | string | Numeric (Discord snowflake) | The Discord role ID                  |
 | `userId`  | string | 17–20 digit numeric string  | A Discord user ID (snowflake format) |
 
-You can find guild, role, and user IDs by enabling **Developer Mode** in Discord Settings > Advanced, then right-clicking on a server, role, or user and selecting "Copy ID".
-
 ---
-
-## Endpoints
 
 ### List Users
 
-Retrieve all Discord user IDs currently linked to this role. Returns the complete list regardless of size.
+Retrieve all Discord user IDs currently linked to this role.
 
 ```http
 GET /api/role-link/:guildId/:roleId/users
@@ -105,9 +529,9 @@ GET /api/role-link/:guildId/:roleId/users
 
 **Headers**
 
-| Header          | Value                   |
-| --------------- | ----------------------- |
-| `Authorization` | `Token your_token_here` |
+| Header          | Value              |
+| --------------- | ---------------    |
+| `Authorization` | `Token rl_...`     |
 
 **Response `200 OK`**
 
@@ -123,7 +547,7 @@ GET /api/role-link/:guildId/:roleId/users
 
 ### Replace Users (Batch Set)
 
-Atomically replaces the entire user list with the provided array. The old list is fully removed and the new list is inserted in a single transaction. Use this for full synchronization from an external source.
+Atomically replaces the entire user list. The old list is fully removed and the new list is inserted in a single transaction. Use this for full synchronization from an external source.
 
 ```http
 PUT /api/role-link/:guildId/:roleId/users
@@ -131,14 +555,14 @@ PUT /api/role-link/:guildId/:roleId/users
 
 **Headers**
 
-| Header          | Value                   |
-| --------------- | ----------------------- |
-| `Authorization` | `Token your_token_here` |
-| `Content-Type`  | `application/json`      |
+| Header          | Value                |
+| --------------- | -------------------- |
+| `Authorization` | `Token rl_...`       |
+| `Content-Type`  | `application/json`   |
 
 **Request Body**
 
-A JSON array of Discord user ID strings (snowflake format, 17–20 digits each):
+A JSON array of Discord user ID strings (17–20 digits each):
 
 ```json
 ["123456789012345678", "234567890123456789", "345678901234567890"]
@@ -161,6 +585,8 @@ A JSON array of Discord user ID strings (snowflake format, 17–20 digits each):
 
 `user_count` reflects the number of **unique** users stored after deduplication.
 
+**Timeout:** This endpoint has a **2-minute timeout** for very large payloads. Users are inserted in batches of 50,000.
+
 ---
 
 ### Check User
@@ -173,9 +599,9 @@ GET /api/role-link/:guildId/:roleId/users/:userId
 
 **Headers**
 
-| Header          | Value                   |
-| --------------- | ----------------------- |
-| `Authorization` | `Token your_token_here` |
+| Header          | Value          |
+| --------------- | -------------- |
+| `Authorization` | `Token rl_...` |
 
 **Response `200 OK`**
 
@@ -204,9 +630,9 @@ POST /api/role-link/:guildId/:roleId/users/:userId
 
 **Headers**
 
-| Header          | Value                   |
-| --------------- | ----------------------- |
-| `Authorization` | `Token your_token_here` |
+| Header          | Value          |
+| --------------- | -------------- |
+| `Authorization` | `Token rl_...` |
 
 **Response `200 OK`**
 
@@ -235,9 +661,9 @@ DELETE /api/role-link/:guildId/:roleId/users/:userId
 
 **Headers**
 
-| Header          | Value                   |
-| --------------- | ----------------------- |
-| `Authorization` | `Token your_token_here` |
+| Header          | Value          |
+| --------------- | -------------- |
+| `Authorization` | `Token rl_...` |
 
 **Response `200 OK`**
 
@@ -256,6 +682,14 @@ DELETE /api/role-link/:guildId/:roleId/users/:userId
 
 ---
 
+### Role Sync Behavior
+
+When you modify the user list (Add, Remove, or Replace), RoleLogic automatically notifies the bot to sync role assignments on Discord. Changes typically apply within seconds, provided the user count is within the allowed limit.
+
+If the stored user count exceeds the allowed limit (e.g., after a plan downgrade), the bot **stops syncing** the role link entirely until the count is reduced.
+
+---
+
 ## Limits
 
 | Resource              | Free Plan | Premium   |
@@ -264,8 +698,8 @@ DELETE /api/role-link/:guildId/:roleId/users/:userId
 | Role links per server | 10        | 10        |
 
 - Exceeding the user limit on **Add User** or **Replace Users** returns a `400` error with a message indicating the maximum allowed.
-- If the user count in the database exceeds the allowed limit (e.g., due to a plan downgrade), the **bot will stop syncing** the role link entirely until the user count is reduced below the limit. No role assignments or removals will be processed.
-- The **Replace Users** endpoint has a 2-minute timeout for very large payloads.
+- The error message includes a hint to upgrade if on the free plan.
+- The **Replace Users** endpoint has a 2-minute timeout for large payloads.
 - Upgrade to a premium plan for higher user limits. See [Plans & Pricing](../plans).
 
 ---
@@ -281,53 +715,167 @@ All errors return a JSON object with `statusCode` and `message`:
 }
 ```
 
-### Error Reference
+### User Management API Errors
 
 | Status Code | Message                                            | Cause                                                        |
 | ----------- | -------------------------------------------------- | ------------------------------------------------------------ |
+| `400`       | Maximum N users per role link                      | User limit exceeded (see [Limits](#limits))                  |
+| `400`       | Validation error                                   | Invalid request body (e.g., user ID not in snowflake format) |
 | `401`       | Authorization header required                      | Missing `Authorization` header                               |
 | `401`       | Invalid authorization scheme. Use: Token \<token\> | Wrong scheme (e.g., `Bearer` instead of `Token`)             |
 | `403`       | Invalid or revoked token                           | Token doesn't match the guild/role pair, or was reset        |
 | `403`       | This role link is disabled                         | Role link exists but is disabled in the dashboard            |
-| `400`       | Maximum N users per role link                      | User limit exceeded (see [Limits](#limits))                  |
-| `400`       | Validation error                                   | Invalid request body (e.g., user ID not in snowflake format) |
 | `404`       | Role link not found                                | No role link exists for this guild/role combination          |
+
+### Plugin Server Errors (Shown to Admins)
+
+These errors are returned to the dashboard when RoleLogic cannot communicate with your plugin:
+
+| Status Code | Message                                                 | Cause                                     |
+| ----------- | ------------------------------------------------------- | ----------------------------------------- |
+| `502`       | Failed to fetch plugin schema: plugin server unreachable | Your `/schema` endpoint is down or timed out |
+| `502`       | Plugin returned invalid schema                          | Your `/schema` response failed validation |
+| `502`       | Failed to submit config to plugin server                | Your `/config` endpoint returned an error |
+| `502`       | Failed to submit config to plugin server: \<detail\>    | Your `/config` returned an error with a message |
 
 ---
 
 ## Examples
 
-### cURL
+### Minimal Plugin Server (Node.js / Express)
+
+A minimal plugin server that manages a "VIP" role based on a configured API key:
+
+```javascript
+import express from "express";
+
+const app = express();
+app.use(express.json());
+
+// Store config per guild+role (use a database in production)
+const configs = new Map();
+
+// GET /schema — Return the configuration form
+app.get("/schema", (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  const config = findConfigByToken(token);
+
+  res.json({
+    version: 1,
+    name: "VIP Sync Plugin",
+    description: "Syncs VIP status from your platform to Discord roles",
+    sections: [
+      {
+        title: "Connection",
+        fields: [
+          {
+            type: "text",
+            key: "platform_api_key",
+            label: "Platform API Key",
+            description: "Your platform's API key for fetching VIP users",
+            validation: { required: true, min: 10, max: 200 },
+          },
+          {
+            type: "number",
+            key: "sync_interval",
+            label: "Sync Interval (minutes)",
+            default_value: 30,
+            validation: { required: true, min: 5, max: 1440 },
+          },
+          {
+            type: "toggle",
+            key: "auto_remove",
+            label: "Auto-remove expired VIPs",
+            default_value: true,
+          },
+        ],
+      },
+    ],
+    // Return current values if config exists
+    values: config
+      ? {
+          platform_api_key: config.platform_api_key,
+          sync_interval: config.sync_interval,
+          auto_remove: config.auto_remove,
+        }
+      : undefined,
+  });
+});
+
+// POST /config — Receive configuration from the dashboard
+app.post("/config", (req, res) => {
+  const { guild_id, role_id, config } = req.body;
+  const token = req.headers.authorization?.split(" ")[1];
+
+  // Store config with the token for later API calls
+  configs.set(`${guild_id}:${role_id}`, { ...config, token });
+
+  res.json({ success: true });
+
+  // Start syncing (in production, use a job scheduler)
+  startSync(guild_id, role_id);
+});
+
+// DELETE /config — Clean up on role link deletion
+app.delete("/config", (req, res) => {
+  const { guild_id, role_id } = req.body;
+  configs.delete(`${guild_id}:${role_id}`);
+  res.json({ success: true });
+});
+
+// Sync logic: fetch VIP users from your platform, update RoleLogic
+async function startSync(guildId, roleId) {
+  const config = configs.get(`${guildId}:${roleId}`);
+  if (!config) return;
+
+  const API_BASE = "https://api-rolelogic.faizo.net";
+  const headers = { Authorization: `Token ${config.token}` };
+
+  // Fetch VIP user IDs from your platform
+  const vipUserIds = await fetchVipUsers(config.platform_api_key);
+
+  // Replace the entire user list atomically
+  await fetch(`${API_BASE}/api/role-link/${guildId}/${roleId}/users`, {
+    method: "PUT",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify(vipUserIds),
+  });
+}
+
+app.listen(3000);
+```
+
+### User Management API — cURL
 
 ```bash
 # List all users linked to a role
-curl -H "Authorization: Token your_token_here" \
+curl -H "Authorization: Token rl_your_token_here" \
   https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users
 
 # Add a user
-curl -X POST -H "Authorization: Token your_token_here" \
+curl -X POST -H "Authorization: Token rl_your_token_here" \
   https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users/111222333444555666
 
 # Replace all users (batch set)
-curl -X PUT -H "Authorization: Token your_token_here" \
+curl -X PUT -H "Authorization: Token rl_your_token_here" \
   -H "Content-Type: application/json" \
   -d '["111222333444555666", "222333444555666777"]' \
   https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users
 
 # Check if a user exists
-curl -H "Authorization: Token your_token_here" \
+curl -H "Authorization: Token rl_your_token_here" \
   https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users/111222333444555666
 
 # Remove a user
-curl -X DELETE -H "Authorization: Token your_token_here" \
+curl -X DELETE -H "Authorization: Token rl_your_token_here" \
   https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users/111222333444555666
 ```
 
-### JavaScript (fetch)
+### User Management API — JavaScript (fetch)
 
 ```javascript
 const API_BASE = "https://api-rolelogic.faizo.net";
-const TOKEN = "your_token_here";
+const TOKEN = "rl_your_token_here";
 const GUILD_ID = "123456789";
 const ROLE_ID = "987654321";
 
@@ -359,13 +907,13 @@ const setResult = await fetch(
 // → { data: { user_count: 2 } }
 ```
 
-### Python (requests)
+### User Management API — Python (requests)
 
 ```python
 import requests
 
 API_BASE = "https://api-rolelogic.faizo.net"
-TOKEN = "your_token_here"
+TOKEN = "rl_your_token_here"
 GUILD_ID = "123456789"
 ROLE_ID = "987654321"
 
@@ -394,27 +942,57 @@ resp = requests.put(
 
 ---
 
-## Frequently Asked Questions
+## Best Practices
+
+### Plugin Server
+
+- **Always return `values` in your schema** so admins see their current configuration when revisiting the form. Only the schema structure is cached; values are fetched fresh every time.
+- **Keep your `/schema` endpoint fast** (under 5 seconds). If fetching current values is slow, consider caching them on your side.
+- **Validate the `Authorization` header** on incoming requests from RoleLogic to ensure they're legitimate. You can verify the token by making a test call to the User Management API.
+- **Handle `DELETE /config` gracefully.** The token will be invalidated after the role link is deleted, so clean up any stored state and stop sync jobs.
+- **Return descriptive errors from `POST /config`.** Include an `error` or `message` field in your response body — RoleLogic displays it to the admin.
+- **Use HTTPS** for your plugin URL. HTTP is rejected.
+
+### User Management
+
+- **Prefer `PUT` (Replace Users) for periodic full syncs.** It's atomic and handles additions and removals in one call.
+- **Use `POST`/`DELETE` (Add/Remove User) for real-time, event-driven updates** — e.g., when a user completes a purchase.
+- **All write endpoints are idempotent.** Adding an existing user or removing a non-existent user succeeds without error. Safe to retry on network failures.
+- **Check your user count against limits** before calling Replace Users to avoid `400` errors.
+- **Use the `Token` scheme, not `Bearer`.** Using `Bearer` returns `401`.
+- **Store the token securely.** Tokens start with `rl_` and should be treated as secrets.
+
+---
+
+## FAQ
 
 ### What is the Role Link API used for?
 
-The Role Link API allows external applications to programmatically manage which Discord users are linked to a specific role through RoleLogic. Common use cases include: granting roles after a purchase or subscription, syncing role membership from an external database, automating verification flows, and integrating with third-party platforms.
+The Role Link API allows external applications (plugins) to programmatically manage which Discord users are linked to a specific role through RoleLogic. Common use cases include: granting roles after a purchase or subscription, syncing role membership from an external database, automating verification flows, and integrating with third-party platforms.
 
-### How do I get an API token?
+### What does a plugin need to implement?
 
-Open the RoleLogic Dashboard, go to Role Links for your server, select or create a role link, and click "Reset Token". The token is shown once — copy and store it securely.
+At minimum, two HTTP endpoints: `GET /schema` (returns the configuration form) and `POST /config` (receives submitted configuration). Optionally, `DELETE /config` for cleanup on role link deletion. Your plugin then calls the User Management API to add/remove users.
+
+### How does RoleLogic authenticate to my plugin?
+
+RoleLogic sends the role link's API token in the `Authorization: Token rl_...` header on all requests to your plugin server. You can verify this token by making a test call to the User Management API.
+
+### How do I get the API token in my plugin?
+
+RoleLogic includes the token in the `Authorization` header when it calls your plugin's `/schema`, `/config`, and `/config` (DELETE) endpoints. Extract and store the token during the `POST /config` call to use it for User Management API calls later.
 
 ### What is the difference between Token and Bearer authentication?
 
-The Role Link API uses the `Token` scheme (`Authorization: Token rl_...`), **not** `Bearer`. Using `Bearer` will return a `401` error. This distinguishes external API tokens from internal service authentication.
+The User Management API uses the `Token` scheme (`Authorization: Token rl_...`), **not** `Bearer`. Using `Bearer` returns a `401` error. This distinguishes external API tokens from internal service authentication.
 
 ### Can one token access multiple role links?
 
-No. Each token is scoped to exactly one role link (one guild + one role). To manage multiple role links, generate a separate token for each.
+No. Each token is scoped to exactly one role link (one guild + one role). To manage multiple role links, each will have its own token.
 
-### What happens when I reset a token?
+### What happens when an admin resets a token?
 
-The old token is immediately invalidated and a new one is generated. Any systems using the old token will receive `403` errors. Update your integrations with the new token.
+The old token is immediately invalidated and a new one is generated. Any systems using the old token will receive `403` errors. Your plugin will receive the new token on the next `/schema` or `/config` request from RoleLogic.
 
 ### Are the Add and Remove endpoints idempotent?
 
@@ -426,11 +1004,15 @@ Free plan: 100 users per role link. Premium: 1,000,000 users per role link. The 
 
 ### What happens if the user count exceeds the limit?
 
-The API will reject any **Add User** or **Replace Users** request that would exceed the limit with a `400` error. Additionally, if the stored user count is already over the limit (for example, after a plan downgrade), the bot will **not sync** the role link at all — no role assignments or removals will be processed until the user count is reduced below the allowed limit.
+The API rejects **Add User** or **Replace Users** requests that would exceed the limit with a `400` error. If the stored count already exceeds the limit (e.g., after a plan downgrade), the bot **stops syncing** the role link entirely until the count is reduced.
 
-### Does the API trigger role syncs?
+### How quickly do role changes take effect on Discord?
 
-Yes. When you modify the user list (Add, Remove, or Replace), RoleLogic automatically notifies the bot to sync the role assignments on Discord. Changes typically apply within seconds, provided the user count is within the allowed limit.
+Changes typically apply within seconds after a User Management API call. RoleLogic notifies the bot immediately, and the bot processes the sync. Delays may occur during high-traffic periods or if the bot is rate-limited by Discord.
+
+### What happens if my plugin server is down?
+
+If the `/schema` endpoint is unreachable, RoleLogic falls back to a cached schema (if available) for up to 5 minutes. If no cache exists, the dashboard shows a `502` error. The User Management API is unaffected by plugin server outages — it's hosted by RoleLogic.
 
 ---
 
