@@ -88,6 +88,7 @@ Your plugin server must expose endpoints under the **plugin URL** that the admin
 
 - Must use **HTTPS** — HTTP URLs are rejected.
 - Must not point to private/internal addresses: `localhost`, `127.0.0.1`, `::1`, `0.0.0.0`, `10.*`, `192.168.*`, `172.16-31.*`, `*.internal`, `*.local`.
+- Trailing slashes are automatically stripped (e.g., `https://example.com/` becomes `https://example.com`).
 - Maximum length: **500 characters**.
 
 ### How RoleLogic Authenticates to Your Plugin
@@ -235,7 +236,9 @@ User-Agent: RoleLogic/1.0
 2. Return a `200` response (the response body is forwarded to the dashboard).
 3. Begin using the configuration to manage users via the User Management API.
 
-**Error handling:** If your server returns a non-2xx response, RoleLogic shows the error to the admin. Include a meaningful error message in the response body:
+**After a successful save:** The dashboard automatically refetches your plugin's `/schema` endpoint to display the latest configuration values. Ensure your schema response reflects the newly saved config immediately.
+
+**Error handling:** If your server returns a 4xx error, RoleLogic forwards the original status code and error message to the admin. For 5xx errors or network failures, RoleLogic returns a `502 Bad Gateway`. Include a meaningful error message in the response body:
 
 ```json
 { "error": "Invalid API key" }
@@ -451,7 +454,7 @@ Read-only text displayed in the form. Not submitted as configuration data.
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `value` | string | Text content to display (max 2,000 chars) |
+| `value` | string | Text content to display (max 2,000 chars). Supports `\n` for line breaks. |
 
 ### Common Field Properties
 
@@ -541,11 +544,11 @@ Tokens start with the `rl_` prefix and are scoped to exactly **one role link** (
 
 #### How to Get a Token
 
-- **Dashboard users:** Open the RoleLogic Dashboard > Role Links > select a role link > click **Reset Token**. The token is shown once — store it securely.
-- **Plugin developers:** The token is sent to your plugin server in the `Authorization` header starting from the `POST /register` call when the role link is created. Extract and store it during registration.
+- **Plugin developers:** The token is automatically generated when a role link is created and sent to your plugin server in the `Authorization` header during the `POST /register` call. Extract and store it during registration.
+- **Dashboard users:** Tokens are not manually visible or resettable. To get a new token, delete the role link and recreate it.
 
 :::warning
-Tokens are shown **only once** when generated. Generating a new token **immediately invalidates** the previous one. If you store the token in your plugin, it will stop working after a reset — you'll receive the new token on the next `POST /config` call.
+Tokens cannot be reset independently. To regenerate a token, you must **delete and recreate** the role link. This will trigger a new `POST /register` call to your plugin with the new token.
 :::
 
 ### Path Parameters
@@ -775,8 +778,8 @@ These errors are returned to the dashboard when RoleLogic cannot communicate wit
 | `502`       | Failed to register with plugin server                    | Your `/register` endpoint is down or returned an error |
 | `502`       | Failed to fetch plugin schema: plugin server unreachable | Your `/schema` endpoint is down or timed out |
 | `502`       | Plugin returned invalid schema                           | Your `/schema` response failed validation    |
-| `502`       | Failed to submit config to plugin server                 | Your `/config` endpoint returned an error    |
-| `502`       | Failed to submit config to plugin server: \<detail\>     | Your `/config` returned an error with a message |
+| `4xx`       | Failed to submit config to plugin server: \<detail\>     | Your `/config` returned a 4xx client error — the original status code is forwarded |
+| `502`       | Failed to submit config to plugin server                 | Your `/config` endpoint is down, timed out, or returned a 5xx error |
 
 ---
 
@@ -1039,9 +1042,9 @@ The User Management API uses the `Token` scheme (`Authorization: Token rl_...`),
 
 No. Each token is scoped to exactly one role link (one guild + one role). To manage multiple role links, each will have its own token.
 
-### What happens when an admin resets a token?
+### How do I get a new token?
 
-The old token is immediately invalidated and a new one is generated. Any systems using the old token will receive `403` errors. Your plugin will receive the new token on the next `/schema` or `/config` request from RoleLogic.
+Tokens cannot be reset independently. To get a new token, delete the role link and recreate it. The new token will be sent to your plugin during the `POST /register` call.
 
 ### Are the Add and Remove endpoints idempotent?
 
