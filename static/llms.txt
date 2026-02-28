@@ -92,7 +92,22 @@ RoleLogic automatically manages Discord server roles. Users create IF-THEN rules
 | Cross-server links | 5 servers |
 | Quota reassignment cooldown | 7 days |
 
-### Role Link API (External)
+### Role Link API
+A Role Link connects a Discord role to an external plugin server. Plugins implement endpoints (POST /register, GET /schema, POST /config, DELETE /config) and use the User Management API to control role membership.
+
+**Plugin Server Contract:**
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | /register | Acknowledge role link creation (receives API token) |
+| GET | /schema | Return configuration form schema |
+| POST | /config | Receive submitted configuration (4xx errors forwarded) |
+| DELETE | /config | Clean up on role link deletion (fire-and-forget) |
+
+- Plugin URL: HTTPS only, trailing slashes auto-stripped, no private addresses
+- Tokens auto-generated on creation, sent via POST /register. No independent reset — delete and recreate to get a new token.
+- Dashboard refetches /schema after successful config save
+
+**User Management API:**
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | /api/role-link/:guildId/:roleId/users | List all linked user IDs |

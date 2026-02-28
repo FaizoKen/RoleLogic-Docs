@@ -929,27 +929,100 @@ A: The free plan (2 rules) serves as your trial. No time limit.
 
 ---
 
-# SECTION 12: ROLE LINK API REFERENCE (EXTERNAL)
+# SECTION 12: ROLE LINK API REFERENCE
 
-The Role Link external API lets external applications manage users linked to a Discord role programmatically via HTTP. Use it to grant Discord roles after purchases, sync membership from external databases, automate verification, or integrate with third-party platforms.
+A Role Link connects a Discord role to an external plugin server. The plugin controls which users receive the role based on its own logic (purchases, verification, subscriptions, etc.).
 
-## Base URL
+## How It Works
 
-https://api-rolelogic.faizo.net
+1. Admin creates a Role Link in the dashboard, providing the plugin's HTTPS URL.
+2. RoleLogic calls the plugin's `POST /register` endpoint with `guild_id`, `role_id`, and API token. If rejected, the role link is not created.
+3. RoleLogic calls `GET /schema` to fetch a configuration form for the dashboard.
+4. Admin fills out the form; RoleLogic validates and sends it to `POST /config`.
+5. After a successful config save, the dashboard automatically refetches `/schema` to display updated values.
+6. The plugin uses the User Management API to add/remove users from the role link.
+7. RoleLogic's bot syncs the user list to Discord role assignments automatically.
 
-## Authentication
+## Plugin Server Contract
+
+Your plugin must expose these endpoints under the plugin URL:
+
+| Method | Path | Purpose | Called when |
+|--------|------|---------|------------|
+| POST | /register | Acknowledge role link creation | Admin creates a role link |
+| GET | /schema | Return configuration form schema | Dashboard loads the role link |
+| POST | /config | Receive submitted configuration | Admin saves config in dashboard |
+| DELETE | /config | Clean up on role link deletion | Admin deletes the role link |
+
+### Plugin URL Requirements
+
+- Must use HTTPS — HTTP is rejected.
+- Must not point to private/internal addresses: localhost, 127.0.0.1, ::1, 0.0.0.0, 10.*, 192.168.*, 172.16-31.*, *.internal, *.local.
+- Trailing slashes are automatically stripped (e.g., `https://example.com/` becomes `https://example.com`).
+- Maximum length: 500 characters.
+
+### POST /register
+
+Blocking call — non-2xx response rolls back role link creation. Timeout: 5 seconds.
+
+Request: `POST {plugin_url}/register` with `Authorization: Token rl_...`, body: `{ "guild_id": "...", "role_id": "..." }`
+
+Your server should store the token from the Authorization header and record the guild_id/role_id. Return 200 to confirm.
+
+### GET /schema
+
+Returns the configuration form schema. Timeout: 5 seconds. Response capped at 50 KB. Schema structure (without values) is cached for 5 minutes; values are always fetched fresh.
+
+Response format:
+```json
+{
+  "version": 1,
+  "name": "Plugin Name",
+  "description": "Optional description",
+  "sections": [{ "title": "Section", "fields": [...] }],
+  "values": { "key": "current_value" }
+}
+```
+
+Schema constraints: version must be 1, name max 100 chars, description max 500 chars, 1–10 sections, 1–30 fields per section, field keys unique and alphanumeric+underscores (max 100 chars).
+
+Field types: `text`, `textarea`, `number`, `select`, `radio`, `checkbox`, `toggle`, `display`. The `display` type is read-only text (not submitted as config data, supports `\n` for line breaks). Fields support conditional visibility via `condition: { field, equals }`.
+
+### POST /config
+
+Receives validated config from dashboard. Timeout: 10 seconds. Response capped at 50 KB.
+
+Request body: `{ "guild_id": "...", "role_id": "...", "config": { ... } }`
+
+After a successful save, the dashboard automatically refetches `/schema` to display updated configuration values. Ensure your schema response reflects newly saved config immediately.
+
+Error handling: 4xx errors from your server are forwarded to the admin with the original status code. 5xx errors or network failures return 502 Bad Gateway. Include an `error` or `message` field in error response bodies.
+
+### DELETE /config
+
+Fire-and-forget — failures are logged but don't block deletion. Timeout: 5 seconds.
+
+Request body: `{ "guild_id": "...", "role_id": "..." }`
+
+Your server should clean up stored config and stop managing users. The token is invalidated after deletion.
+
+## User Management API
+
+Base URL: https://api-rolelogic.faizo.net
+
+### Authentication
 
 Every request requires an `Authorization` header using the `Token` scheme (NOT `Bearer`):
 
 ```
-Authorization: Token your_token_here
+Authorization: Token rl_...
 ```
 
-Tokens start with `rl_` prefix. Each token is scoped to one role link (one guild + one role pair). Generate tokens from the RoleLogic Dashboard under Role Links > Reset Token. Tokens are shown only once; resetting generates a new token and immediately invalidates the old one.
+Tokens start with `rl_` prefix. Each token is scoped to one role link (one guild + one role pair). Tokens are automatically generated when a role link is created and sent to the plugin server during the `POST /register` call. Tokens cannot be reset independently — to get a new token, delete the role link and recreate it.
 
-## Endpoints
+### Endpoints
 
-### GET /api/role-link/:guildId/:roleId/users
+#### GET /api/role-link/:guildId/:roleId/users
 List all user IDs linked to this role.
 
 Response:
@@ -957,7 +1030,7 @@ Response:
 { "data": ["123456789012345678", "234567890123456789"] }
 ```
 
-### PUT /api/role-link/:guildId/:roleId/users
+#### PUT /api/role-link/:guildId/:roleId/users
 Atomically replace the entire user list. Request body is a JSON array of Discord user ID strings.
 
 Request body:
@@ -974,7 +1047,7 @@ Response:
 - Empty array `[]` removes all users.
 - 2-minute timeout for large payloads.
 
-### GET /api/role-link/:guildId/:roleId/users/:userId
+#### GET /api/role-link/:guildId/:roleId/users/:userId
 Check if a specific user exists in the list.
 
 Response:
@@ -982,7 +1055,7 @@ Response:
 { "data": { "exists": true } }
 ```
 
-### POST /api/role-link/:guildId/:roleId/users/:userId
+#### POST /api/role-link/:guildId/:roleId/users/:userId
 Add a single user. Idempotent: returns `added: false` if user already exists.
 
 Response:
@@ -990,7 +1063,7 @@ Response:
 { "data": { "added": true } }
 ```
 
-### DELETE /api/role-link/:guildId/:roleId/users/:userId
+#### DELETE /api/role-link/:guildId/:roleId/users/:userId
 Remove a single user. Idempotent: returns `removed: false` if user was not in list.
 
 Response:
@@ -998,7 +1071,7 @@ Response:
 { "data": { "removed": true } }
 ```
 
-## Path Parameters
+### Path Parameters
 
 - `guildId`: Discord server (guild) ID (numeric snowflake)
 - `roleId`: Discord role ID (numeric snowflake)
@@ -1012,9 +1085,11 @@ Response:
 | Role links per server | 10 | 10 |
 
 - Exceeding the user limit on Add User or Replace Users returns a `400` error.
-- If the user count in the database exceeds the allowed limit (e.g., due to a plan downgrade), the bot will stop syncing the role link entirely until the user count is reduced below the limit. No role assignments or removals will be processed.
+- If the user count in the database exceeds the allowed limit (e.g., due to a plan downgrade), the bot will stop syncing the role link entirely until the user count is reduced below the limit.
 
 ## Error Responses
+
+### User Management API Errors
 
 | Status | Message | Cause |
 |--------|---------|-------|
@@ -1026,7 +1101,26 @@ Response:
 | 400 | Validation error | Invalid request body format |
 | 404 | Role link not found | No role link for this guild/role |
 
-## Role Link API FAQ
+### Plugin Server Errors (Shown to Admins)
+
+| Status | Message | Cause |
+|--------|---------|-------|
+| 502 | Failed to register with plugin server | /register endpoint is down or returned an error |
+| 502 | Failed to fetch plugin schema: plugin server unreachable | /schema endpoint is down or timed out |
+| 502 | Plugin returned invalid schema | /schema response failed validation |
+| 4xx | Failed to submit config to plugin server: <detail> | /config returned a 4xx client error — original status code is forwarded |
+| 502 | Failed to submit config to plugin server | /config endpoint is down, timed out, or returned a 5xx error |
+
+## Role Link FAQ
+
+Q: What does a plugin need to implement?
+A: At minimum: POST /register (acknowledges creation and receives the API token), GET /schema (returns config form), and POST /config (receives submitted config). Optionally DELETE /config for cleanup. Then call the User Management API to add/remove users.
+
+Q: How do I get the API token in my plugin?
+A: Extract it from the Authorization header during POST /register — the first request your plugin receives when a role link is created.
+
+Q: How do I get a new token?
+A: Tokens cannot be reset independently. Delete the role link and recreate it. The new token is sent during the new POST /register call.
 
 Q: Can one token access multiple role links?
 A: No. Each token is scoped to exactly one guild + role pair.
@@ -1038,7 +1132,10 @@ Q: Does modifying users trigger Discord role sync?
 A: Yes. The bot is notified automatically and syncs within seconds, provided the user count is within the allowed limit.
 
 Q: What happens if the user count exceeds the limit?
-A: The API rejects Add User or Replace Users requests that would exceed the limit with a 400 error. If the stored user count already exceeds the limit (e.g., after a plan downgrade), the bot will not sync the role link at all until the user count is reduced below the allowed limit.
+A: The API rejects Add User or Replace Users requests that would exceed the limit with a 400 error. If the stored count already exceeds the limit (e.g., after a plan downgrade), the bot will not sync at all until the count is reduced.
+
+Q: What happens if my plugin server is down?
+A: If /schema is unreachable, RoleLogic falls back to a cached schema (if available) for up to 5 minutes. The User Management API is unaffected — it's hosted by RoleLogic.
 
 Q: What format are user IDs?
 A: Discord snowflake format: 17–20 digit numeric strings.
