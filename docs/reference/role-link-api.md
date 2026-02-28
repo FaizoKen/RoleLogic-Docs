@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 title: Role Link API Reference — Plugin Developer Guide
-description: Complete reference for building RoleLogic Role Link plugins. Covers the plugin server contract (schema, config, delete endpoints), the external REST API for managing users, authentication, field types, validation, error handling, and best practices.
+description: Complete reference for building RoleLogic Role Link plugins. Covers the plugin server contract (register, schema, config, delete endpoints), the external REST API for managing users, authentication, field types, validation, error handling, and best practices.
 keywords:
   - RoleLogic API
   - RoleLogic Role Link API
@@ -37,10 +37,11 @@ This reference covers everything you need to build a **Role Link plugin** for Ro
 A Role Link connects a **Discord role** to your **plugin server**. The flow is:
 
 1. A server admin creates a Role Link in the RoleLogic Dashboard, providing your plugin's HTTPS URL.
-2. RoleLogic calls your plugin's **schema endpoint** to fetch a configuration form.
-3. The admin fills out the form in the dashboard; RoleLogic validates it and sends it to your plugin's **config endpoint**.
-4. Your plugin uses the **User Management API** (token-authenticated REST API) to add or remove users from the role link.
-5. RoleLogic's bot syncs the user list to Discord role assignments automatically.
+2. RoleLogic calls your plugin's **register endpoint** to notify it that a role link was created, sending the `guild_id`, `role_id`, and the API token. If your plugin rejects the registration, the role link is not created.
+3. RoleLogic calls your plugin's **schema endpoint** to fetch a configuration form.
+4. The admin fills out the form in the dashboard; RoleLogic validates it and sends it to your plugin's **config endpoint**.
+5. Your plugin uses the **User Management API** (token-authenticated REST API) to add or remove users from the role link.
+6. RoleLogic's bot syncs the user list to Discord role assignments automatically.
 
 As a plugin developer, you need to implement **two things**:
 
@@ -52,6 +53,7 @@ As a plugin developer, you need to implement **two things**:
 ## Table of Contents
 
 - [Plugin Server Contract](#plugin-server-contract) — Endpoints your plugin must implement
+  - [POST /register](#post-register) — Acknowledge role link creation
   - [GET /schema](#get-schema) — Return a configuration form
   - [POST /config](#post-config) — Receive configuration from the dashboard
   - [DELETE /config](#delete-config) — Handle role link deletion
@@ -75,11 +77,12 @@ As a plugin developer, you need to implement **two things**:
 
 Your plugin server must expose endpoints under the **plugin URL** that the admin provides when creating a Role Link. RoleLogic appends paths to this base URL:
 
-| Method   | Path      | Purpose                          | Called when                    |
-| -------- | --------- | -------------------------------- | ----------------------------- |
-| `GET`    | `/schema` | Return configuration form schema | Dashboard loads the role link  |
-| `POST`   | `/config` | Receive submitted configuration  | Admin saves config in dashboard |
-| `DELETE` | `/config` | Clean up on role link deletion   | Admin deletes the role link   |
+| Method   | Path        | Purpose                          | Called when                     |
+| -------- | ----------- | -------------------------------- | ------------------------------- |
+| `POST`   | `/register` | Acknowledge role link creation   | Admin creates a role link       |
+| `GET`    | `/schema`   | Return configuration form schema | Dashboard loads the role link   |
+| `POST`   | `/config`   | Receive submitted configuration  | Admin saves config in dashboard |
+| `DELETE` | `/config`   | Clean up on role link deletion   | Admin deletes the role link     |
 
 ### Plugin URL Requirements
 
@@ -97,6 +100,42 @@ User-Agent: RoleLogic/1.0
 ```
 
 You can use this token to identify which role link the request belongs to. The same token is used for the User Management API, so you can verify it matches by calling the API with it.
+
+---
+
+### POST /register
+
+When an admin creates a new Role Link, RoleLogic calls `POST {plugin_url}/register` to notify your plugin. This is a **blocking** call — if your plugin returns a non-2xx response, the role link creation is rolled back and the admin sees an error.
+
+**Request from RoleLogic:**
+
+```http
+POST {plugin_url}/register
+Authorization: Token rl_...
+Content-Type: application/json
+User-Agent: RoleLogic/1.0
+```
+
+```json
+{
+  "guild_id": "123456789012345678",
+  "role_id": "987654321098765432"
+}
+```
+
+| Field      | Type   | Description               |
+| ---------- | ------ | ------------------------- |
+| `guild_id` | string | Discord server (guild) ID |
+| `role_id`  | string | Discord role ID           |
+
+**Your server should:**
+1. Store the token from the `Authorization` header — this is the token you'll use for the User Management API.
+2. Record the `guild_id` and `role_id` for this role link.
+3. Return a `200` response to confirm the registration.
+
+**Error handling:** If your server returns a non-2xx response or is unreachable, the role link is **not created**. RoleLogic returns a `502 Bad Gateway` error to the admin.
+
+**Timeout:** 5 seconds.
 
 ---
 
@@ -503,7 +542,7 @@ Tokens start with the `rl_` prefix and are scoped to exactly **one role link** (
 #### How to Get a Token
 
 - **Dashboard users:** Open the RoleLogic Dashboard > Role Links > select a role link > click **Reset Token**. The token is shown once — store it securely.
-- **Plugin developers:** The token is sent to your plugin server in the `Authorization` header on schema/config requests. Your plugin can extract and store it during `POST /config`.
+- **Plugin developers:** The token is sent to your plugin server in the `Authorization` header starting from the `POST /register` call when the role link is created. Extract and store it during registration.
 
 :::warning
 Tokens are shown **only once** when generated. Generating a new token **immediately invalidates** the previous one. If you store the token in your plugin, it will stop working after a reset — you'll receive the new token on the next `POST /config` call.
@@ -731,12 +770,13 @@ All errors return a JSON object with `statusCode` and `message`:
 
 These errors are returned to the dashboard when RoleLogic cannot communicate with your plugin:
 
-| Status Code | Message                                                 | Cause                                     |
-| ----------- | ------------------------------------------------------- | ----------------------------------------- |
+| Status Code | Message                                                  | Cause                                        |
+| ----------- | -------------------------------------------------------- | -------------------------------------------- |
+| `502`       | Failed to register with plugin server                    | Your `/register` endpoint is down or returned an error |
 | `502`       | Failed to fetch plugin schema: plugin server unreachable | Your `/schema` endpoint is down or timed out |
-| `502`       | Plugin returned invalid schema                          | Your `/schema` response failed validation |
-| `502`       | Failed to submit config to plugin server                | Your `/config` endpoint returned an error |
-| `502`       | Failed to submit config to plugin server: \<detail\>    | Your `/config` returned an error with a message |
+| `502`       | Plugin returned invalid schema                           | Your `/schema` response failed validation    |
+| `502`       | Failed to submit config to plugin server                 | Your `/config` endpoint returned an error    |
+| `502`       | Failed to submit config to plugin server: \<detail\>     | Your `/config` returned an error with a message |
 
 ---
 
@@ -754,6 +794,15 @@ app.use(express.json());
 
 // Store config per guild+role (use a database in production)
 const configs = new Map();
+const tokens = new Map();
+
+// POST /register — Acknowledge role link creation and store the token
+app.post("/register", (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  const { guild_id, role_id } = req.body;
+  tokens.set(`${guild_id}:${role_id}`, token);
+  res.json({ success: true });
+});
 
 // GET /schema — Return the configuration form
 app.get("/schema", (req, res) => {
@@ -972,7 +1021,7 @@ The Role Link API allows external applications (plugins) to programmatically man
 
 ### What does a plugin need to implement?
 
-At minimum, two HTTP endpoints: `GET /schema` (returns the configuration form) and `POST /config` (receives submitted configuration). Optionally, `DELETE /config` for cleanup on role link deletion. Your plugin then calls the User Management API to add/remove users.
+At minimum, three HTTP endpoints: `POST /register` (acknowledges role link creation and receives the API token), `GET /schema` (returns the configuration form), and `POST /config` (receives submitted configuration). Optionally, `DELETE /config` for cleanup on role link deletion. Your plugin then calls the User Management API to add/remove users.
 
 ### How does RoleLogic authenticate to my plugin?
 
@@ -980,7 +1029,7 @@ RoleLogic sends the role link's API token in the `Authorization: Token rl_...` h
 
 ### How do I get the API token in my plugin?
 
-RoleLogic includes the token in the `Authorization` header when it calls your plugin's `/schema`, `/config`, and `/config` (DELETE) endpoints. Extract and store the token during the `POST /config` call to use it for User Management API calls later.
+RoleLogic includes the token in the `Authorization` header when it calls your plugin's `/register`, `/schema`, `/config`, and `/config` (DELETE) endpoints. The best place to extract and store the token is during the `POST /register` call, which is the first request your plugin receives when a role link is created.
 
 ### What is the difference between Token and Bearer authentication?
 
