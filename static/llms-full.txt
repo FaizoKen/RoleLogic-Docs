@@ -937,9 +937,9 @@ A Role Link connects a Discord role to an external plugin server. The plugin con
 
 1. Admin creates a Role Link in the dashboard, providing the plugin's HTTPS URL.
 2. RoleLogic calls the plugin's `POST /register` endpoint with `guild_id`, `role_id`, and API token. If rejected, the role link is not created.
-3. RoleLogic calls `GET /schema` to fetch a configuration form for the dashboard.
+3. RoleLogic calls `GET /config` to fetch a configuration form for the dashboard.
 4. Admin fills out the form; RoleLogic validates and sends it to `POST /config`.
-5. After a successful config save, the dashboard automatically refetches `/schema` to display updated values.
+5. After a successful config save, the dashboard automatically refetches `GET /config` to display updated values.
 6. The plugin uses the User Management API to add/remove users from the role link.
 7. RoleLogic's bot syncs the user list to Discord role assignments automatically.
 
@@ -950,7 +950,7 @@ Your plugin must expose these endpoints under the plugin URL:
 | Method | Path | Purpose | Called when |
 |--------|------|---------|------------|
 | POST | /register | Acknowledge role link creation | Admin creates a role link |
-| GET | /schema | Return configuration form schema | Dashboard loads the role link |
+| GET | /config | Return configuration form schema | Dashboard loads the role link |
 | POST | /config | Receive submitted configuration | Admin saves config in dashboard |
 | DELETE | /config | Clean up on role link deletion | Admin deletes the role link |
 
@@ -969,7 +969,7 @@ Request: `POST {plugin_url}/register` with `Authorization: Token rl_...`, body: 
 
 Your server should store the token from the Authorization header and record the guild_id/role_id. Return 200 to confirm.
 
-### GET /schema
+### GET /config
 
 Returns the configuration form schema. Timeout: 5 seconds. Response capped at 50 KB. Schema structure (without values) is cached for 5 minutes; values are always fetched fresh.
 
@@ -994,7 +994,7 @@ Receives validated config from dashboard. Timeout: 10 seconds. Response capped a
 
 Request body: `{ "guild_id": "...", "role_id": "...", "config": { ... } }`
 
-After a successful save, the dashboard automatically refetches `/schema` to display updated configuration values. Ensure your schema response reflects newly saved config immediately.
+After a successful save, the dashboard automatically refetches `GET /config` to display updated configuration values. Ensure your response reflects newly saved config immediately.
 
 Error handling: 4xx errors from your server are forwarded to the admin with the original status code. 5xx errors or network failures return 502 Bad Gateway. Include an `error` or `message` field in error response bodies.
 
@@ -1106,15 +1106,15 @@ Response:
 | Status | Message | Cause |
 |--------|---------|-------|
 | 502 | Failed to register with plugin server | /register endpoint is down or returned an error |
-| 502 | Failed to fetch plugin schema: plugin server unreachable | /schema endpoint is down or timed out |
-| 502 | Plugin returned invalid schema | /schema response failed validation |
+| 502 | Failed to fetch plugin schema: plugin server unreachable | GET /config endpoint is down or timed out |
+| 502 | Plugin returned invalid schema | GET /config response failed validation |
 | 4xx | Failed to submit config to plugin server: <detail> | /config returned a 4xx client error — original status code is forwarded |
 | 502 | Failed to submit config to plugin server | /config endpoint is down, timed out, or returned a 5xx error |
 
 ## Role Link FAQ
 
 Q: What does a plugin need to implement?
-A: At minimum: POST /register (acknowledges creation and receives the API token), GET /schema (returns config form), and POST /config (receives submitted config). Optionally DELETE /config for cleanup. Then call the User Management API to add/remove users.
+A: At minimum: POST /register (acknowledges creation and receives the API token), GET /config (returns config form), and POST /config (receives submitted config). Optionally DELETE /config for cleanup. Then call the User Management API to add/remove users.
 
 Q: How do I get the API token in my plugin?
 A: Extract it from the Authorization header during POST /register — the first request your plugin receives when a role link is created.
@@ -1135,7 +1135,7 @@ Q: What happens if the user count exceeds the limit?
 A: The API rejects Add User or Replace Users requests that would exceed the limit with a 400 error. If the stored count already exceeds the limit (e.g., after a plan downgrade), the bot will not sync at all until the count is reduced.
 
 Q: What happens if my plugin server is down?
-A: If /schema is unreachable, RoleLogic falls back to a cached schema (if available) for up to 5 minutes. The User Management API is unaffected — it's hosted by RoleLogic.
+A: If GET /config is unreachable, RoleLogic falls back to a cached schema (if available) for up to 5 minutes. The User Management API is unaffected — it's hosted by RoleLogic.
 
 Q: What format are user IDs?
 A: Discord snowflake format: 17–20 digit numeric strings.

@@ -38,7 +38,7 @@ A Role Link connects a **Discord role** to your **plugin server**. The flow is:
 
 1. A server admin creates a Role Link in the RoleLogic Dashboard, providing your plugin's HTTPS URL.
 2. RoleLogic calls your plugin's **register endpoint** to notify it that a role link was created, sending the `guild_id`, `role_id`, and the API token. If your plugin rejects the registration, the role link is not created.
-3. RoleLogic calls your plugin's **schema endpoint** to fetch a configuration form.
+3. RoleLogic calls your plugin's **config endpoint** (`GET /config`) to fetch a configuration form.
 4. The admin fills out the form in the dashboard; RoleLogic validates it and sends it to your plugin's **config endpoint**.
 5. Your plugin uses the **User Management API** (token-authenticated REST API) to add or remove users from the role link.
 6. RoleLogic's bot syncs the user list to Discord role assignments automatically.
@@ -54,7 +54,7 @@ As a plugin developer, you need to implement **two things**:
 
 - [Plugin Server Contract](#plugin-server-contract) — Endpoints your plugin must implement
   - [POST /register](#post-register) — Acknowledge role link creation
-  - [GET /schema](#get-schema) — Return a configuration form
+  - [GET /config](#get-config) — Return a configuration form
   - [POST /config](#post-config) — Receive configuration from the dashboard
   - [DELETE /config](#delete-config) — Handle role link deletion
 - [Schema Reference](#schema-reference) — All field types and validation options
@@ -80,7 +80,7 @@ Your plugin server must expose endpoints under the **plugin URL** that the admin
 | Method   | Path        | Purpose                          | Called when                     |
 | -------- | ----------- | -------------------------------- | ------------------------------- |
 | `POST`   | `/register` | Acknowledge role link creation   | Admin creates a role link       |
-| `GET`    | `/schema`   | Return configuration form schema | Dashboard loads the role link   |
+| `GET`    | `/config`   | Return configuration form schema | Dashboard loads the role link   |
 | `POST`   | `/config`   | Receive submitted configuration  | Admin saves config in dashboard |
 | `DELETE` | `/config`   | Clean up on role link deletion   | Admin deletes the role link     |
 
@@ -140,9 +140,9 @@ User-Agent: RoleLogic/1.0
 
 ---
 
-### GET /schema
+### GET /config
 
-RoleLogic calls `GET {plugin_url}/schema` to fetch the configuration form that admins see in the dashboard. The response defines sections, fields, validation rules, and optionally the current values.
+RoleLogic calls `GET {plugin_url}/config` to fetch the configuration form that admins see in the dashboard. The response defines sections, fields, validation rules, and optionally the current values.
 
 **Request headers from RoleLogic:**
 
@@ -236,7 +236,7 @@ User-Agent: RoleLogic/1.0
 2. Return a `200` response (the response body is forwarded to the dashboard).
 3. Begin using the configuration to manage users via the User Management API.
 
-**After a successful save:** The dashboard automatically refetches your plugin's `/schema` endpoint to display the latest configuration values. Ensure your schema response reflects the newly saved config immediately.
+**After a successful save:** The dashboard automatically refetches your plugin's `GET /config` endpoint to display the latest configuration values. Ensure your response reflects the newly saved config immediately.
 
 **Error handling:** If your server returns a 4xx error, RoleLogic forwards the original status code and error message to the admin. For 5xx errors or network failures, RoleLogic returns a `502 Bad Gateway`. Include a meaningful error message in the response body:
 
@@ -776,8 +776,8 @@ These errors are returned to the dashboard when RoleLogic cannot communicate wit
 | Status Code | Message                                                  | Cause                                        |
 | ----------- | -------------------------------------------------------- | -------------------------------------------- |
 | `502`       | Failed to register with plugin server                    | Your `/register` endpoint is down or returned an error |
-| `502`       | Failed to fetch plugin schema: plugin server unreachable | Your `/schema` endpoint is down or timed out |
-| `502`       | Plugin returned invalid schema                           | Your `/schema` response failed validation    |
+| `502`       | Failed to fetch plugin schema: plugin server unreachable | Your `GET /config` endpoint is down or timed out |
+| `502`       | Plugin returned invalid schema                           | Your `GET /config` response failed validation    |
 | `4xx`       | Failed to submit config to plugin server: \<detail\>     | Your `/config` returned a 4xx client error — the original status code is forwarded |
 | `502`       | Failed to submit config to plugin server                 | Your `/config` endpoint is down, timed out, or returned a 5xx error |
 
@@ -807,8 +807,8 @@ app.post("/register", (req, res) => {
   res.json({ success: true });
 });
 
-// GET /schema — Return the configuration form
-app.get("/schema", (req, res) => {
+// GET /config — Return the configuration form
+app.get("/config", (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   const config = findConfigByToken(token);
 
@@ -999,7 +999,7 @@ resp = requests.put(
 ### Plugin Server
 
 - **Always return `values` in your schema** so admins see their current configuration when revisiting the form. Only the schema structure is cached; values are fetched fresh every time.
-- **Keep your `/schema` endpoint fast** (under 5 seconds). If fetching current values is slow, consider caching them on your side.
+- **Keep your `GET /config` endpoint fast** (under 5 seconds). If fetching current values is slow, consider caching them on your side.
 - **Validate the `Authorization` header** on incoming requests from RoleLogic to ensure they're legitimate. You can verify the token by making a test call to the User Management API.
 - **Handle `DELETE /config` gracefully.** The token will be invalidated after the role link is deleted, so clean up any stored state and stop sync jobs.
 - **Return descriptive errors from `POST /config`.** Include an `error` or `message` field in your response body — RoleLogic displays it to the admin.
@@ -1024,7 +1024,7 @@ The Role Link API allows external applications (plugins) to programmatically man
 
 ### What does a plugin need to implement?
 
-At minimum, three HTTP endpoints: `POST /register` (acknowledges role link creation and receives the API token), `GET /schema` (returns the configuration form), and `POST /config` (receives submitted configuration). Optionally, `DELETE /config` for cleanup on role link deletion. Your plugin then calls the User Management API to add/remove users.
+At minimum, three HTTP endpoints: `POST /register` (acknowledges role link creation and receives the API token), `GET /config` (returns the configuration form), and `POST /config` (receives submitted configuration). Optionally, `DELETE /config` for cleanup on role link deletion. Your plugin then calls the User Management API to add/remove users.
 
 ### How does RoleLogic authenticate to my plugin?
 
@@ -1032,7 +1032,7 @@ RoleLogic sends the role link's API token in the `Authorization: Token rl_...` h
 
 ### How do I get the API token in my plugin?
 
-RoleLogic includes the token in the `Authorization` header when it calls your plugin's `/register`, `/schema`, `/config`, and `/config` (DELETE) endpoints. The best place to extract and store the token is during the `POST /register` call, which is the first request your plugin receives when a role link is created.
+RoleLogic includes the token in the `Authorization` header when it calls your plugin's `/register` and `/config` (GET, POST, DELETE) endpoints. The best place to extract and store the token is during the `POST /register` call, which is the first request your plugin receives when a role link is created.
 
 ### What is the difference between Token and Bearer authentication?
 
@@ -1064,7 +1064,7 @@ Changes typically apply within seconds after a User Management API call. RoleLog
 
 ### What happens if my plugin server is down?
 
-If the `/schema` endpoint is unreachable, RoleLogic falls back to a cached schema (if available) for up to 5 minutes. If no cache exists, the dashboard shows a `502` error. The User Management API is unaffected by plugin server outages — it's hosted by RoleLogic.
+If the `GET /config` endpoint is unreachable, RoleLogic falls back to a cached schema (if available) for up to 5 minutes. If no cache exists, the dashboard shows a `502` error. The User Management API is unaffected by plugin server outages — it's hosted by RoleLogic.
 
 ---
 
