@@ -3,8 +3,8 @@
   "categories": ["Utility"],
   "plugins": [
     {
-      "id": "topgg-voter",
-      "name": "Top.gg Voter",
+      "id": "topgg-voter-role",
+      "name": "Top.gg Voter Role",
       "description": "Assigns a Discord role to users who vote on Top.gg. The role is automatically removed when the vote expires.",
       "author": "RoleLogic",
       "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/topgg-voter-role.png",
