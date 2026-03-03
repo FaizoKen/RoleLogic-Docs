@@ -3,6 +3,7 @@ import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 import * as dotenv from "dotenv";
 import * as path from "path";
+import pluginPlugins from "./src/plugins/docusaurus-plugin-plugins";
 
 // Load environment variables based on NODE_ENV
 // - Development (npm start): loads .env
@@ -38,6 +39,10 @@ const config: Config = {
   trailingSlash: false,
 
   onBrokenLinks: "throw",
+
+  customFields: {
+    appUrl: APP_URL,
+  },
 
   markdown: {
     hooks: {
@@ -271,6 +276,8 @@ const config: Config = {
     },
   ],
 
+  plugins: [pluginPlugins],
+
   presets: [
     [
       "classic",
@@ -300,6 +307,17 @@ const config: Config = {
               // High priority pages (main landing, getting started)
               if (item.url.endsWith("/") || item.url.includes("/quick-start")) {
                 return { ...item, priority: 1.0, changefreq: "daily" };
+              }
+              // Plugin listing page
+              if (
+                item.url.includes("/plugins") &&
+                !item.url.includes("/plugins/")
+              ) {
+                return { ...item, priority: 0.9, changefreq: "weekly" };
+              }
+              // Individual plugin pages
+              if (item.url.includes("/plugins/")) {
+                return { ...item, priority: 0.8, changefreq: "weekly" };
               }
               // Medium-high priority (guides, common scenarios, FAQ)
               if (
@@ -425,6 +443,11 @@ const config: Config = {
           label: "Documentation",
         },
         {
+          to: "/plugins",
+          label: "Plugins",
+          position: "left",
+        },
+        {
           href: APP_URL,
           label: "Dashboard",
           position: "right",
@@ -445,6 +468,10 @@ const config: Config = {
             {
               label: "Getting Started",
               to: "/quick-start",
+            },
+            {
+              label: "Plugins",
+              to: "/plugins",
             },
             {
               label: "Common Scenarios",
