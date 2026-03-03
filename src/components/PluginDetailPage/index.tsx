@@ -76,20 +76,6 @@ export default function PluginDetailPage({ detailData }: Props): ReactNode {
             </div>
           </section>
 
-          <section className={styles.infoSection}>
-            <h2>Details</h2>
-            <dl className={styles.detailsList}>
-              <div className={styles.detailItem}>
-                <dt>Author</dt>
-                <dd>{plugin.author}</dd>
-              </div>
-              <div className={styles.detailItem}>
-                <dt>Category</dt>
-                <dd>{plugin.category}</dd>
-              </div>
-            </dl>
-          </section>
-
           <div className={styles.actions}>
             <Link to="/plugins" className={styles.backLink}>
               Back to Plugins
