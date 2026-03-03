@@ -142,29 +142,32 @@
 
 .detailsList {
   margin: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .detailItem {
   background: var(--ifm-color-emphasis-100);
-  padding: 1rem;
-  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .detailItem dt {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--ifm-color-emphasis-500);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 0.25rem;
+  margin: 0;
 }
 
 .detailItem dd {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 500;
 }
 
@@ -200,7 +203,4 @@
     font-size: 1.5rem;
   }
 
-  .detailsList {
-    grid-template-columns: 1fr;
-  }
 }
