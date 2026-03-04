@@ -5,13 +5,18 @@
     {
       "id": "topgg-voter-role",
       "name": "Top.gg Voter Role",
-      "description": "Assigns a Discord role to users who vote on Top.gg. The role is automatically removed when the vote expires.",
+      "short_description": "Auto-assign roles to Top.gg voters with expiry support.",
+      "description": "Assigns a Discord role to users who vote on Top.gg. The role is automatically removed when the vote expires. Seamlessly integrates with RoleLogic's role link system to reward your community members who support your bot on Top.gg.",
       "author": "RoleLogic",
+      "author_url": "https://docs-rolelogic.faizo.net",
       "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/topgg-voter-role.png",
       "plugin_url": "https://voterrole-plugin-rolelogic.faizo.net",
       "category": "Utility",
       "tags": ["topgg", "vote", "voter", "role"],
-      "featured": true
+      "featured": true,
+      "version": "1.0.0",
+      "date_published": "2025-05-01",
+      "date_updated": "2025-05-01"
     }
   ]
 }

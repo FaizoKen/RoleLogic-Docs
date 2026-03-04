@@ -45,6 +45,9 @@ export default function PluginDetailPage({ detailData }: Props): ReactNode {
               <div className={styles.meta}>
                 <span className={styles.author}>by {plugin.author}</span>
                 <span className={styles.category}>{plugin.category}</span>
+                {plugin.version && (
+                  <span className={styles.version}>v{plugin.version}</span>
+                )}
                 {plugin.featured && (
                   <span className={styles.featuredBadge}>Featured</span>
                 )}

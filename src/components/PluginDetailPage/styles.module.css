@@ -96,6 +96,12 @@
   border-radius: 4px;
 }
 
+.version {
+  font-size: 0.8rem;
+  color: var(--ifm-color-emphasis-500);
+  font-family: var(--ifm-font-family-monospace);
+}
+
 .featuredBadge {
   background: var(--ifm-color-primary);
   color: #fff;

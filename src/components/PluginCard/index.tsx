@@ -27,7 +27,7 @@ export default function PluginCard({ plugin }: Props): ReactNode {
           <span className={styles.featuredBadge}>Featured</span>
         )}
       </div>
-      <p className={styles.description}>{plugin.description}</p>
+      <p className={styles.description}>{plugin.short_description}</p>
       <div className={styles.cardFooter}>
         <span className={styles.category}>{plugin.category}</span>
         <div className={styles.tags}>

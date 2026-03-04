@@ -13,7 +13,7 @@ export default function PluginDetailSeo({
 }: Props): ReactNode {
   const pageUrl = `${siteUrl}/plugins/${plugin.id}`;
 
-  const softwareAppSchema = {
+  const softwareAppSchema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: plugin.name,
@@ -24,6 +24,7 @@ export default function PluginDetailSeo({
     author: {
       "@type": "Organization",
       name: plugin.author,
+      ...(plugin.author_url && { url: plugin.author_url }),
     },
     image: plugin.icon_url,
     isPartOf: {
@@ -32,6 +33,9 @@ export default function PluginDetailSeo({
       url: siteUrl,
     },
     keywords: plugin.tags.join(", "),
+    ...(plugin.version && { softwareVersion: plugin.version }),
+    ...(plugin.date_published && { datePublished: plugin.date_published }),
+    ...(plugin.date_updated && { dateModified: plugin.date_updated }),
   };
 
   const breadcrumbSchema = {
