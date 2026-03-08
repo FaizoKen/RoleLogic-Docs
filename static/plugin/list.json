@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "categories": ["Utility"],
+  "categories": ["Utility", "Games"],
   "plugins": [
     {
       "id": "topgg-voter-role",
@@ -9,14 +9,30 @@
       "description": "Assigns a Discord role to users who vote on Top.gg. The role is automatically removed when the vote expires. Seamlessly integrates with RoleLogic's role link system to reward your community members who support your bot on Top.gg.",
       "author": "RoleLogic",
       "author_url": "https://docs-rolelogic.faizo.net",
-      "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/topgg-voter-role.png",
+      "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/topgg-voter-role.webp",
       "plugin_url": "https://voterrole-plugin-rolelogic.faizo.net",
       "category": "Utility",
       "tags": ["topgg", "vote", "voter", "role"],
       "featured": true,
       "version": "1.0.0",
-      "date_published": "2025-05-01",
-      "date_updated": "2025-05-01"
+      "date_published": "2026-03-01",
+      "date_updated": "2026-03-01"
+    },
+    {
+      "id": "genshin-roles",
+      "name": "Genshin Roles",
+      "short_description": "Assign Discord roles based on Genshin Impact player stats.",
+      "description": "Automatically assign Discord roles based on player stats from Genshin Impact. Create custom conditions using Adventure Rank, World Level, or other progress data to reward players, highlight achievements, and keep roles synced with progression.",
+      "author": "RoleLogic",
+      "author_url": "https://docs-rolelogic.faizo.net",
+      "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/genshin-roles.webp",
+      "plugin_url": "https://genshinroles-plugin-rolelogic.faizo.net",
+      "category": "Games",
+      "tags": ["genshin", "verify", "verification", "role"],
+      "featured": true,
+      "version": "1.0.0",
+      "date_published": "2026-03-08",
+      "date_updated": "2026-03-08"
     }
   ]
 }
