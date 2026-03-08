@@ -22,7 +22,7 @@
       "id": "genshin-roles",
       "name": "Genshin Roles",
       "short_description": "Assign Discord roles based on Genshin Impact player stats.",
-      "description": "Automatically assign Discord roles based on player stats from Genshin Impact. Create custom conditions using Adventure Rank, World Level, or other progress data to reward players, highlight achievements, and keep roles synced with progression.",
+      "description": "Automatically assign Discord roles based on player stats from Genshin Impact. Create custom conditions using Adventure Rank, World Level, or other progress data to reward players, highlight achievements, and keep roles synced with progression. You can also view a list of verified players within your Discord server to easily track who’s linked and their stats.",
       "author": "RoleLogic",
       "author_url": "https://docs-rolelogic.faizo.net",
       "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/genshin-roles.webp",
