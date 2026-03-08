@@ -979,14 +979,32 @@ Response format:
   "version": 1,
   "name": "Plugin Name",
   "description": "Optional description",
-  "sections": [{ "title": "Section", "fields": [...] }],
+  "sections": [{ "title": "Section", "description": "...", "collapsible": false, "default_collapsed": false, "fields": [...] }],
   "values": { "key": "current_value" }
 }
 ```
 
 Schema constraints: version must be 1, name max 100 chars, description max 500 chars, 1–10 sections, 1–30 fields per section, field keys unique and alphanumeric+underscores (max 100 chars).
 
-Field types: `text`, `textarea`, `number`, `select`, `radio`, `checkbox`, `toggle`, `display`. The `display` type is read-only text (not submitted as config data, supports `\n` for line breaks). Fields support conditional visibility via `condition: { field, equals }`.
+Sections support `collapsible` (boolean, allows expand/collapse in dashboard) and `default_collapsed` (boolean, starts collapsed; only honored when `collapsible` is true).
+
+Field types: `text`, `textarea`, `number`, `select`, `radio`, `checkbox`, `toggle`, `secret`, `url`, `color`, `slider`, `multi_select`, `display`.
+
+- `text`: Single-line input with optional placeholder, default_value, validation (required, min/max length, pattern).
+- `textarea`: Multi-line input with rows (2–20), same validation as text.
+- `number`: Numeric input with step, suffix (unit label, max 20 chars), validation (min/max value).
+- `select`: Dropdown with 1–100 options (label + value). Validation: required.
+- `radio`: Radio buttons with 1–50 options. Same as select.
+- `checkbox`: Boolean checkbox with default_value.
+- `toggle`: Boolean toggle switch. Same as checkbox, rendered differently.
+- `secret`: Masked text input (password field with show/hide toggle). Same validation as text.
+- `url`: URL input with built-in http(s):// format validation. Clickable open-link button when valid URL entered.
+- `color`: Color picker + hex text input. Value is `#rrggbb` format.
+- `slider`: Range slider with required min/max, optional step, show_value (display current value), suffix.
+- `multi_select`: Multi-select dropdown with chips. 1–100 options, default_value is array, optional max_selections. Submitted as array of values.
+- `display`: Read-only text (not submitted). Supports inline formatting: `**bold**`, `*italic*`, `` `code` ``, `[text](url)`, and bare URLs (auto-linked).
+
+Fields support conditional visibility via `condition: { field, equals }`.
 
 ### POST /config
 

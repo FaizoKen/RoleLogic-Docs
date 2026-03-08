@@ -163,6 +163,8 @@ RoleLogic calls `GET {plugin_url}/config` to fetch the configuration form that a
     {
       "title": "Section Title",
       "description": "Optional section description",
+      "collapsible": false,
+      "default_collapsed": false,
       "fields": [
         {
           "type": "text",
@@ -359,6 +361,7 @@ Numeric input.
 | Property | Type | Description |
 | --- | --- | --- |
 | `step` | number? | Step increment |
+| `suffix` | string? | Unit label displayed after the input, e.g. `"days"`, `"users"`, `"%"` (max 20 chars) |
 | `default_value` | number? | Default value |
 | `validation.min` | number? | Minimum value |
 | `validation.max` | number? | Maximum value |
@@ -439,16 +442,129 @@ Boolean toggle switch. Functionally identical to `checkbox`, rendered differentl
 }
 ```
 
+#### `secret`
+
+Masked text input for sensitive values like API keys and tokens. Functionally identical to `text` but rendered as a password field with a show/hide toggle.
+
+```json
+{
+  "type": "secret",
+  "key": "api_secret",
+  "label": "API Secret",
+  "placeholder": "sk_live_...",
+  "validation": { "required": true, "min": 10 }
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `placeholder` | string? | Placeholder text (max 200 chars) |
+| `default_value` | string? | Default value (max 1,000 chars) |
+| `validation` | object? | Same as `text` |
+
+#### `url`
+
+URL input with built-in format validation. Must start with `http://` or `https://`. A clickable open-link button appears next to the input when a valid URL is entered.
+
+```json
+{
+  "type": "url",
+  "key": "callback_url",
+  "label": "Callback URL",
+  "placeholder": "https://example.com/callback",
+  "validation": { "required": true }
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `placeholder` | string? | Placeholder text (max 200 chars) |
+| `default_value` | string? | Default value (max 2,000 chars) |
+| `validation` | object? | Same as `text` (URL format is always validated in addition to these) |
+
+#### `color`
+
+Color picker with a hex color input. Value is stored as a 7-character hex string (e.g. `#ff0000`).
+
+```json
+{
+  "type": "color",
+  "key": "brand_color",
+  "label": "Brand Color",
+  "description": "Color used for embed accents",
+  "default_value": "#5865f2"
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `default_value` | string? | Default hex color (must match `#[0-9a-fA-F]{6}`) |
+
+#### `slider`
+
+Range slider for selecting a number within a bounded range. A visual alternative to `number` when the value has clear min/max bounds.
+
+```json
+{
+  "type": "slider",
+  "key": "sync_rate",
+  "label": "Sync Rate",
+  "min": 1,
+  "max": 60,
+  "step": 5,
+  "default_value": 15,
+  "show_value": true,
+  "suffix": " min"
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `min` | number | **Required.** Minimum value |
+| `max` | number | **Required.** Maximum value (must be greater than `min`) |
+| `step` | number? | Step increment (default: 1) |
+| `default_value` | number? | Default value |
+| `show_value` | boolean? | Show current value next to the slider (default: `true`) |
+| `suffix` | string? | Unit label appended to displayed values, e.g. `" min"`, `"%"` (max 20 chars) |
+
+#### `multi_select`
+
+Multi-select dropdown that allows selecting multiple options. Selected values are displayed as removable chips above the dropdown.
+
+```json
+{
+  "type": "multi_select",
+  "key": "allowed_regions",
+  "label": "Allowed Regions",
+  "options": [
+    { "label": "North America", "value": "na" },
+    { "label": "Europe", "value": "eu" },
+    { "label": "Asia Pacific", "value": "apac" }
+  ],
+  "default_value": ["na", "eu"],
+  "max_selections": 2
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `options` | array | 1–100 options (same format as `select`) |
+| `default_value` | array? | Array of option values to select by default (each must match an option value) |
+| `max_selections` | number? | Maximum number of options that can be selected |
+| `validation.required` | boolean? | If `true`, at least one option must be selected |
+
+The submitted value is an array of selected option values (e.g. `["na", "eu"]`).
+
 #### `display`
 
-Read-only text displayed in the form. Not submitted as configuration data.
+Read-only text displayed in the form. Not submitted as configuration data. Supports basic inline formatting.
 
 ```json
 {
   "type": "display",
   "key": "info_notice",
   "label": "Important",
-  "value": "This plugin requires a premium API key. Visit https://example.com to get one."
+  "value": "This plugin requires a **premium API key**. Visit [our website](https://example.com) to get one."
 }
 ```
 
@@ -456,13 +572,23 @@ Read-only text displayed in the form. Not submitted as configuration data.
 | --- | --- | --- |
 | `value` | string | Text content to display (max 2,000 chars). Supports `\n` for line breaks. |
 
+**Formatting support:**
+
+| Syntax | Renders as |
+| --- | --- |
+| `**bold text**` | **bold text** |
+| `*italic text*` | *italic text* |
+| `` `inline code` `` | `inline code` |
+| `[link text](https://example.com)` | Clickable link (opens in new tab) |
+| `https://example.com` | Auto-linked URL (opens in new tab) |
+
 ### Common Field Properties
 
 All field types share these base properties:
 
 | Property | Type | Required | Description |
 | --- | --- | --- | --- |
-| `type` | string | Yes | One of: `text`, `textarea`, `number`, `select`, `radio`, `checkbox`, `toggle`, `display` |
+| `type` | string | Yes | One of: `text`, `textarea`, `number`, `select`, `radio`, `checkbox`, `toggle`, `secret`, `url`, `color`, `slider`, `multi_select`, `display` |
 | `key` | string | Yes | Unique identifier (`^[a-zA-Z0-9_]+$`, max 100 chars) |
 | `label` | string | Yes | Display label (max 200 chars) |
 | `description` | string? | No | Help text below the field (max 500 chars) |
@@ -490,6 +616,25 @@ Fields can be shown or hidden based on another field's value:
 | `condition.equals` | string \| number \| boolean | The value that field must have for this field to be visible |
 
 The referenced field must exist in the schema. Conditions referencing unknown fields cause a validation error.
+
+### Collapsible Sections
+
+Sections can be made collapsible so admins can expand/collapse them in the dashboard. Useful for grouping advanced or optional settings.
+
+```json
+{
+  "title": "Advanced Settings",
+  "description": "Optional configuration for power users",
+  "collapsible": true,
+  "default_collapsed": true,
+  "fields": [ ... ]
+}
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `collapsible` | boolean? | Whether the section can be collapsed/expanded (default: `false`) |
+| `default_collapsed` | boolean? | Whether the section starts collapsed (default: `false`). Only honored when `collapsible` is `true` |
 
 ### The `values` Object
 

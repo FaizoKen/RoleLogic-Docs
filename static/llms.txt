@@ -106,6 +106,9 @@ A Role Link connects a Discord role to an external plugin server. Plugins implem
 - Plugin URL: HTTPS only, trailing slashes auto-stripped, no private addresses
 - Tokens auto-generated on creation, sent via POST /register. No independent reset — delete and recreate to get a new token.
 - Dashboard refetches GET /config after successful config save
+- Schema field types: text, textarea, number, select, radio, checkbox, toggle, secret, url, color, slider, multi_select, display
+- Sections support collapsible/default_collapsed for expand/collapse behavior
+- display fields support inline formatting: **bold**, *italic*, `code`, [text](url), bare URLs
 
 **User Management API:**
 | Method | Endpoint | Description |
