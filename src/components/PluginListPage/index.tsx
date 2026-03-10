@@ -42,7 +42,7 @@ export default function PluginListPage({ listData }: Props): ReactNode {
       <main className={styles.pluginListPage}>
         <div className="container">
           <header className={styles.header}>
-            <h1>RoleLogic Plugins</h1>
+            <h1>Role Link Plugins</h1>
             <p>
               Extend RoleLogic with plugins to add new integrations and
               capabilities to your Discord server.

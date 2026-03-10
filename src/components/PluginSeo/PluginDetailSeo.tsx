@@ -7,10 +7,7 @@ interface Props {
   siteUrl: string;
 }
 
-export default function PluginDetailSeo({
-  plugin,
-  siteUrl,
-}: Props): ReactNode {
+export default function PluginDetailSeo({ plugin, siteUrl }: Props): ReactNode {
   const pageUrl = `${siteUrl}/plugins/${plugin.id}`;
 
   const softwareAppSchema: Record<string, unknown> = {
@@ -67,10 +64,7 @@ export default function PluginDetailSeo({
     <Head>
       <link rel="canonical" href={pageUrl} />
 
-      <meta
-        property="og:title"
-        content={`${plugin.name} - RoleLogic Plugin`}
-      />
+      <meta property="og:title" content={`${plugin.name} - Role Link Plugin`} />
       <meta property="og:description" content={plugin.description} />
       <meta property="og:url" content={pageUrl} />
       <meta property="og:type" content="website" />
@@ -78,7 +72,7 @@ export default function PluginDetailSeo({
 
       <meta
         name="twitter:title"
-        content={`${plugin.name} - RoleLogic Plugin`}
+        content={`${plugin.name} - Role Link Plugin`}
       />
       <meta name="twitter:description" content={plugin.description} />
       <meta name="twitter:image" content={plugin.icon_url} />

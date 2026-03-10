@@ -13,7 +13,7 @@ export default function PluginListSeo({ plugins, siteUrl }: Props): ReactNode {
   const collectionPageSchema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "RoleLogic Plugins",
+    name: "Role Link Plugins",
     description:
       "Browse and install plugins to extend RoleLogic Discord bot functionality. Official and community plugins for role management automation.",
     url: pageUrl,
@@ -61,7 +61,7 @@ export default function PluginListSeo({ plugins, siteUrl }: Props): ReactNode {
 
       <meta
         property="og:title"
-        content="RoleLogic Plugins - Extend Your Discord Bot"
+        content="Role Link Plugins – Automate Discord Roles with External Services"
       />
       <meta
         property="og:description"
@@ -76,7 +76,7 @@ export default function PluginListSeo({ plugins, siteUrl }: Props): ReactNode {
 
       <meta
         name="twitter:title"
-        content="RoleLogic Plugins - Extend Your Discord Bot"
+        content="Role Link Plugins – Automate Discord Roles with External Services"
       />
       <meta
         name="twitter:description"
@@ -89,7 +89,7 @@ export default function PluginListSeo({ plugins, siteUrl }: Props): ReactNode {
 
       <meta
         name="keywords"
-        content="RoleLogic plugins, Discord bot plugins, role management plugins, Discord automation extensions, RoleLogic extensions"
+        content="Role link plugins, Discord bot plugins, role management plugins, Discord automation extensions, RoleLogic extensions"
       />
 
       <script type="application/ld+json">
