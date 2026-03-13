@@ -592,11 +592,15 @@ All field types share these base properties:
 | `key` | string | Yes | Unique identifier (`^[a-zA-Z0-9_]+$`, max 100 chars) |
 | `label` | string | Yes | Display label (max 200 chars) |
 | `description` | string? | No | Help text below the field (max 500 chars) |
-| `condition` | object? | No | Conditional visibility (see below) |
+| `condition` | object? | No | Single condition for conditional visibility (see below) |
+| `conditions` | array? | No | Multiple conditions — **all** must match for the field to be visible (AND logic, max 5) |
+| `pair_with` | string? | No | Key of another field to render inline alongside as a range pair (see [Range Pairs](#range-pairs)) |
 
 ### Conditional Fields
 
-Fields can be shown or hidden based on another field's value:
+Fields can be shown or hidden based on another field's value. Use `condition` for a single check or `conditions` (array) when multiple checks must all pass.
+
+#### Single condition
 
 ```json
 {
@@ -610,12 +614,85 @@ Fields can be shown or hidden based on another field's value:
 }
 ```
 
+#### Multiple conditions (AND logic)
+
+All conditions must match for the field to be visible:
+
+```json
+{
+  "type": "number",
+  "key": "value_end_level",
+  "label": "Level (end of range)",
+  "conditions": [
+    { "field": "stat", "equals": "level" },
+    { "field": "operator", "equals": "between" }
+  ]
+}
+```
+
+#### `equals_any` — match one of several values
+
+Use `equals_any` instead of `equals` to show a field when the referenced field matches **any** value in the array:
+
+```json
+{
+  "type": "select",
+  "key": "operator",
+  "label": "Comparison",
+  "condition": {
+    "field": "stat",
+    "equals_any": ["level", "score", "rank"]
+  }
+}
+```
+
+#### Condition properties
+
 | Property | Type | Description |
 | --- | --- | --- |
-| `condition.field` | string | The `key` of another field in the schema (max 100 chars) |
-| `condition.equals` | string \| number \| boolean | The value that field must have for this field to be visible |
+| `field` | string | The `key` of another field in the schema (max 100 chars) |
+| `equals` | string \| number \| boolean | The value that field must have for the condition to pass. Optional if `equals_any` is set |
+| `equals_any` | array of string \| number \| boolean | The condition passes if the field's value matches **any** entry in the array. Optional if `equals` is set |
 
-The referenced field must exist in the schema. Conditions referencing unknown fields cause a validation error.
+At least one of `equals` or `equals_any` should be provided. All referenced fields must exist in the schema — conditions referencing unknown fields cause a validation error.
+
+### Range Pairs
+
+Two fields can be rendered **side by side** as a range (e.g. `[30] to [55]`) by setting `pair_with` on the end field to the `key` of the start field. This is useful when your plugin supports "between" or range comparisons.
+
+```json
+[
+  {
+    "type": "number",
+    "key": "value_level",
+    "label": "Adventure Rank",
+    "validation": { "required": true, "min": 1, "max": 60 },
+    "condition": { "field": "stat", "equals": "level" }
+  },
+  {
+    "type": "number",
+    "key": "value_end_level",
+    "label": "Adventure Rank (end)",
+    "validation": { "required": true, "min": 1, "max": 60 },
+    "pair_with": "value_level",
+    "conditions": [
+      { "field": "stat", "equals": "level" },
+      { "field": "operator", "equals": "between" }
+    ]
+  }
+]
+```
+
+When both fields are visible, the dashboard renders them as:
+
+> **Adventure Rank** *(1–60)*
+> `[30]` **to** `[55]`
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `pair_with` | string | The `key` of the start field to pair with. Must reference an existing field in the schema |
+
+The end field's label and description are hidden in the inline layout — only the start field's label is shown. Both fields are still independently validated.
 
 ### Collapsible Sections
 
