@@ -30,7 +30,7 @@ You'll need:
 ## Step 1: Invite RoleLogic
 
 1. Visit the RoleLogic website
-2. Click **"Get Started Free"** or **"Add to Discord"**
+2. Click **"Get Started Free"** or **["Add to Discord"](https://api-rolelogic.faizo.net/api/discord/bot/invite)**
 3. Select your server from the dropdown
 4. Click **"Authorize"**
 

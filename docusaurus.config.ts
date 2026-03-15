@@ -15,7 +15,7 @@ dotenv.config({ path: path.resolve(__dirname, envFile) });
 // Environment variables with defaults
 const APP_URL = process.env.APP_URL || "https://rolelogic.faizo.net";
 const BOT_INVITE_URL =
-  process.env.BOT_INVITE_URL || "https://rolelogic.faizo.net/invite";
+  process.env.BOT_INVITE_URL || "https://api-rolelogic.faizo.net/api/discord/bot/invite";
 const DISCORD_INVITE =
   process.env.DISCORD_INVITE || "https://discord.gg/rolelogic";
 const SITE_URL = process.env.SITE_URL || "https://docs-rolelogic.faizo.net";

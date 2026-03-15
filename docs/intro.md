@@ -113,7 +113,7 @@ Whether you need simple verification cleanup or complex multi-tier reward system
 
 ## Get Started
 
-Ready to automate your server?
+Ready to automate your server? **[Add to Discord](https://api-rolelogic.faizo.net/api/discord/bot/invite)** to get started!
 
 1. **[Quick Start Guide](./quick-start)** — Set up your first rule in 5 minutes
 2. **[Understanding Rules](./concepts/rules)** — Learn how rules work
