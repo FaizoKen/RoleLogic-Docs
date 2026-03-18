@@ -27,13 +27,13 @@
       "date_updated": "2026-03-01"
     },
     {
-      "id": "genshin-roles",
-      "name": "Genshin Roles",
+      "id": "genshin-player-role",
+      "name": "Genshin Player Role",
       "short_description": "Give Discord roles based on Genshin Impact player stats and progress.",
       "description": "A RoleLogic plugin that automatically assigns Discord roles based on Genshin Impact player stats. Set up custom conditions using Adventure Rank, World Level, Spiral Abyss progress, or other in-game data to reward players and highlight achievements. Roles stay synced as players progress. View a list of verified Genshin Impact players in your Discord server to track linked accounts and their stats.",
       "author": "RoleLogic",
       "author_url": "https://docs-rolelogic.faizo.net",
-      "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/genshin-roles.webp",
+      "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/genshin-player-role.webp",
       "plugin_url": "https://genshinroles-plugin-rolelogic.faizo.net",
       "category": "Games",
       "tags": [
