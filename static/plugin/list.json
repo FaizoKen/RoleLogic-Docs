@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "categories": ["Utility", "Games"],
+  "categories": ["Utility", "Games", "Developer"],
   "plugins": [
     {
       "id": "topgg-voter-role",
@@ -73,6 +73,31 @@
       "version": "1.0.0",
       "date_published": "2026-03-18",
       "date_updated": "2026-03-18"
+    },
+    {
+      "id": "github-contributor-role",
+      "name": "GitHub Contributor Role",
+      "short_description": "Give Discord roles based on GitHub contributions to any repository.",
+      "description": "A RoleLogic plugin that automatically assigns Discord roles based on GitHub contribution activity. Configure conditions using commits, pull requests, merged PRs, or issues on any public repository. Members link their Discord and GitHub accounts, and the plugin continuously tracks their contributions to keep roles synced with real activity.",
+      "author": "RoleLogic",
+      "author_url": "https://docs-rolelogic.faizo.net",
+      "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/github-contributor-role.webp",
+      "plugin_url": "https://githubcontributorrole-plugin-rolelogic.faizo.net",
+      "category": "Developer",
+      "tags": [
+        "github",
+        "contributor",
+        "commits",
+        "pull requests",
+        "open source",
+        "developer",
+        "role",
+        "discord server"
+      ],
+      "featured": true,
+      "version": "1.0.0",
+      "date_published": "2026-03-19",
+      "date_updated": "2026-03-19"
     }
   ]
 }
