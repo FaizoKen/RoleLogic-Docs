@@ -21,7 +21,7 @@
         "discord bot",
         "upvote"
       ],
-      "featured": true,
+      "featured": false,
       "version": "1.0.0",
       "date_published": "2026-03-01",
       "date_updated": "2026-03-01"
@@ -56,9 +56,9 @@
       "short_description": "Give Discord roles to YouTube channel subscribers automatically.",
       "description": "A RoleLogic plugin that automatically assigns Discord roles to members subscribed to a YouTube channel. Members verify through Google OAuth, and the plugin periodically checks subscription status via the YouTube Data API. Roles are dynamically assigned to active subscribers and removed when they unsubscribe, keeping your Discord server roles synced with your YouTube audience.",
       "author": "RoleLogic",
-      "author_url": "https://github.com/FaizoKen",
+      "author_url": "https://docs-rolelogic.faizo.net",
       "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/youtube-subscriber-role.webp",
-      "plugin_url": "https://github.com/FaizoKen/YouTube-Subscriber-Role",
+      "plugin_url": "https://youtubesubrole-plugin-rolelogic.faizo.net/",
       "category": "Utility",
       "tags": [
         "youtube",
@@ -69,7 +69,7 @@
         "youtube channel",
         "google oauth"
       ],
-      "featured": false,
+      "featured": true,
       "version": "1.0.0",
       "date_published": "2026-03-18",
       "date_updated": "2026-03-18"
