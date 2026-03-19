@@ -1,0 +1,12 @@
+# Trailing slash redirects (prevent duplicate content)
+/quick-start/ /quick-start 301
+/faq/ /faq 301
+/glossary/ /glossary 301
+/plans/ /plans 301
+/support/ /support 301
+/plugins/ /plugins 301
+/concepts/* /concepts/:splat 301
+/features/* /features/:splat 301
+/guides/* /guides/:splat 301
+/reference/* /reference/:splat 301
+/blog/* /blog/:splat 301

@@ -153,3 +153,5 @@ Add up to 9 additional conditions with AND logic. All must be true.
 - **[Understanding Rules](./rules)** — How rules work
 - **[Actions](./actions)** — What happens when conditions match
 - **[Common Scenarios](../guides/common-scenarios)** — See conditions in action
+- **[Conditions Reference](../reference/conditions-reference)** — Complete technical reference for all condition types
+- **[Rule Builder](../features/rule-builder)** — Create conditions visually in the dashboard

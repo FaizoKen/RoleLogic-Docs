@@ -32,17 +32,17 @@ Definitions of terms used throughout the RoleLogic documentation.
 
 ## A
 
-### Action
+### Action {#action}
 
-The "THEN" part of a rule. Actions define what happens when a condition matches. RoleLogic supports two action types: **Add Roles** and **Remove Roles**.
+The "THEN" part of a [rule](/concepts/rules). Actions define what happens when a condition matches. RoleLogic supports two action types: **Add Roles** and **Remove Roles**. See [Actions documentation](/concepts/actions).
 
-### Activity Log
+### Activity Log {#activity-log}
 
-A record of all changes made to your RoleLogic configuration. Shows who created, modified, or deleted rules, webhooks, and settings.
+A record of all changes made to your RoleLogic configuration. Shows who created, modified, or deleted rules, webhooks, and settings. See [Activity Log feature](/features/activity-log).
 
-### AND Condition
+### AND Condition {#and-condition}
 
-An additional condition added to a rule using "Add AND Condition." All AND conditions must be true (along with the primary condition) for the rule to trigger.
+An additional condition added to a rule using "Add AND Condition." All AND conditions must be true (along with the primary condition) for the rule to trigger. See [Conditions](/concepts/conditions).
 
 ---
 
@@ -56,23 +56,23 @@ A Discord application that can perform automated actions. RoleLogic is a bot tha
 
 ## C
 
-### Cascading
+### Cascading {#cascading}
 
-When one rule's action triggers another rule. For example, Rule A adds "VIP" which causes Rule B (if has VIP, add Lounge Access) to fire. RoleLogic handles cascading automatically.
+When one rule's action triggers another rule. For example, Rule A adds "VIP" which causes Rule B (if has VIP, add Lounge Access) to fire. RoleLogic handles cascading automatically. See [Rules](/concepts/rules).
 
-### Condition
+### Condition {#condition}
 
-The "IF" part of a rule. Conditions define which members a rule applies to based on their current roles.
+The "IF" part of a rule. Conditions define which members a rule applies to based on their current roles. RoleLogic supports [9 condition types](/concepts/conditions).
 
-### Cross-Server Action
+### Cross-Server Action {#cross-server-action}
 
-An action that affects roles in a different Discord server than where the rule is configured. Requires RoleLogic to be present in both servers.
+An action that affects roles in a different Discord server than where the rule is configured. Requires RoleLogic to be present in both servers. See [Cross-Server Management](/features/cross-guild).
 
 ---
 
 ## D
 
-### Dashboard
+### Dashboard {#dashboard}
 
 The web interface where you manage RoleLogic. Access it by logging in with Discord to create rules, view logs, and configure settings.
 
@@ -92,9 +92,9 @@ A rule that is active and processing members. Enabled rules evaluate whenever me
 
 ## F
 
-### Free Plan
+### Free Plan {#free-plan}
 
-RoleLogic's base tier that includes 2 rules per server, all 9 condition types, all action types, testing sandbox, activity log, and 5 cross-server links. No time limit or credit card required.
+RoleLogic's base tier that includes 2 rules per server, all 9 condition types, all action types, testing sandbox, activity log, and 5 cross-server links. No time limit or credit card required. See [Plans & Pricing](/plans).
 
 ---
 
@@ -108,9 +108,9 @@ Discord's technical term for a "server." In RoleLogic, "guild" and "server" are 
 
 ## I
 
-### IF-THEN Rule
+### IF-THEN Rule {#if-then-rule}
 
-The fundamental structure of RoleLogic automation. "IF" defines the condition (which members match), and "THEN" defines the action (what happens). Example: IF member has "Server Booster" THEN add "VIP" role.
+The fundamental structure of RoleLogic automation. "IF" defines the condition (which members match), and "THEN" defines the action (what happens). Example: IF member has "Server Booster" THEN add "VIP" role. See [Understanding Rules](/concepts/rules).
 
 ---
 
@@ -136,9 +136,9 @@ When a rule's condition evaluates to true for a member. A matching rule executes
 
 ## P
 
-### Placeholder
+### Placeholder {#placeholder}
 
-A variable in webhook messages that gets replaced with actual data when sent. Example: `{user.mention}` becomes `@JohnDoe`.
+A variable in webhook messages that gets replaced with actual data when sent. Example: `{user.mention}` becomes `@JohnDoe`. See [Placeholders Reference](/reference/placeholders-reference).
 
 ### Premium
 
@@ -156,9 +156,9 @@ To remove all cross-server actions targeting a specific linked guild. Used to di
 
 ## Q
 
-### Quota
+### Quota {#quota}
 
-Limits on how many rules and resources you can use. Free plans have base quotas; premium plans provide additional quota.
+Limits on how many rules and resources you can use. Free plans have base quotas; premium plans provide additional quota. See [Limits Reference](/reference/limits-reference).
 
 ---
 
@@ -172,9 +172,9 @@ RoleLogic's ability to evaluate and execute rules immediately when member roles 
 
 A Discord role that can be assigned to members. Roles grant permissions and can be used to organize members.
 
-### Role Hierarchy
+### Role Hierarchy {#role-hierarchy}
 
-Discord's system where roles are ranked from highest to lowest. Bots can only manage roles below their own position. RoleLogic can only manage roles positioned below its own role.
+Discord's system where roles are ranked from highest to lowest. Bots can only manage roles below their own position. RoleLogic can only manage roles positioned below its own role. See [Role Hierarchy guide](/concepts/role-hierarchy).
 
 ### Rule
 
@@ -184,9 +184,9 @@ A complete automation instruction combining a condition (IF) and action (THEN). 
 
 ## S
 
-### Sandbox
+### Sandbox {#sandbox}
 
-The testing environment where you can simulate rule execution without affecting real members. Also called "Testing Sandbox."
+The testing environment where you can simulate rule execution without affecting real members. Also called "Testing Sandbox." See [Testing Sandbox](/features/testing-sandbox).
 
 ### Server
 
@@ -220,21 +220,21 @@ When a condition matches and causes a rule's action to execute. "The rule was tr
 
 Branding included in webhook messages on the free plan. Premium plans remove the watermark.
 
-### Webhook
+### Webhook {#webhook}
 
-A Discord feature that allows external services to post messages to channels. RoleLogic uses webhooks for notifications about role changes.
+A Discord feature that allows external services to post messages to channels. RoleLogic uses webhooks for notifications about role changes. See [Webhooks & Logging](/features/webhooks-logging).
 
-### Webhook Log
+### Webhook Log {#webhook-log}
 
-A configured notification that sends messages to a Discord channel when rules trigger. Customizable with placeholders.
+A configured notification that sends messages to a Discord channel when rules trigger. Customizable with [placeholders](/reference/placeholders-reference).
 
 ---
 
 ## V
 
-### Visual Rule Builder
+### Visual Rule Builder {#visual-rule-builder}
 
-RoleLogic's graphical interface for creating rules. Users select conditions and actions by clicking rather than writing code. Accessible through the web dashboard after logging in with Discord.
+RoleLogic's graphical interface for creating rules. Users select conditions and actions by clicking rather than writing code. Accessible through the web dashboard after logging in with Discord. See [Rule Builder](/features/rule-builder).
 
 ---
 

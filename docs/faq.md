@@ -269,9 +269,20 @@ Yes. We use:
 
 ## Still Need Help?
 
-1. **Test in the sandbox** — Many issues can be diagnosed by testing
-2. **Check the Activity Log** — See what's happening with your rules
+1. **Test in the [sandbox](./features/testing-sandbox)** — Many issues can be diagnosed by testing
+2. **Check the [Activity Log](./features/activity-log)** — See what's happening with your rules
 3. **Search documentation** — Use the search bar
 4. **Join the support server** — Get help from the community
 
 See [Support](./support) for contact options.
+
+---
+
+## Related Pages
+
+- **[Quick Start Guide](./quick-start)** — Set up your first rule in 5 minutes
+- **[Common Scenarios](./guides/common-scenarios)** — 50+ ready-to-use configurations
+- **[Understanding Rules](./concepts/rules)** — How IF-THEN rules work
+- **[Condition Types](./concepts/conditions)** — All 9 condition types explained
+- **[Plans & Pricing](./plans)** — Compare free and premium tiers
+- **[Glossary](./glossary)** — Term definitions

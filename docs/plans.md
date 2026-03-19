@@ -214,3 +214,12 @@ No. Rules are deactivated but not deleted. Re-subscribe to reactivate them.
 - **[FAQ](./faq)** — More questions answered
 - **[Limits Reference](./reference/limits-reference)** — Technical limits
 - **[Support](./support)** — Get help
+
+## Explore What Premium Unlocks
+
+- **[Visual Rule Builder](./features/rule-builder)** — Create rules without coding
+- **[Testing Sandbox](./features/testing-sandbox)** — Test rules safely before going live
+- **[Cross-Server Management](./features/cross-guild)** — Sync roles across multiple servers
+- **[Webhooks & Logging](./features/webhooks-logging)** — Get notified when roles change
+- **[Activity Log](./features/activity-log)** — Full audit trail of all changes
+- **[Common Scenarios](./guides/common-scenarios)** — 50+ ready-to-use configurations

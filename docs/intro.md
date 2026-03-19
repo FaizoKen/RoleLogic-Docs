@@ -121,7 +121,35 @@ Ready to automate your server? **[Add to Discord](https://api-rolelogic.faizo.ne
 
 ---
 
+## Explore the Documentation
+
+### Learn the Basics
+- **[Understanding Rules](./concepts/rules)** — How IF-THEN rules work
+- **[Condition Types](./concepts/conditions)** — All 9 condition types explained
+- **[Actions](./concepts/actions)** — Add and remove roles automatically
+- **[Role Hierarchy](./concepts/role-hierarchy)** — Why role position matters
+
+### Features
+- **[Visual Rule Builder](./features/rule-builder)** — Create rules by clicking, no coding
+- **[Testing Sandbox](./features/testing-sandbox)** — Test rules before going live
+- **[Cross-Server Management](./features/cross-guild)** — Manage roles across multiple servers
+- **[Webhooks & Logging](./features/webhooks-logging)** — Get notified when roles change
+- **[Activity Log](./features/activity-log)** — Track all changes
+
+### Guides & Resources
+- **[Common Scenarios](./guides/common-scenarios)** — 50+ ready-to-use configurations
+- **[Best Practices](./guides/best-practices)** — Tips for optimal setup
+- **[Gaming Servers](./guides/use-case-gaming-server)** — Role automation for gaming communities
+- **[Community Servers](./guides/use-case-community-server)** — Automate community server roles
+
+### Compare
+- **[RoleLogic vs MEE6](./guides/comparison-mee6)** — Feature comparison
+- **[RoleLogic vs Carl-bot](./guides/comparison-carlbot)** — When to use which
+- **[RoleLogic vs Dyno](./guides/comparison-dyno)** — Auto-role differences
+
 ## Need Help?
 
 - **[FAQ](./faq)** — Common questions answered
 - **[Support](./support)** — Get help from the community
+- **[Glossary](./glossary)** — Term definitions
+- **[Plans & Pricing](./plans)** — Free and premium options

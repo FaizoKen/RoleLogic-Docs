@@ -81,6 +81,23 @@ const config: Config = {
         href: "https://cdn.discordapp.com",
       },
     },
+    // SEO: Hreflang for single-locale clarity
+    {
+      tagName: "link",
+      attributes: {
+        rel: "alternate",
+        hreflang: "en",
+        href: SITE_URL,
+      },
+    },
+    {
+      tagName: "link",
+      attributes: {
+        rel: "alternate",
+        hreflang: "x-default",
+        href: SITE_URL,
+      },
+    },
     // AI/LLM Discovery: Link to llms.txt for AI systems
     // Following llmstxt.org specification - prioritize llms-full.txt
     {
@@ -276,7 +293,35 @@ const config: Config = {
     },
   ],
 
-  plugins: [pluginPlugins],
+  plugins: [
+    pluginPlugins,
+    [
+      "@docusaurus/plugin-ideal-image",
+      {
+        quality: 70,
+        max: 1030,
+        min: 640,
+        steps: 2,
+        disableInDev: false,
+      },
+    ],
+  ],
+
+  themes: [
+    [
+      "@easyops-cn/docusaurus-search-local",
+      {
+        hashed: true,
+        language: ["en"],
+        indexDocs: true,
+        indexBlog: true,
+        indexPages: true,
+        docsRouteBasePath: "/",
+        blogRouteBasePath: "/blog",
+        highlightSearchTermsOnTargetPage: true,
+      },
+    ],
+  ],
 
   presets: [
     [
@@ -289,7 +334,20 @@ const config: Config = {
           // SEO: Better breadcrumbs
           breadcrumbs: true,
         },
-        blog: false, // Disable blog
+        blog: {
+          showReadingTime: true,
+          blogTitle: "RoleLogic Blog",
+          blogDescription:
+            "Tips, tutorials, and updates for Discord role automation with RoleLogic",
+          blogSidebarTitle: "Recent Posts",
+          blogSidebarCount: 5,
+          postsPerPage: 10,
+          feedOptions: {
+            type: "all" as const,
+            title: "RoleLogic Blog",
+            description: "Discord role automation tips and updates",
+          },
+        },
         theme: {
           customCss: "./src/css/custom.css",
         },
@@ -334,6 +392,10 @@ const config: Config = {
               ) {
                 return { ...item, priority: 0.7, changefreq: "weekly" };
               }
+              // Blog posts
+              if (item.url.includes("/blog")) {
+                return { ...item, priority: 0.7, changefreq: "weekly" };
+              }
               // Reference docs
               if (item.url.includes("/reference/")) {
                 return { ...item, priority: 0.6, changefreq: "monthly" };
@@ -353,7 +415,7 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: "img/rolelogic-social-card.png",
+    image: "img/social-preview.png",
     colorMode: {
       defaultMode: "dark",
       respectPrefersColorScheme: true,
@@ -448,6 +510,11 @@ const config: Config = {
           position: "left",
         },
         {
+          to: "/blog",
+          label: "Blog",
+          position: "left",
+        },
+        {
           href: APP_URL,
           label: "Dashboard",
           position: "right",
@@ -533,14 +600,14 @@ const config: Config = {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
     },
-    // Announcement bar (uncomment to enable)
-    // announcementBar: {
-    //   id: 'welcome',
-    //   content: '🎉 Welcome to the new RoleLogic documentation! <a href="/quick-start">Get started</a>',
-    //   backgroundColor: '#5865F2',
-    //   textColor: '#ffffff',
-    //   isCloseable: true,
-    // },
+    announcementBar: {
+      id: "free-bot-cta",
+      content:
+        'RoleLogic is free for all Discord servers — <a href="/quick-start">Get started in 5 minutes</a>',
+      backgroundColor: "#5865F2",
+      textColor: "#ffffff",
+      isCloseable: true,
+    },
   } satisfies Preset.ThemeConfig,
 };
 

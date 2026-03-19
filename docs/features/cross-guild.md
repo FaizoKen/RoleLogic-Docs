@@ -114,3 +114,5 @@ Dashboard shows **Linked Guilds** section:
 - **[Testing Sandbox](./testing-sandbox)** — Test cross-server rules
 - **[Plans & Pricing](../plans)** — Cross-server quota limits
 - **[FAQ](../faq)** — Cross-server troubleshooting
+- **[Role Link API](../reference/role-link-api)** — Build custom cross-server integrations
+- **[Plugins](/plugins)** — Extend RoleLogic with role link plugins

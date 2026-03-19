@@ -128,3 +128,5 @@ You can select roles from other servers where RoleLogic is present.
 - **[Role Hierarchy](./role-hierarchy)** — Permission requirements
 - **[Cross-Server](../features/cross-guild)** — Manage roles across servers
 - **[Testing Sandbox](../features/testing-sandbox)** — Test actions safely
+- **[Webhooks & Logging](../features/webhooks-logging)** — Get notified when actions fire
+- **[Common Scenarios](../guides/common-scenarios)** — 50+ example action configurations

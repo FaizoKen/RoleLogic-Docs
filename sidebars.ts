@@ -52,6 +52,29 @@ const sidebars: SidebarsConfig = {
       ],
     },
 
+    // USE CASES - Server-type specific guides
+    {
+      type: 'category',
+      label: 'Use Cases',
+      collapsed: true,
+      items: [
+        'guides/use-case-gaming-server',
+        'guides/use-case-community-server',
+      ],
+    },
+
+    // COMPARISONS - RoleLogic vs alternatives
+    {
+      type: 'category',
+      label: 'Comparisons',
+      collapsed: true,
+      items: [
+        'guides/comparison-mee6',
+        'guides/comparison-carlbot',
+        'guides/comparison-dyno',
+      ],
+    },
+
     // REFERENCE - Technical details
     {
       type: 'category',
