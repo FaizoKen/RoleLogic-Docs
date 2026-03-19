@@ -20,6 +20,7 @@ const DISCORD_INVITE =
   process.env.DISCORD_INVITE || "https://discord.gg/rolelogic";
 const SITE_URL = process.env.SITE_URL || "https://docs-rolelogic.faizo.net";
 
+// Last build trigger: 2026-03-19
 const config: Config = {
   title: "RoleLogic",
   tagline:
