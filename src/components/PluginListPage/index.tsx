@@ -35,8 +35,8 @@ export default function PluginListPage({ listData }: Props): ReactNode {
 
   return (
     <Layout
-      title="Plugins"
-      description="Browse and install plugins to extend RoleLogic Discord bot functionality. Official and community plugins for role management automation."
+      title="Discord Role Plugins – Connect YouTube, GitHub, Games & More"
+      description="Browse plugins that connect Discord roles to external platforms like YouTube, GitHub, Genshin Impact, and Top.gg. Assign roles based on real-world activity automatically."
     >
       <PluginListSeo plugins={plugins} siteUrl={siteUrl} />
       <main className={styles.pluginListPage}>
@@ -44,8 +44,9 @@ export default function PluginListPage({ listData }: Props): ReactNode {
           <header className={styles.header}>
             <h1>Role Link Plugins</h1>
             <p>
-              Extend RoleLogic with plugins to add new integrations and
-              capabilities to your Discord server.
+              Connect Discord roles to external platforms like YouTube, GitHub,
+              Genshin Impact, and Top.gg. Assign roles based on real-world
+              activity — automatically.
             </p>
           </header>
 

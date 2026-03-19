@@ -218,6 +218,31 @@ Available within 7 days through Patreon.
 
 ---
 
+## Plugins
+
+### What are Role Link Plugins?
+
+Plugins connect Discord roles to external platforms like YouTube, GitHub, Genshin Impact, and Top.gg. They let you assign roles based on activity outside Discord — automatically.
+
+Browse available plugins at [Plugins](/plugins).
+
+### How do I install a plugin?
+
+1. Go to the [Plugins page](/plugins)
+2. Click a plugin to see its details
+3. Click **"Use Plugin"** to configure it in your dashboard
+4. Follow the plugin's setup instructions
+
+### Can I build my own plugin?
+
+Yes. Plugins use the [Role Link API](/reference/role-link-api). Any developer can build a plugin that connects an external service to Discord roles.
+
+### Are plugins free?
+
+Yes. All official plugins are free to use. The free plan supports up to 100 users per role link; premium supports up to 1,000,000.
+
+---
+
 ## Other Bots
 
 ### Does RoleLogic work with other bots?
@@ -285,4 +310,5 @@ See [Support](./support) for contact options.
 - **[Understanding Rules](./concepts/rules)** — How IF-THEN rules work
 - **[Condition Types](./concepts/conditions)** — All 9 condition types explained
 - **[Plans & Pricing](./plans)** — Compare free and premium tiers
+- **[Plugins](/plugins)** — Connect Discord roles to external platforms
 - **[Glossary](./glossary)** — Term definitions

@@ -20,7 +20,6 @@ const DISCORD_INVITE =
   process.env.DISCORD_INVITE || "https://discord.gg/rolelogic";
 const SITE_URL = process.env.SITE_URL || "https://docs-rolelogic.faizo.net";
 
-// Last build trigger: 2026-03-19
 const config: Config = {
   title: "RoleLogic",
   tagline:
@@ -170,6 +169,7 @@ const config: Config = {
           "Cross-server role management",
           "Activity logging",
           "Webhook notifications",
+          "Role Link Plugins for YouTube, GitHub, games, and more",
         ],
       }),
     },
@@ -250,6 +250,14 @@ const config: Config = {
             acceptedAnswer: {
               "@type": "Answer",
               text: "Yes, RoleLogic supports cross-server role management. You can create rules that check roles in one server and add/remove roles in another server. Requirements: RoleLogic must be in both servers, members must exist in both servers, and role hierarchy must be correct in each server.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Does RoleLogic have plugins for external platforms?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Yes, RoleLogic offers Role Link Plugins that connect Discord roles to external platforms. Available plugins include YouTube Subscriber Role, GitHub Contributor Role, Genshin Player Role, and Top.gg Voter Role. Plugins automatically assign and remove roles based on external activity.",
             },
           },
         ],
@@ -427,7 +435,7 @@ const config: Config = {
       {
         name: "keywords",
         content:
-          "RoleLogic, Discord bot, role automation, automatic role assignment, Discord role management, auto role bot, Discord server bot, role management bot free, IF THEN rules Discord, no-code Discord automation",
+          "RoleLogic, Discord bot, role automation, automatic role assignment, Discord role management, auto role bot, Discord server bot, role management bot free, IF THEN rules Discord, no-code Discord automation, Discord role plugins, YouTube subscriber Discord role, GitHub contributor Discord role, Discord bot plugins",
       },
       // Author and publisher
       { name: "author", content: "RoleLogic" },

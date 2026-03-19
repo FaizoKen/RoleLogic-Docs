@@ -64,7 +64,7 @@ export default function PluginDetailSeo({ plugin, siteUrl }: Props): ReactNode {
     <Head>
       <link rel="canonical" href={pageUrl} />
 
-      <meta property="og:title" content={`${plugin.name} - Role Link Plugin`} />
+      <meta property="og:title" content={`${plugin.name} – Free Discord Role Plugin | RoleLogic`} />
       <meta property="og:description" content={plugin.description} />
       <meta property="og:url" content={pageUrl} />
       <meta property="og:type" content="website" />
@@ -72,7 +72,7 @@ export default function PluginDetailSeo({ plugin, siteUrl }: Props): ReactNode {
 
       <meta
         name="twitter:title"
-        content={`${plugin.name} - Role Link Plugin`}
+        content={`${plugin.name} – Free Discord Role Plugin | RoleLogic`}
       />
       <meta name="twitter:description" content={plugin.description} />
       <meta name="twitter:image" content={plugin.icon_url} />

@@ -63,6 +63,7 @@ That's it. No coding, no complex setup—just simple rules that run automaticall
 | **Cross-Server Support**  | Manage roles across multiple servers      |
 | **Activity Logging**      | Track all changes with full audit trail   |
 | **Webhook Notifications** | Get notified when roles change            |
+| **Role Link Plugins**     | Connect roles to YouTube, GitHub, and more|
 
 ## Free Plan Includes
 
@@ -135,6 +136,13 @@ Ready to automate your server? **[Add to Discord](https://api-rolelogic.faizo.ne
 - **[Cross-Server Management](./features/cross-guild)** — Manage roles across multiple servers
 - **[Webhooks & Logging](./features/webhooks-logging)** — Get notified when roles change
 - **[Activity Log](./features/activity-log)** — Track all changes
+
+### Plugins
+- **[Browse All Plugins](/plugins)** — Connect Discord roles to external platforms
+- **[YouTube Subscriber Role](/plugins/youtube-subscriber-role)** — Roles for YouTube subscribers
+- **[GitHub Contributor Role](/plugins/github-contributor-role)** — Roles for GitHub contributors
+- **[Genshin Player Role](/plugins/genshin-player-role)** — Roles based on Genshin Impact stats
+- **[Top.gg Voter Role](/plugins/topgg-voter-role)** — Temporary roles for bot voters
 
 ### Guides & Resources
 - **[Common Scenarios](./guides/common-scenarios)** — 50+ ready-to-use configurations

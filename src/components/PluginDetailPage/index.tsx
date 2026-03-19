@@ -18,7 +18,7 @@ export default function PluginDetailPage({ detailData }: Props): ReactNode {
 
   return (
     <Layout
-      title={`${plugin.name} - Plugin`}
+      title={`${plugin.name} – Free Discord Role Plugin`}
       description={plugin.description}
     >
       <PluginDetailSeo plugin={plugin} siteUrl={siteUrl} />

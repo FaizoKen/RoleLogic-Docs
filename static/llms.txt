@@ -59,6 +59,13 @@ RoleLogic automatically manages Discord server roles. Users create IF-THEN rules
 - [Limits Reference](/reference/limits-reference): System constraints and quotas
 - [Role Link API Reference](/reference/role-link-api): External REST API for managing role-linked users with token authentication
 
+### Plugins
+- [Plugin Directory](/plugins): Browse all Role Link Plugins
+- [YouTube Subscriber Role](/plugins/youtube-subscriber-role): Assign roles to YouTube subscribers
+- [GitHub Contributor Role](/plugins/github-contributor-role): Assign roles based on GitHub contributions
+- [Genshin Player Role](/plugins/genshin-player-role): Assign roles based on Genshin Impact stats
+- [Top.gg Voter Role](/plugins/topgg-voter-role): Temporary roles for Top.gg voters
+
 ### Other Pages
 - [Plans & Pricing](/plans): Free vs Premium comparison with pricing
 - [FAQ](/faq): Frequently asked questions
