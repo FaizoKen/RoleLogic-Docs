@@ -71,7 +71,7 @@ export default function PluginListSeo({ plugins, siteUrl }: Props): ReactNode {
       <meta property="og:type" content="website" />
       <meta
         property="og:image"
-        content={`${siteUrl}/img/rolelogic-social-card.png`}
+        content={`${siteUrl}/img/social-preview.png`}
       />
 
       <meta
@@ -84,7 +84,7 @@ export default function PluginListSeo({ plugins, siteUrl }: Props): ReactNode {
       />
       <meta
         name="twitter:image"
-        content={`${siteUrl}/img/rolelogic-social-card.png`}
+        content={`${siteUrl}/img/social-preview.png`}
       />
 
       <meta
