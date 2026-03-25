@@ -116,16 +116,20 @@ RoleLogic periodically polls `GET {plugin_url}/health` to monitor your plugin's 
 {
   "status": "healthy",
   "timestamp": "2025-03-25T12:00:00.000Z",
+  "total_users": 142,
   "checks": {
     "database": {
       "status": "up",
       "latency_ms": 3
-    },
-    "external_api": {
-      "status": "up",
-      "latency_ms": 45
     }
-  }
+  },
+  "services": [
+    {
+      "name": "YouTube API",
+      "status": "up",
+      "latency_ms": 120
+    }
+  ]
 }
 ```
 
@@ -133,7 +137,9 @@ RoleLogic periodically polls `GET {plugin_url}/health` to monitor your plugin's 
 | ----- | ---- | -------- | ----------- |
 | `status` | `"healthy"` \| `"degraded"` \| `"unhealthy"` | Yes | Overall plugin status. `healthy` = all checks pass, `degraded` = some checks failing but service is up, `unhealthy` = critical failure. |
 | `timestamp` | string (ISO 8601) | No | When the health check was performed. |
-| `checks` | object | No | Map of named dependency checks. Each check has a `status` (`"up"` or `"down"`), optional `latency_ms`, and optional `message` for error details. |
+| `total_users` | number | No | Total users the plugin is currently managing across all role links. Displayed on the status page when present. |
+| `checks` | object | No | Map of named internal dependency checks. Each check has a `status` (`"up"` or `"down"`), optional `latency_ms`, and optional `message` for error details. |
+| `services` | array | No | List of external service pings. Each entry has `name` (string), `status` (`"up"` or `"down"`), and optional `latency_ms`. Use this to report connectivity to third-party APIs your plugin depends on (e.g. YouTube, GitHub, game APIs). |
 
 **Minimal response** — if your plugin has no internal dependencies to check, a simple response is fine:
 
