@@ -53,6 +53,7 @@ As a plugin developer, you need to implement **two things**:
 ## Table of Contents
 
 - [Plugin Server Contract](#plugin-server-contract) — Endpoints your plugin must implement
+  - [GET /health](#get-health) — Report plugin health status
   - [POST /register](#post-register) — Acknowledge role link creation
   - [GET /config](#get-config) — Return a configuration form
   - [POST /config](#post-config) — Receive configuration from the dashboard
@@ -79,6 +80,7 @@ Your plugin server must expose endpoints under the **plugin URL** that the admin
 
 | Method   | Path        | Purpose                          | Called when                     |
 | -------- | ----------- | -------------------------------- | ------------------------------- |
+| `GET`    | `/health`   | Report plugin health status      | Status page polls plugin health |
 | `POST`   | `/register` | Acknowledge role link creation   | Admin creates a role link       |
 | `GET`    | `/config`   | Return configuration form schema | Dashboard loads the role link   |
 | `POST`   | `/config`   | Receive submitted configuration  | Admin saves config in dashboard |
@@ -101,6 +103,49 @@ User-Agent: RoleLogic/1.0
 ```
 
 You can use this token to identify which role link the request belongs to. The same token is used for the User Management API, so you can verify it matches by calling the API with it.
+
+---
+
+### GET /health
+
+RoleLogic periodically polls `GET {plugin_url}/health` to monitor your plugin's availability. The results are displayed on the **Server Status** page (`/status`). This endpoint is **not authenticated** — no `Authorization` header is sent.
+
+**Expected response** (HTTP 200):
+
+```json
+{
+  "status": "healthy",
+  "timestamp": "2025-03-25T12:00:00.000Z",
+  "checks": {
+    "database": {
+      "status": "up",
+      "latency_ms": 3
+    },
+    "external_api": {
+      "status": "up",
+      "latency_ms": 45
+    }
+  }
+}
+```
+
+| Field | Type | Required | Description |
+| ----- | ---- | -------- | ----------- |
+| `status` | `"healthy"` \| `"degraded"` \| `"unhealthy"` | Yes | Overall plugin status. `healthy` = all checks pass, `degraded` = some checks failing but service is up, `unhealthy` = critical failure. |
+| `timestamp` | string (ISO 8601) | No | When the health check was performed. |
+| `checks` | object | No | Map of named dependency checks. Each check has a `status` (`"up"` or `"down"`), optional `latency_ms`, and optional `message` for error details. |
+
+**Minimal response** — if your plugin has no internal dependencies to check, a simple response is fine:
+
+```json
+{
+  "status": "healthy"
+}
+```
+
+**Behavior when missing** — if your plugin does not implement `/health`, the status page will show it as **unreachable**. Implementing this endpoint is recommended but not required.
+
+**Timeout** — RoleLogic waits up to **5 seconds** for a response before marking the plugin as unreachable.
 
 ---
 
