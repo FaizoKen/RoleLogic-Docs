@@ -21,15 +21,16 @@ This page documents all limits and constraints in RoleLogic. Understanding these
 
 Here's a summary of the most important limits:
 
-| Category                | Limit        | Value                  |
-| ----------------------- | ------------ | ---------------------- |
-| Rules per server (free) | Default      | 2 rules                |
-| Conditions per rule     | Maximum      | 10 (1 primary + 9 AND) |
-| Actions per rule        | Maximum      | 2 (add + remove)       |
-| Roles per action        | Maximum      | 250 roles              |
-| Roles per condition     | Maximum      | 250 roles              |
-| Cross-server syncs      | Default      | 5 linked servers       |
-| Cascade passes          | Safety limit | 100 passes             |
+| Category                  | Limit        | Value                  |
+| ------------------------- | ------------ | ---------------------- |
+| Rules per server (free)   | Default      | 2 rules                |
+| Plugins per server (free) | Default      | 2 plugins              |
+| Conditions per rule       | Maximum      | 10 (1 primary + 9 AND) |
+| Actions per rule          | Maximum      | 2 (add + remove)       |
+| Roles per action          | Maximum      | 250 roles              |
+| Roles per condition       | Maximum      | 250 roles              |
+| Cross-server syncs        | Default      | 5 linked servers       |
+| Cascade passes            | Safety limit | 100 passes             |
 
 ---
 
@@ -107,13 +108,14 @@ This prevents infinite loops from misconfigured rules. If your rules require mor
 
 ## Quota Limits
 
-Quotas determine how many rules and features you can use per server.
+Quotas determine how many rules, plugins, and features you can use per server. The same quota allocation increases both your rule limit and plugin limit.
 
 ### Free Plan
 
 | Resource                | Limit                               |
 | ----------------------- | ----------------------------------- |
 | Rules per server        | 2 rules                             |
+| Plugins per server      | 2 plugins                           |
 | Cross-server role slots | 5 linked servers                    |
 | Webhook watermark       | Included (shows RoleLogic branding) |
 | All condition types     | ✅ Full access                      |
@@ -129,21 +131,22 @@ The free plan includes everything you need to get started. It's perfect for:
 
 ### Premium Plans
 
-Premium plans expand your capacity:
+Premium plans expand your capacity. The same quota applies to both rules and plugins:
 
-| Resource          | Premium Benefit                               |
-| ----------------- | --------------------------------------------- |
-| Rules per server  | +10 to +208 additional rules (varies by tier) |
-| Webhook watermark | Removed for clean notifications               |
-| Priority support  | Faster response times                         |
+| Resource            | Premium Benefit                                        |
+| ------------------- | ------------------------------------------------------ |
+| Rules per server    | +10 to +208 additional rules (varies by tier)          |
+| Plugins per server  | +10 to +208 additional plugins (same quota as rules)   |
+| Webhook watermark   | Removed for clean notifications                        |
+| Priority support    | Faster response times                                  |
 
-**Premium Tiers (total rules):**
+**Premium Tiers (total rules & plugins per server):**
 
-- Tier 1: 12 rules
-- Tier 2: 38 rules
-- Tier 3: 76 rules
-- Tier 4: 132 rules
-- Tier 5: 210 rules
+- Tier 1: 12 rules + 12 plugins
+- Tier 2: 38 rules + 38 plugins
+- Tier 3: 76 rules + 76 plugins
+- Tier 4: 132 rules + 132 plugins
+- Tier 5: 210 rules + 210 plugins
 
 Check the Upgrade page in your dashboard for current pricing and options.
 
@@ -297,7 +300,7 @@ View your current usage:
 
 1. Open your server's dashboard
 2. Check the sidebar for quota information
-3. See "Rules: X / Y" showing current usage vs. limit
+3. See "Role Condition Quota" and "Plugin Quota" showing current usage vs. limit
 
 ### On the Upgrade Page
 
@@ -356,15 +359,15 @@ For servers with many members:
 
 ## Frequently Asked Questions
 
-### What happens when I hit the rule limit?
+### What happens when I hit the rule or plugin limit?
 
-You cannot create new rules until you free up quota. Options:
+You cannot create new rules or plugins until you free up quota. Options:
 
-- Delete unused rules to make room
+- Delete unused rules or plugins to make room
 - Consolidate similar rules into one
 - Upgrade to a premium plan for more quota
 
-Existing rules continue working normally.
+Existing rules and plugins continue working normally. Items beyond the quota are paused but not deleted.
 
 ### Can I request higher limits?
 

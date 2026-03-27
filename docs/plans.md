@@ -25,6 +25,7 @@ RoleLogic offers a generous free plan and premium options for servers that need 
 | Feature               | Free           | Premium      |
 | --------------------- | -------------- | ------------ |
 | Rules per server      | 2              | Up to 210    |
+| Plugins per server    | 2              | Up to 210    |
 | All condition types   | ✅             | ✅           |
 | All action types      | ✅             | ✅           |
 | Testing sandbox       | ✅             | ✅           |
@@ -38,6 +39,7 @@ RoleLogic offers a generous free plan and premium options for servers that need 
 The free plan includes everything you need to get started:
 
 - **2 rules per server** — enough for verification cleanup + booster rewards
+- **2 plugins per server** — connect external services to manage roles
 - **All 9 condition types** — full access to every matching option
 - **All action types** — add and remove roles freely
 - **Testing sandbox** — test rules before going live
@@ -64,17 +66,18 @@ Premium plans expand your capacity through Patreon subscription.
 
 ### Premium Tiers
 
-| Tier       | Price     | Additional Rules | Total Rules | Best For                               |
-| ---------- | --------- | ---------------- | ----------- | -------------------------------------- |
-| **Tier 1** | $2.00/mo  | +10              | 12          | Small servers with moderate needs      |
-| **Tier 2** | $5.00/mo  | +36              | 38          | Growing servers with complex setups    |
-| **Tier 3** | $7.00/mo  | +74              | 76          | Large servers with tier systems        |
-| **Tier 4** | $10.00/mo | +130             | 132         | Very active servers with many features |
-| **Tier 5** | $14.00/mo | +208             | 210         | Enterprise/network-level automation    |
+| Tier       | Price     | Additional Slots | Total Rules | Total Plugins | Best For                               |
+| ---------- | --------- | ---------------- | ----------- | ------------- | -------------------------------------- |
+| **Tier 1** | $2.00/mo  | +10              | 12          | 12            | Small servers with moderate needs      |
+| **Tier 2** | $5.00/mo  | +36              | 38          | 38            | Growing servers with complex setups    |
+| **Tier 3** | $7.00/mo  | +74              | 76          | 76            | Large servers with tier systems        |
+| **Tier 4** | $10.00/mo | +130             | 132         | 132           | Very active servers with many features |
+| **Tier 5** | $14.00/mo | +208             | 210         | 210           | Enterprise/network-level automation    |
 
 ### Premium Benefits
 
 - **More rules** — Up to 210 per server
+- **More plugins** — Up to 210 per server
 - **No watermark** — Clean webhook notifications
 - **Priority support** — Faster response times
 - **Expanded cross-server capacity** — More linked servers
@@ -117,16 +120,17 @@ Refunds are available within 7 days per Patreon's terms.
 
 ### How Quota Works
 
-Premium quota is allocated per server:
+Premium quota is allocated per server and applies to both rules and plugins:
 
 - You assign your quota to specific servers
 - Multiple servers can share your total quota
-- Each server has its own rule limit
+- Each server has its own rule and plugin limit
+- The same quota increases both your rule limit and plugin limit
 
-**Example:** With Tier 2 (38 total rules), you could:
+**Example:** With Tier 2 (38 total), you could:
 
-- Give one server all 38 rules, OR
-- Split: 20 rules on Server A, 18 on Server B
+- Give one server all 38 rules + 38 plugins, OR
+- Split: 20 on Server A, 18 on Server B (each gets that many rules AND plugins)
 
 ### Quota Cooldown
 
@@ -136,18 +140,19 @@ After assigning quota to a server, there's a **7-day cooldown** before you can r
 
 In the dashboard, you'll see:
 
-- **Rules used:** "Rules: 5 / 38"
+- **Rule quota:** "Role Condition Quota: 5 / 38"
+- **Plugin quota:** "Plugin Quota: 3 / 38"
 - **Quota allocation:** Which servers have what
 
 ## What Happens When Downgrading?
 
 When you downgrade to a lower tier or cancel:
 
-- **Rules are deactivated, not deleted** — Your rules stay saved
-- **Most recent rules stay active** — Within your new quota limit
-- **Automatic reactivation on upgrade** — If you upgrade again, deactivated rules come back
+- **Rules and plugins are paused, not deleted** — Your configuration stays saved
+- **Most recent items stay active** — Within your new quota limit
+- **Automatic reactivation on upgrade** — If you upgrade again, paused items come back
 
-**Example:** If you have 30 rules and downgrade to Tier 1 (12 rules), 18 rules are deactivated but preserved. Upgrade back, and all 30 reactivate.
+**Example:** If you have 30 rules and downgrade to Tier 1 (12 slots), 18 rules are paused but preserved. The same applies to plugins. Upgrade back, and all 30 reactivate.
 
 ## Tips for Staying Within Quota
 
