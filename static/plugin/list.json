@@ -123,6 +123,32 @@
       "version": "1.0.0",
       "date_published": "2026-03-28",
       "date_updated": "2026-03-28"
+    },
+    {
+      "id": "member-origin-role",
+      "name": "Member Origin Role",
+      "short_description": "Give Discord roles based on member origin — country, timezone, and language.",
+      "description": "A RoleLogic plugin that assigns Discord roles based on member origin detected from HTTP headers and browser APIs. Automatically detects country, timezone, language, platform, and browser to assign roles matching your conditions. Built-in anti-fraud features block VPN users, spoofed identities, and impossible travel to ensure role eligibility.",
+      "author": "RoleLogic",
+      "author_url": "https://docs-rolelogic.faizo.net",
+      "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/member-origin-role.webp",
+      "plugin_url": "https://memberoriginrole-plugin-rolelogic.faizo.net",
+      "category": "Utility",
+      "tags": [
+        "origin",
+        "country",
+        "timezone",
+        "language",
+        "geolocation",
+        "anti-fraud",
+        "vpn detection",
+        "role",
+        "discord server"
+      ],
+      "featured": true,
+      "version": "1.0.0",
+      "date_published": "2026-03-29",
+      "date_updated": "2026-03-29"
     }
   ]
 }
