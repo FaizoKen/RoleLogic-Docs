@@ -98,6 +98,31 @@
       "version": "1.0.0",
       "date_published": "2026-03-19",
       "date_updated": "2026-03-19"
+    },
+    {
+      "id": "twitch-follower-role",
+      "name": "Twitch Follower Role",
+      "short_description": "Give Discord roles based on Twitch follow and subscription status.",
+      "description": "A RoleLogic plugin that assigns Discord roles based on Twitch channel follow and subscription status. Users link their Discord and Twitch accounts, then roles are automatically assigned based on configurable conditions including follower status, follow tenure, subscription tier, and more. Uses Twitch EventSub for real-time monitoring of follow and subscribe events to keep roles synced.",
+      "author": "RoleLogic",
+      "author_url": "https://docs-rolelogic.faizo.net",
+      "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/twitch-follower-role.webp",
+      "plugin_url": "https://twitchfollowerrole-plugin-rolelogic.faizo.net",
+      "category": "Utility",
+      "tags": [
+        "twitch",
+        "follower",
+        "subscriber",
+        "subscription",
+        "role",
+        "discord server",
+        "eventsub",
+        "twitch oauth"
+      ],
+      "featured": true,
+      "version": "1.0.0",
+      "date_published": "2026-03-28",
+      "date_updated": "2026-03-28"
     }
   ]
 }
