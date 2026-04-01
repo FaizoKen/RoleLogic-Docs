@@ -448,6 +448,11 @@ const config: Config = {
           position: "left",
         },
         {
+          to: "/release-notes",
+          label: "Release Notes",
+          position: "right",
+        },
+        {
           href: APP_URL,
           label: "Dashboard",
           position: "right",
@@ -480,6 +485,10 @@ const config: Config = {
             {
               label: "FAQ",
               to: "/faq",
+            },
+            {
+              label: "Release Notes",
+              to: "/release-notes",
             },
           ],
         },
