@@ -14,7 +14,7 @@ export default function PluginDetailPage({ detailData }: Props): ReactNode {
   const { plugin, siteUrl } = detailData;
   const { siteConfig } = useDocusaurusContext();
   const appUrl = siteConfig.customFields?.appUrl as string;
-  const dashboardPluginUrl = `${appUrl}/dashboard?plugin_search=${encodeURIComponent(plugin.name)}`;
+  const dashboardPluginUrl = `${appUrl}/dashboard?plugin_select=${encodeURIComponent(plugin.plugin_url)}`;
 
   return (
     <Layout
