@@ -10,7 +10,7 @@
       "author": "RoleLogic",
       "author_url": "https://docs-rolelogic.faizo.net",
       "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/topgg-voter-role.webp",
-      "plugin_url": "https://voterrole-plugin-rolelogic.faizo.net",
+      "plugin_url": "https://plugin-rolelogic.faizo.net/topgg-voter-role",
       "category": "Utility",
       "tags": [
         "topgg",
@@ -34,7 +34,7 @@
       "author": "RoleLogic",
       "author_url": "https://docs-rolelogic.faizo.net",
       "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/genshin-player-role.webp",
-      "plugin_url": "https://genshinroles-plugin-rolelogic.faizo.net",
+      "plugin_url": "https://plugin-rolelogic.faizo.net/genshin-player-role",
       "category": "Games",
       "tags": [
         "genshin",
@@ -58,7 +58,7 @@
       "author": "RoleLogic",
       "author_url": "https://docs-rolelogic.faizo.net",
       "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/youtube-subscriber-role.webp",
-      "plugin_url": "https://youtubesubrole-plugin-rolelogic.faizo.net",
+      "plugin_url": "https://plugin-rolelogic.faizo.net/youtube-subscriber-role",
       "category": "Utility",
       "tags": [
         "youtube",
@@ -82,7 +82,7 @@
       "author": "RoleLogic",
       "author_url": "https://docs-rolelogic.faizo.net",
       "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/github-contributor-role.webp",
-      "plugin_url": "https://githubcontributorrole-plugin-rolelogic.faizo.net",
+      "plugin_url": "https://plugin-rolelogic.faizo.net/github-contributor-role",
       "category": "Developer",
       "tags": [
         "github",
@@ -107,7 +107,7 @@
       "author": "RoleLogic",
       "author_url": "https://docs-rolelogic.faizo.net",
       "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/twitch-follower-role.webp",
-      "plugin_url": "https://twitchfollowerrole-plugin-rolelogic.faizo.net",
+      "plugin_url": "https://plugin-rolelogic.faizo.net/twitch-follower-role",
       "category": "Utility",
       "tags": [
         "twitch",
@@ -132,7 +132,7 @@
       "author": "RoleLogic",
       "author_url": "https://docs-rolelogic.faizo.net",
       "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/member-origin-role.webp",
-      "plugin_url": "https://memberoriginrole-plugin-rolelogic.faizo.net",
+      "plugin_url": "https://plugin-rolelogic.faizo.net/member-origin-role",
       "category": "Utility",
       "tags": [
         "origin",
