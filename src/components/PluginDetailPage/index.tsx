@@ -10,6 +10,37 @@ interface Props {
   detailData: PluginDetailPageData;
 }
 
+function getYouTubeEmbedUrl(url?: string): string | null {
+  if (!url) {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.replace(/^www\./, "");
+    let videoId = "";
+
+    if (hostname === "youtu.be") {
+      videoId = parsed.pathname.slice(1);
+    } else if (
+      hostname === "youtube.com" ||
+      hostname === "youtube-nocookie.com"
+    ) {
+      if (parsed.pathname.startsWith("/embed/")) {
+        videoId = parsed.pathname.split("/embed/")[1] || "";
+      } else if (parsed.pathname === "/watch") {
+        videoId = parsed.searchParams.get("v") || "";
+      }
+    }
+
+    return videoId
+      ? `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?rel=0`
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function PluginDetailPage({ detailData }: Props): ReactNode {
   const { plugin, siteUrl } = detailData;
   const { siteConfig } = useDocusaurusContext();
@@ -17,10 +48,7 @@ export default function PluginDetailPage({ detailData }: Props): ReactNode {
   const dashboardPluginUrl = `${appUrl}/dashboard?plugin_select=${encodeURIComponent(plugin.plugin_url)}`;
 
   return (
-    <Layout
-      title={`${plugin.name} - Plugin`}
-      description={plugin.description}
-    >
+    <Layout title={`${plugin.name} - Plugin`} description={plugin.description}>
       <PluginDetailSeo plugin={plugin} siteUrl={siteUrl} />
       <main className={styles.pluginDetailPage}>
         <div className="container">
@@ -62,6 +90,24 @@ export default function PluginDetailPage({ detailData }: Props): ReactNode {
               Use Plugin
             </a>
           </div>
+
+          {(() => {
+            const videoUrl = getYouTubeEmbedUrl(plugin.youtube_url);
+            return videoUrl ? (
+              <section className={styles.videoSection}>
+                <h2>Video</h2>
+                <div className={styles.videoWrapper}>
+                  <iframe
+                    src={videoUrl}
+                    title={`${plugin.name} video`}
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </section>
+            ) : null;
+          })()}
 
           <section className={styles.descriptionSection}>
             <h2>About</h2>

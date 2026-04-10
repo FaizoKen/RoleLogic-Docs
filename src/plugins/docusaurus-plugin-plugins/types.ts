@@ -7,6 +7,7 @@ export interface PluginData {
   author_url?: string;
   icon_url: string;
   plugin_url: string;
+  youtube_url?: string;
   category: string;
   tags: string[];
   featured: boolean;
