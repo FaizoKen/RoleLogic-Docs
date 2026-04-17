@@ -22,9 +22,9 @@
         "upvote"
       ],
       "featured": false,
-      "version": "1.0.0",
+      "version": "1.0.10",
       "date_published": "2026-03-01",
-      "date_updated": "2026-03-01"
+      "date_updated": "2026-04-17"
     },
     {
       "id": "genshin-player-role",
@@ -46,10 +46,10 @@
         "adventure rank",
         "discord server"
       ],
-      "featured": true,
-      "version": "1.0.0",
+      "featured": false,
+      "version": "1.2.13",
       "date_published": "2026-03-08",
-      "date_updated": "2026-03-08"
+      "date_updated": "2026-04-17"
     },
     {
       "id": "youtube-subscriber-role",
@@ -72,9 +72,9 @@
         "google oauth"
       ],
       "featured": true,
-      "version": "1.0.0",
+      "version": "1.1.2",
       "date_published": "2026-03-18",
-      "date_updated": "2026-03-18"
+      "date_updated": "2026-04-17"
     },
     {
       "id": "github-contributor-role",
@@ -97,9 +97,9 @@
         "discord server"
       ],
       "featured": true,
-      "version": "1.0.0",
+      "version": "1.0.9",
       "date_published": "2026-03-19",
-      "date_updated": "2026-03-19"
+      "date_updated": "2026-04-17"
     },
     {
       "id": "twitch-follower-role",
@@ -122,9 +122,9 @@
         "twitch oauth"
       ],
       "featured": true,
-      "version": "1.0.0",
+      "version": "1.0.4",
       "date_published": "2026-03-28",
-      "date_updated": "2026-03-28"
+      "date_updated": "2026-04-17"
     },
     {
       "id": "member-origin-role",
@@ -147,10 +147,36 @@
         "role",
         "discord server"
       ],
+      "featured": false,
+      "version": "1.0.7",
+      "date_published": "2026-03-29",
+      "date_updated": "2026-04-17"
+    },
+    {
+      "id": "steam-player-role",
+      "name": "Steam Player Role",
+      "short_description": "Give Discord roles based on Steam profile stats, playtime, and account data.",
+      "description": "A RoleLogic plugin that automatically assigns Discord roles based on Steam profile data. Members verify through Steam OpenID, and roles are assigned based on configurable conditions including games owned, playtime, achievements, account age, ban status, Steam group membership, and country. Background data refresh keeps roles continuously synced with real Steam activity.",
+      "author": "RoleLogic",
+      "author_url": "https://docs-rolelogic.faizo.net",
+      "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/steam-player-role.webp",
+      "plugin_url": "https://plugin-rolelogic.faizo.net/steam-player-role",
+      "category": "Games",
+      "tags": [
+        "steam",
+        "steam player",
+        "playtime",
+        "games owned",
+        "achievements",
+        "verify",
+        "verification",
+        "role",
+        "discord server"
+      ],
       "featured": true,
       "version": "1.0.0",
-      "date_published": "2026-03-29",
-      "date_updated": "2026-03-29"
+      "date_published": "2026-04-17",
+      "date_updated": "2026-04-17"
     }
   ]
 }
