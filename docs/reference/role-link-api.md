@@ -63,6 +63,7 @@ As a plugin developer, you need to implement **two things**:
   - [Authentication](#authentication)
   - [List Users](#list-users)
   - [Replace Users (Batch Set)](#replace-users-batch-set)
+  - [Upload Users (Chunked)](#upload-users-chunked) — for lists larger than 100,000
   - [Check User](#check-user)
   - [Add User](#add-user)
   - [Remove User](#remove-user)
@@ -789,13 +790,17 @@ The User Management API lets your plugin programmatically control which Discord 
 
 ### Quick Reference
 
-| Method   | Endpoint                                                            | Description                          |
-| -------- | ------------------------------------------------------------------- | ------------------------------------ |
-| `GET`    | [`/api/role-link/:guildId/:roleId/users`](#list-users)              | Get all user IDs linked to this role |
-| `PUT`    | [`/api/role-link/:guildId/:roleId/users`](#replace-users-batch-set) | Replace entire user list atomically  |
-| `GET`    | [`/api/role-link/:guildId/:roleId/users/:userId`](#check-user)      | Check if a specific user exists      |
-| `POST`   | [`/api/role-link/:guildId/:roleId/users/:userId`](#add-user)        | Add a single user (idempotent)       |
-| `DELETE` | [`/api/role-link/:guildId/:roleId/users/:userId`](#remove-user)     | Remove a single user (idempotent)    |
+| Method   | Endpoint                                                                                        | Description                                                |
+| -------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `GET`    | [`/api/role-link/:guildId/:roleId/users`](#list-users)                                          | Get all user IDs linked to this role                       |
+| `PUT`    | [`/api/role-link/:guildId/:roleId/users`](#replace-users-batch-set)                             | Replace entire user list atomically (up to 100,000 users)  |
+| `POST`   | [`/api/role-link/:guildId/:roleId/users/upload`](#upload-users-chunked)                         | Start a chunked upload session (for lists &gt; 100,000)    |
+| `POST`   | [`/api/role-link/:guildId/:roleId/users/upload/:uploadId/chunk`](#2-append-a-chunk)             | Append a chunk of user IDs to a session                    |
+| `POST`   | [`/api/role-link/:guildId/:roleId/users/upload/:uploadId/commit`](#3-commit-the-upload)         | Atomically swap the live list with the uploaded users      |
+| `DELETE` | [`/api/role-link/:guildId/:roleId/users/upload/:uploadId`](#cancel-an-upload)                   | Cancel an uncommitted session                              |
+| `GET`    | [`/api/role-link/:guildId/:roleId/users/:userId`](#check-user)                                  | Check if a specific user exists                            |
+| `POST`   | [`/api/role-link/:guildId/:roleId/users/:userId`](#add-user)                                    | Add a single user (idempotent)                             |
+| `DELETE` | [`/api/role-link/:guildId/:roleId/users/:userId`](#remove-user)                                 | Remove a single user (idempotent)                          |
 
 ### Base URL
 
@@ -883,7 +888,8 @@ A JSON array of Discord user ID strings (17–20 digits each):
 
 - Each ID must be a valid Discord snowflake (17–20 digits).
 - Duplicate IDs are automatically deduplicated.
-- Maximum number of users depends on your plan (see [Limits](#limits)).
+- Maximum **100,000 users per request**. For larger lists, use the [chunked upload flow](#upload-users-chunked).
+- Total user count after the call must stay within your plan's limit (see [Limits](#limits)).
 - An empty array `[]` removes all users.
 
 **Response `200 OK`**
@@ -898,7 +904,157 @@ A JSON array of Discord user ID strings (17–20 digits each):
 
 `user_count` reflects the number of **unique** users stored after deduplication.
 
-**Timeout:** This endpoint has a **2-minute timeout** for very large payloads. Users are inserted in batches of 50,000.
+**Timeout:** This endpoint has a **2-minute timeout**. If you hit the 100,000-user cap with a `413` or want to upload lists that don't fit in a single request, use the [chunked upload flow](#upload-users-chunked).
+
+---
+
+### Upload Users (Chunked)
+
+For user lists larger than **100,000**, use the chunked upload flow. The server accumulates user IDs in a staging area across multiple short HTTP requests, then atomically swaps the live list on commit. This avoids the memory, request-size, and transaction-timeout limits of a single `PUT` for very large lists (up to the per-role-link plan limit — see [Limits](#limits)).
+
+The flow has three mandatory steps plus an optional cancel:
+
+1. **`POST /users/upload`** — start a session, get an `upload_id`.
+2. **`POST /users/upload/:uploadId/chunk`** — append one or more batches of user IDs (≤ 100,000 per request). Repeat as many times as needed.
+3. **`POST /users/upload/:uploadId/commit`** — atomically replace the live list with the accumulated users.
+4. **`DELETE /users/upload/:uploadId`** *(optional)* — discard an in-progress session.
+
+**Sessions expire after 24 hours** if not committed or cancelled; uncommitted staging data is garbage-collected automatically.
+
+#### 1. Start an upload session
+
+```http
+POST /api/role-link/:guildId/:roleId/users/upload
+```
+
+**Headers**
+
+| Header          | Value          |
+| --------------- | -------------- |
+| `Authorization` | `Token rl_...` |
+
+**Request body:** none (empty body).
+
+**Response `200 OK`**
+
+```json
+{
+  "data": {
+    "upload_id": "3f2a1b7c-8e4d-4f5a-9b0c-1d2e3f4a5b6c"
+  }
+}
+```
+
+The `upload_id` is a UUID scoped to this role link. It is required for all subsequent chunk, commit, and cancel requests in the session.
+
+---
+
+#### 2. Append a chunk
+
+```http
+POST /api/role-link/:guildId/:roleId/users/upload/:uploadId/chunk
+```
+
+**Headers**
+
+| Header          | Value              |
+| --------------- | ------------------ |
+| `Authorization` | `Token rl_...`     |
+| `Content-Type`  | `application/json` |
+
+**Request body** — a JSON array of Discord user ID strings (17–20 digits each):
+
+```json
+["111222333444555666", "222333444555666777", "..."]
+```
+
+- Up to **100,000 user IDs per chunk**.
+- Duplicates across chunks are automatically deduplicated at commit time.
+- Chunks can be sent **sequentially or in parallel** (up to a reasonable concurrency — e.g. 4 in flight). Each chunk is an independent short transaction.
+
+**Response `200 OK`**
+
+```json
+{
+  "data": {
+    "chunks": 3,
+    "users": 287145
+  }
+}
+```
+
+| Field    | Description                                                            |
+| -------- | ---------------------------------------------------------------------- |
+| `chunks` | Total number of chunks accepted into this session so far               |
+| `users`  | Total number of user IDs staged so far (across all chunks, before dedup) |
+
+The plan's per-role-link limit is **not** enforced on individual chunks — only at commit time. This lets you stage a large list and find out on commit whether it fits within your plan.
+
+---
+
+#### 3. Commit the upload
+
+```http
+POST /api/role-link/:guildId/:roleId/users/upload/:uploadId/commit
+```
+
+Atomically replaces the entire live user list with the users staged in this session. The old list is deleted and the staged users are inserted in a single transaction, then the session's staging data is cleaned up.
+
+**Headers**
+
+| Header          | Value          |
+| --------------- | -------------- |
+| `Authorization` | `Token rl_...` |
+
+**Request body:** none.
+
+**Response `200 OK`**
+
+```json
+{
+  "data": {
+    "user_count": 287145
+  }
+}
+```
+
+`user_count` is the number of unique users now linked to the role after the swap.
+
+**Behavior:**
+
+- If the staged user count exceeds your plan's limit, the commit is rejected with a `400` error and the staging data is preserved so you can inspect or cancel it.
+- After a successful commit, the bot is notified to sync role assignments on Discord. For very large lists, the initial bulk application to Discord is rate-limited by Discord itself and can take **days** for multi-million-user role links (see [Role Sync Behavior](#role-sync-behavior)).
+- Committing a session with **zero chunks** is allowed and results in an empty user list (equivalent to `PUT /users` with `[]`).
+
+**Timeout:** Up to **30 minutes** for the atomic swap on very large lists. Typical commits for &lt; 1M users finish in seconds.
+
+---
+
+#### Cancel an upload
+
+```http
+DELETE /api/role-link/:guildId/:roleId/users/upload/:uploadId
+```
+
+Discards an uncommitted session and its staged users. The live user list is not touched.
+
+**Headers**
+
+| Header          | Value          |
+| --------------- | -------------- |
+| `Authorization` | `Token rl_...` |
+
+**Response `200 OK`**
+
+```json
+{
+  "data": {
+    "cancelled": true
+  }
+}
+```
+
+Calling cancel on an unknown, already-committed, or already-cancelled `upload_id` returns a `404` error.
 
 ---
 
@@ -1005,14 +1161,18 @@ If the stored user count exceeds the allowed limit (e.g., after a plan downgrade
 
 ## Limits
 
-| Resource              | Free Plan | Premium   |
-| --------------------- | --------- | --------- |
-| Users per role link   | 100       | 1,000,000 |
-| Role links per server | 10        | 10        |
+| Resource                              | Free Plan | Premium    |
+| ------------------------------------- | --------- | ---------- |
+| Users per role link                   | 100       | 30,000,000 |
+| Role links per server                 | 10        | 10         |
+| Users per single `PUT /users` request | 100       | 100,000    |
+| Users per chunk in a chunked upload   | —         | 100,000    |
+| Chunked upload session TTL            | —         | 24 hours   |
 
-- Exceeding the user limit on **Add User** or **Replace Users** returns a `400` error with a message indicating the maximum allowed.
+- Exceeding the per-role-link user limit on **Add User**, **Replace Users**, or **Commit Upload** returns a `400` error with a message indicating the maximum allowed.
 - The error message includes a hint to upgrade if on the free plan.
-- The **Replace Users** endpoint has a 2-minute timeout for large payloads.
+- Use the [chunked upload flow](#upload-users-chunked) for any list larger than 100,000 users — a single `PUT /users` with more than 100,000 IDs is rejected.
+- For multi-million-user role links, the initial bulk application to Discord is rate-limited by Discord and can take **days** to complete. Steady-state incremental changes (adds/removes) apply within seconds.
 - Upgrade to a premium plan for higher user limits. See [Plans & Pricing](../plans).
 
 ---
@@ -1030,15 +1190,16 @@ All errors return a JSON object with `statusCode` and `message`:
 
 ### User Management API Errors
 
-| Status Code | Message                                            | Cause                                                        |
-| ----------- | -------------------------------------------------- | ------------------------------------------------------------ |
-| `400`       | Maximum N users per role link                      | User limit exceeded (see [Limits](#limits))                  |
-| `400`       | Validation error                                   | Invalid request body (e.g., user ID not in snowflake format) |
-| `401`       | Authorization header required                      | Missing `Authorization` header                               |
-| `401`       | Invalid authorization scheme. Use: Token \<token\> | Wrong scheme (e.g., `Bearer` instead of `Token`)             |
-| `403`       | Invalid or revoked token                           | Token doesn't match the guild/role pair, or was reset        |
-| `403`       | This role link is disabled                         | Role link exists but is disabled in the dashboard            |
-| `404`       | Role link not found                                | No role link exists for this guild/role combination          |
+| Status Code | Message                                            | Cause                                                                              |
+| ----------- | -------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `400`       | Maximum N users per role link                      | Per-role-link user limit exceeded on Add, Replace, or Commit (see [Limits](#limits)) |
+| `400`       | Validation error                                   | Invalid request body (e.g., user ID not in snowflake format, chunk &gt; 100,000 IDs) |
+| `401`       | Authorization header required                      | Missing `Authorization` header                                                     |
+| `401`       | Invalid authorization scheme. Use: Token \<token\> | Wrong scheme (e.g., `Bearer` instead of `Token`)                                   |
+| `403`       | Invalid or revoked token                           | Token doesn't match the guild/role pair, or was reset                              |
+| `403`       | This role link is disabled                         | Role link exists but is disabled in the dashboard                                  |
+| `404`       | Role link not found                                | No role link exists for this guild/role combination                                |
+| `404`       | Upload session not found                           | `upload_id` does not exist, already committed, or expired after 24 h               |
 
 ### Plugin Server Errors (Shown to Admins)
 
@@ -1194,6 +1355,38 @@ curl -X DELETE -H "Authorization: Token rl_your_token_here" \
   https://api-rolelogic.faizo.net/api/role-link/123456789/987654321/users/111222333444555666
 ```
 
+### Chunked Upload — cURL
+
+Upload a large list (&gt; 100,000 users) by streaming chunks into a session, then committing atomically:
+
+```bash
+API=https://api-rolelogic.faizo.net
+TOKEN=rl_your_token_here
+GID=123456789
+RID=987654321
+H="Authorization: Token $TOKEN"
+CT="Content-Type: application/json"
+
+# 1. Start a session
+UPLOAD=$(curl -s -X POST -H "$H" "$API/api/role-link/$GID/$RID/users/upload" \
+  | jq -r .data.upload_id)
+
+# 2. Append chunks (repeat for each batch of up to 100,000 user IDs)
+curl -X POST -H "$H" -H "$CT" \
+  -d @chunk_1.json \
+  "$API/api/role-link/$GID/$RID/users/upload/$UPLOAD/chunk"
+
+curl -X POST -H "$H" -H "$CT" \
+  -d @chunk_2.json \
+  "$API/api/role-link/$GID/$RID/users/upload/$UPLOAD/chunk"
+
+# 3. Commit — atomically swaps the live user list
+curl -X POST -H "$H" "$API/api/role-link/$GID/$RID/users/upload/$UPLOAD/commit"
+
+# Or cancel to discard an in-progress session
+# curl -X DELETE -H "$H" "$API/api/role-link/$GID/$RID/users/upload/$UPLOAD"
+```
+
 ### User Management API — JavaScript (fetch)
 
 ```javascript
@@ -1228,6 +1421,32 @@ const setResult = await fetch(
   },
 ).then((r) => r.json());
 // → { data: { user_count: 2 } }
+
+// Upload a large list in chunks (for > 100,000 users)
+async function uploadAll(userIds) {
+  const base = `${API_BASE}/api/role-link/${GUILD_ID}/${ROLE_ID}/users/upload`;
+  const json = { ...headers, "Content-Type": "application/json" };
+
+  const { data: { upload_id } } = await fetch(base, {
+    method: "POST",
+    headers,
+  }).then((r) => r.json());
+
+  const CHUNK = 100_000;
+  for (let i = 0; i < userIds.length; i += CHUNK) {
+    await fetch(`${base}/${upload_id}/chunk`, {
+      method: "POST",
+      headers: json,
+      body: JSON.stringify(userIds.slice(i, i + CHUNK)),
+    });
+  }
+
+  const { data } = await fetch(`${base}/${upload_id}/commit`, {
+    method: "POST",
+    headers,
+  }).then((r) => r.json());
+  return data.user_count;
+}
 ```
 
 ### User Management API — Python (requests)
@@ -1261,6 +1480,24 @@ resp = requests.put(
     headers=headers,
     json=["111222333444555666", "222333444555666777"]
 )
+
+# Upload a large list in chunks (for > 100,000 users)
+def upload_all(user_ids):
+    base = f"{API_BASE}/api/role-link/{GUILD_ID}/{ROLE_ID}/users/upload"
+    upload_id = requests.post(base, headers=headers).json()["data"]["upload_id"]
+
+    CHUNK = 100_000
+    for i in range(0, len(user_ids), CHUNK):
+        requests.post(
+            f"{base}/{upload_id}/chunk",
+            headers=headers,
+            json=user_ids[i:i + CHUNK],
+        )
+
+    return requests.post(
+        f"{base}/{upload_id}/commit",
+        headers=headers,
+    ).json()["data"]["user_count"]
 ```
 
 ---
@@ -1278,10 +1515,12 @@ resp = requests.put(
 
 ### User Management
 
-- **Prefer `PUT` (Replace Users) for periodic full syncs.** It's atomic and handles additions and removals in one call.
-- **Use `POST`/`DELETE` (Add/Remove User) for real-time, event-driven updates** — e.g., when a user completes a purchase.
+- **Prefer `PUT` (Replace Users) for periodic full syncs of up to 100,000 users.** It's atomic and handles additions and removals in one call.
+- **Use the [chunked upload flow](#upload-users-chunked) for lists larger than 100,000.** Start a session, stream chunks (≤ 100,000 IDs each, optionally in parallel), then commit. The commit does an atomic swap — there's no window where the list is partially applied.
+- **Use `POST`/`DELETE` (Add/Remove User) for real-time, event-driven updates** — e.g., when a user completes a purchase. For very large role links, always prefer these over re-uploading the full list.
 - **All write endpoints are idempotent.** Adding an existing user or removing a non-existent user succeeds without error. Safe to retry on network failures.
-- **Check your user count against limits** before calling Replace Users to avoid `400` errors.
+- **Cancel stale upload sessions** with `DELETE /users/upload/:uploadId` if you abort mid-upload. Sessions also auto-expire after 24 hours, but cancelling frees staging storage immediately.
+- **Check your user count against limits** before calling Replace Users or Commit Upload to avoid `400` errors.
 - **Use the `Token` scheme, not `Bearer`.** Using `Bearer` returns `401`.
 - **Store the token securely.** Tokens start with `rl_` and should be treated as secrets.
 
@@ -1323,15 +1562,23 @@ Yes. Adding a user who already exists returns `added: false` (no error). Removin
 
 ### What is the user limit?
 
-Free plan: 100 users per role link. Premium: 1,000,000 users per role link. The limit applies per individual role link, not per server.
+Free plan: 100 users per role link. Premium: 30,000,000 users per role link. The limit applies per individual role link, not per server.
 
 ### What happens if the user count exceeds the limit?
 
-The API rejects **Add User** or **Replace Users** requests that would exceed the limit with a `400` error. If the stored count already exceeds the limit (e.g., after a plan downgrade), the bot **stops syncing** the role link entirely until the count is reduced.
+The API rejects **Add User**, **Replace Users**, or **Commit Upload** requests that would exceed the limit with a `400` error. If the stored count already exceeds the limit (e.g., after a plan downgrade), the bot **stops syncing** the role link entirely until the count is reduced.
+
+### How do I upload more than 100,000 users at once?
+
+Use the [chunked upload flow](#upload-users-chunked): start a session with `POST /users/upload`, append chunks of up to 100,000 IDs with `POST /users/upload/:uploadId/chunk`, then atomically swap the live list with `POST /users/upload/:uploadId/commit`. A single `PUT /users` request is capped at 100,000 IDs.
+
+### How long do chunked upload sessions last?
+
+Sessions expire **24 hours** after creation if not committed or cancelled. Expired sessions and their staged users are garbage-collected automatically. You can cancel a session early with `DELETE /users/upload/:uploadId` to free staging storage immediately.
 
 ### How quickly do role changes take effect on Discord?
 
-Changes typically apply within seconds after a User Management API call. RoleLogic notifies the bot immediately, and the bot processes the sync. Delays may occur during high-traffic periods or if the bot is rate-limited by Discord.
+Small changes typically apply within seconds after a User Management API call. RoleLogic notifies the bot immediately, and the bot processes the sync. Delays may occur during high-traffic periods or if the bot is rate-limited by Discord. For the **initial bulk apply** of a multi-million-user role link, Discord's own API rate limits mean the full rollout can take **days**, even though the user list itself was stored in minutes — steady-state incremental changes after that apply within seconds.
 
 ### What happens if my plugin server is down?
 
