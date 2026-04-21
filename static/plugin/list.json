@@ -177,6 +177,30 @@
       "version": "1.0.0",
       "date_published": "2026-04-17",
       "date_updated": "2026-04-17"
+    },
+    {
+      "id": "referral-code-role",
+      "name": "Referral Code Role",
+      "short_description": "Grant Discord roles via redeemable referral codes with customizable rules.",
+      "description": "A RoleLogic plugin that grants a Discord role when a member redeems a code. Hand out codes for Kickstarter rewards, podcast shout-outs, event wristbands, QR-coded flyers — anything that needs a \"prove you have this and get the role\" flow. Built for scale: the Role Link sync path supports 100 000+ members per role link via the chunked upload API, with atomic swaps.",
+      "author": "RoleLogic",
+      "author_url": "https://docs-rolelogic.faizo.net",
+      "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/referral-code-role.webp",
+      "plugin_url": "https://plugin-rolelogic.faizo.net/referral-code-role",
+      "category": "Utility",
+      "tags": [
+        "referral",
+        "code",
+        "redeem",
+        "role",
+        "discord",
+        "customizable",
+        "rules"
+      ],
+      "featured": false,
+      "version": "1.0.0",
+      "date_published": "2026-04-21",
+      "date_updated": "2026-04-21"
     }
   ]
 }
