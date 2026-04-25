@@ -201,6 +201,33 @@
       "version": "1.0.0",
       "date_published": "2026-04-21",
       "date_updated": "2026-04-21"
+    },
+    {
+      "id": "roblox-player-role",
+      "name": "Roblox Player Role",
+      "short_description": "Give Discord roles based on Roblox account data, group membership, and in-game stats.",
+      "description": "A RoleLogic plugin that automatically assigns Discord roles based on Roblox account data and in-game progression. Members link their Roblox account once, and roles are assigned using configurable conditions across account-level data (age, Premium status, badges, gamepasses, assets, social counts), group membership and rank thresholds, and per-game statistics like playtime, levels, wins/losses, and custom fields. Game stats can be delivered via direct server push or polled from Roblox Open Cloud DataStore, keeping Discord roles synced with real Roblox activity.",
+      "author": "RoleLogic",
+      "author_url": "https://docs-rolelogic.faizo.net",
+      "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/roblox-player-role.webp",
+      "plugin_url": "https://plugin-rolelogic.faizo.net/roblox-player-role",
+      "category": "Games",
+      "tags": [
+        "roblox",
+        "roblox player",
+        "group",
+        "gamepass",
+        "badge",
+        "playtime",
+        "verify",
+        "verification",
+        "role",
+        "discord server"
+      ],
+      "featured": false,
+      "version": "1.0.0",
+      "date_published": "2026-04-25",
+      "date_updated": "2026-04-25"
     }
   ]
 }
