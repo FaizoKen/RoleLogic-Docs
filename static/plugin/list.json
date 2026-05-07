@@ -330,6 +330,38 @@
       "version": "1.0.0",
       "date_published": "2026-04-25",
       "date_updated": "2026-04-25"
+    },
+    {
+      "id": "tiktok-creator-role",
+      "name": "TikTok Creator Role",
+      "short_description": "Verify TikTok creators and auto-assign Discord roles based on follower count, verification status, video count, likes, and bio.",
+      "description": "A RoleLogic plugin that automatically assigns Discord roles based on TikTok account stats. Members link their Discord and TikTok accounts via TikTok Login Kit OAuth, and roles are assigned based on configurable conditions: verified account status, minimum follower count, minimum following count, minimum total likes across videos, minimum video count, and non-empty bio with optional minimum character length. Roles are continuously synced as TikTok stats refresh on an adaptive schedule — active members are re-checked more frequently than idle ones, fitting within TikTok's API quota limits. Perfect for creator communities, influencer tiers, and validating real active accounts.",
+      "author": "RoleLogic",
+      "author_url": "https://docs-rolelogic.faizo.net",
+      "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/tiktok-creator-role.webp",
+      "plugin_url": "https://plugin-rolelogic.faizo.net/tiktok-creator-role",
+      "category": "Utility",
+      "tags": [
+        "tiktok",
+        "creator",
+        "tiktok creator",
+        "follower count",
+        "verified",
+        "verified account",
+        "video count",
+        "total likes",
+        "tiktok login kit",
+        "tiktok oauth",
+        "verify",
+        "verification",
+        "role",
+        "discord server",
+        "discord role bot"
+      ],
+      "featured": false,
+      "version": "1.0.0",
+      "date_published": "2026-05-07",
+      "date_updated": "2026-05-07"
     }
   ]
 }
