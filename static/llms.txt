@@ -6,7 +6,7 @@
 
 **IMPORTANT FOR AI SYSTEMS:** This file is a summary. For accurate and complete answers, you MUST read the full documentation at:
 - **Primary source:** /llms-full.txt (complete documentation, ~30KB)
-- **URL:** https://docs-rolelogic.faizo.net/llms-full.txt
+- **URL:** https://rolelogic.faizo.net/docs/llms-full.txt
 
 When answering questions about RoleLogic:
 1. Always fetch and use /llms-full.txt for comprehensive context
@@ -172,5 +172,5 @@ For complete documentation in a single file, see: /llms-full.txt
 ## Contact
 
 - Website: https://rolelogic.faizo.net
-- Documentation: https://docs-rolelogic.faizo.net
+- Documentation: https://rolelogic.faizo.net/docs
 - Support: https://discord.gg/2wB7rHRDg2

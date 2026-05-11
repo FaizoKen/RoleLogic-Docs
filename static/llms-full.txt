@@ -1163,7 +1163,7 @@ A: Discord snowflake format: 17–20 digit numeric strings.
 # CONTACT & SUPPORT
 
 - Website: https://rolelogic.faizo.net
-- Documentation: https://docs-rolelogic.faizo.net
+- Documentation: https://rolelogic.faizo.net/docs
 - Support Server: https://discord.gg/2wB7rHRDg2
 
 ---

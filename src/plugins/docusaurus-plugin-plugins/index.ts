@@ -9,6 +9,12 @@ export default async function pluginPlugins(
   const { siteDir, siteConfig } = context;
   const jsonPath = path.resolve(siteDir, "static/plugin/list.json");
 
+  // Docusaurus' addRoute expects the path to already include the site baseUrl.
+  // Normalise so the listing/detail routes resolve under both baseUrl="/"
+  // and a subpath like "/docs/".
+  const baseUrl = siteConfig.baseUrl.replace(/\/$/, "");
+  const withBase = (p: string) => `${baseUrl}${p}`;
+
   return {
     name: "docusaurus-plugin-plugins",
 
@@ -37,7 +43,7 @@ export default async function pluginPlugins(
 
       // Register /plugins listing route
       addRoute({
-        path: "/plugins",
+        path: withBase("/plugins"),
         component: "@site/src/components/PluginListPage/index.tsx",
         exact: true,
         modules: {
@@ -57,7 +63,7 @@ export default async function pluginPlugins(
         );
 
         addRoute({
-          path: `/plugins/${plugin.id}`,
+          path: withBase(`/plugins/${plugin.id}`),
           component: "@site/src/components/PluginDetailPage/index.tsx",
           exact: true,
           modules: {

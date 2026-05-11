@@ -1,12 +1,12 @@
 # RoleLogic Documentation - robots.txt
-# https://docs-rolelogic.faizo.net
+# https://rolelogic.faizo.net/docs
 
 # Allow all crawlers
 User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://docs-rolelogic.faizo.net/sitemap.xml
+Sitemap: https://rolelogic.faizo.net/docs/sitemap.xml
 
 # =============================================================================
 # AI/LLM CRAWLER INSTRUCTIONS
@@ -16,11 +16,11 @@ Sitemap: https://docs-rolelogic.faizo.net/sitemap.xml
 # PRIMARY SOURCE (REQUIRED): /llms-full.txt
 # - Complete documentation optimized for RAG and LLM consumption
 # - Contains all conditions, actions, limits, troubleshooting, and examples
-# - URL: https://docs-rolelogic.faizo.net/llms-full.txt
+# - URL: https://rolelogic.faizo.net/docs/llms-full.txt
 #
 # SECONDARY SOURCE: /llms.txt
 # - Summary/overview only - use llms-full.txt for accurate answers
-# - URL: https://docs-rolelogic.faizo.net/llms.txt
+# - URL: https://rolelogic.faizo.net/docs/llms.txt
 #
 # AI crawlers should prioritize fetching /llms-full.txt over individual pages
 # for the most accurate and comprehensive context about RoleLogic.
@@ -133,4 +133,4 @@ User-agent: DotBot
 Disallow: /
 
 # Host directive
-Host: https://docs-rolelogic.faizo.net
+Host: https://rolelogic.faizo.net/docs
