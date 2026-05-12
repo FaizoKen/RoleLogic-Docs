@@ -58,6 +58,7 @@ As a plugin developer, you need to implement **two things**:
   - [GET /config](#get-config) — Return a configuration form
   - [POST /config](#post-config) — Receive configuration from the dashboard
   - [DELETE /config](#delete-config) — Handle role link deletion
+- [Iframe UI Mode](#iframe-ui-mode) — Render your own UI inside the dashboard
 - [Schema Reference](#schema-reference) — All field types and validation options
 - [User Management API](#user-management-api) — REST API to manage role-linked users
   - [Authentication](#authentication)
@@ -192,7 +193,16 @@ User-Agent: RoleLogic/1.0
 
 ### GET /config
 
-RoleLogic calls `GET {plugin_url}/config` to fetch the configuration form that admins see in the dashboard. The response defines sections, fields, validation rules, and optionally the current values.
+RoleLogic calls `GET {plugin_url}/config` to fetch the configuration UI that admins see in the dashboard.
+
+There are two UI modes, discriminated by the `ui_mode` field:
+
+| `ui_mode`  | Behavior |
+| ---------- | -------- |
+| `"schema"` (default) | Return a JSON schema; RoleLogic renders the form, handles validation and save. |
+| `"iframe"` | Return an `embed_url`; RoleLogic renders it in an iframe and the plugin owns the entire save UX. See [Iframe UI Mode](#iframe-ui-mode). |
+
+The rest of this section describes `ui_mode: "schema"`. For iframe-mode plugins, the `sections`/`values` fields are not used, and `POST /config` is never called.
 
 **Request headers from RoleLogic:**
 
@@ -331,6 +341,170 @@ User-Agent: RoleLogic/1.0
 **Your server should:** Remove any stored configuration and stop managing users for this role link. The API token included in the request will be invalidated after deletion.
 
 **Timeout:** 5 seconds. Failures do not affect the deletion.
+
+---
+
+## Iframe UI Mode
+
+For plugins that need richer configuration UIs than the built-in form schema can express — rule builders, drag-and-drop editors, live previews, multi-step wizards — return `ui_mode: "iframe"` from `GET /config` and RoleLogic will embed your own page in the dashboard. Your plugin owns the entire save UX; there is no "Save" button on RoleLogic's side and no `POST /config` call.
+
+### Response shape
+
+```json
+{
+  "version": 1,
+  "ui_mode": "iframe",
+  "name": "My Plugin",
+  "description": "Optional description shown above the iframe",
+  "embed_url": "https://plugin.example.com/configure"
+}
+```
+
+| Field        | Type   | Required | Description                                                                                  |
+| ------------ | ------ | -------- | -------------------------------------------------------------------------------------------- |
+| `version`    | `1`    | Yes      | Contract version.                                                                            |
+| `ui_mode`    | string | Yes      | Must be `"iframe"`.                                                                          |
+| `name`       | string | Yes      | Plugin name shown in the dashboard header.                                                   |
+| `description`| string | No       | Optional descriptive text rendered above the iframe.                                         |
+| `embed_url`  | string | Yes      | HTTPS URL to render inside the iframe. Max 2000 chars. Cannot point to private/internal hosts. |
+
+### Auth handoff (signed token)
+
+RoleLogic does **not** rely on third-party cookies to authenticate the admin to your iframe. Instead, the backend mints a short-lived **JWT** and appends it to your `embed_url` as a query parameter named `rl_token`:
+
+```
+https://plugin.example.com/configure?rl_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+If `embed_url` already contains query parameters, they are preserved.
+
+**Token format**
+
+- Algorithm: **HS256**
+- Secret: the plugin's **raw API token** (the `rl_...` value RoleLogic sent to your plugin in the `Authorization` header during [`POST /register`](#post-register)). Store it during registration; verify with it on every iframe request.
+- Lifetime: **5 minutes** from issue. The dashboard refetches `GET /config` when the tab regains focus, which mints a fresh token.
+
+**Claims**
+
+| Claim      | Type   | Description                                                  |
+| ---------- | ------ | ------------------------------------------------------------ |
+| `iss`      | string | Always `"rolelogic"`.                                        |
+| `aud`      | string | Your `plugin_url` (the base URL RoleLogic calls).            |
+| `sub`      | string | Discord user ID of the admin viewing the iframe.             |
+| `guild_id` | string | Discord guild ID being configured.                           |
+| `role_id`  | string | Discord role ID being configured.                            |
+| `iat`      | number | Issued-at timestamp (seconds since epoch).                   |
+| `exp`      | number | Expiry timestamp (`iat + 300`).                              |
+
+**Verification (Node.js example)**
+
+```js
+import jwt from "jsonwebtoken";
+
+// `roleLinkToken` is the rl_... value you stored during POST /register
+const payload = jwt.verify(req.query.rl_token, roleLinkToken, {
+  algorithms: ["HS256"],
+  issuer: "rolelogic",
+  audience: process.env.PUBLIC_PLUGIN_URL,
+});
+// payload.guild_id, payload.role_id, payload.sub (admin discord_id)
+```
+
+**Important:**
+- Always verify `aud`, `iss`, `exp`, and the signature. Never trust unverified claims.
+- The token is bound to a single role link via its HMAC key. A token signed with one role link's API token cannot be reused for another role link.
+
+### postMessage protocol (iframe → dashboard)
+
+Your iframe can send messages to the parent window to control layout and signal state. RoleLogic ignores messages from any origin other than `new URL(embed_url).origin`.
+
+```js
+// Auto-resize: tell the dashboard how tall to make the iframe.
+window.parent.postMessage({ type: "rl:resize", height: document.body.scrollHeight }, "*");
+
+// Optional: notify the dashboard that a save completed (shows a toast).
+window.parent.postMessage({ type: "rl:saved" }, "*");
+
+// Optional: tell the dashboard there are unsaved changes (prompts on close).
+window.parent.postMessage({ type: "rl:dirty", dirty: true }, "*");
+```
+
+| Message type | Payload                | Effect on the dashboard                                            |
+| ------------ | ---------------------- | ------------------------------------------------------------------ |
+| `rl:resize`  | `{ height: number }`   | Sets iframe height. Clamped to 200–4000 px.                        |
+| `rl:saved`   | —                      | Shows a success toast. The plugin decides whether to close itself. |
+| `rl:dirty`   | `{ dirty: boolean }`   | When `true`, the dashboard prompts before closing.                 |
+
+The dashboard does not send messages to the iframe in v1.
+
+### CSP / frame-ancestors
+
+Your iframe response must allow the RoleLogic dashboard to embed it. Set the `Content-Security-Policy` header on the response that serves `embed_url`:
+
+```
+Content-Security-Policy: frame-ancestors https://app.rolelogic.com
+```
+
+Do **not** send `X-Frame-Options: DENY` or `SAMEORIGIN` — those headers will block embedding.
+
+### Sandbox
+
+RoleLogic renders the iframe with the following `sandbox` attribute:
+
+```
+sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+```
+
+This allows scripts, forms, popup windows, and same-origin treatment (so cookies, localStorage, and your own auth work normally on your domain).
+
+### Minimal iframe plugin example
+
+```js
+// GET /config → return iframe mode
+app.get("/config", (req, res) => {
+  res.json({
+    version: 1,
+    ui_mode: "iframe",
+    name: "Rule Builder",
+    embed_url: "https://plugin.example.com/configure",
+  });
+});
+
+// GET /configure → page rendered inside the dashboard iframe
+app.get("/configure", (req, res) => {
+  const { rl_token } = req.query;
+  let claims;
+  try {
+    claims = jwt.verify(rl_token, getRoleLinkToken(/* lookup by aud */), {
+      algorithms: ["HS256"],
+      issuer: "rolelogic",
+    });
+  } catch {
+    res.status(401).send("Invalid token");
+    return;
+  }
+
+  res.set("Content-Security-Policy", "frame-ancestors https://app.rolelogic.com");
+  res.send(`<!doctype html>
+    <html><body>
+      <h1>Configure ${claims.guild_id} / ${claims.role_id}</h1>
+      <!-- your UI here; call your own backend to save -->
+      <script>
+        // Auto-resize once content has rendered.
+        const sendHeight = () =>
+          parent.postMessage({ type: "rl:resize", height: document.body.scrollHeight }, "*");
+        new ResizeObserver(sendHeight).observe(document.body);
+        sendHeight();
+      </script>
+    </body></html>`);
+});
+```
+
+### Notes
+
+- `POST /config` is **never called** for iframe plugins. If you accidentally accept config submissions there, they will not arrive from RoleLogic. The dashboard will reject the call with `400` if attempted.
+- `POST /register`, `DELETE /config`, and `GET /health` work identically to schema-mode plugins.
+- Plugins may switch between `ui_mode: "schema"` and `ui_mode: "iframe"` between requests; the dashboard always honors the latest response.
 
 ---
 
