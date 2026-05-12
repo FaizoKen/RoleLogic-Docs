@@ -414,9 +414,11 @@ const payload = jwt.verify(req.query.rl_token, roleLinkToken, {
 - Always verify `aud`, `iss`, `exp`, and the signature. Never trust unverified claims.
 - The token is bound to a single role link via its HMAC key. A token signed with one role link's API token cannot be reused for another role link.
 
-### postMessage protocol (iframe → dashboard)
+### postMessage protocol
 
-Your iframe can send messages to the parent window to control layout and signal state. RoleLogic ignores messages from any origin other than `new URL(embed_url).origin`.
+Messages flow in both directions. Origins are checked on both sides — the dashboard ignores anything not from `new URL(embed_url).origin`, and your iframe should ignore messages whose `event.origin` isn't the RoleLogic dashboard.
+
+#### Iframe → dashboard
 
 ```js
 // Auto-resize: tell the dashboard how tall to make the iframe.
@@ -435,7 +437,75 @@ window.parent.postMessage({ type: "rl:dirty", dirty: true }, "*");
 | `rl:saved`   | —                      | Shows a success toast. The plugin decides whether to close itself. |
 | `rl:dirty`   | `{ dirty: boolean }`   | When `true`, the dashboard prompts before closing.                 |
 
-The dashboard does not send messages to the iframe in v1.
+#### Dashboard → iframe
+
+```js
+window.addEventListener("message", (event) => {
+  // In production, also check event.origin against the RoleLogic dashboard origin.
+  if (event.data && event.data.type === "rl:visible") {
+    refreshFromServer(); // your refresh function — see "Refreshing state" below
+  }
+});
+```
+
+| Message type  | Payload | Sent when                                                                   |
+| ------------- | ------- | --------------------------------------------------------------------------- |
+| `rl:visible`  | —       | The parent tab becomes visible (admin returned from another tab/window).    |
+
+The dashboard sends `rl:visible` because `visibilitychange` events on iframe documents don't fire reliably across browsers when the *parent tab's* visibility flips. Using this message instead of in-iframe `visibilitychange` is the reliable cross-browser way to detect tab return.
+
+### Refreshing state on tab return
+
+A common scenario: the admin opens your iframe, jumps to another tab (or a `target="_blank"` link in your iframe) to do something related, then comes back. You usually want to pick up external changes — newly created records, renamed items, status updates — *without* discarding any in-progress edits the admin already made in your iframe.
+
+The robust pattern is to split your in-memory state into two buckets and apply different refresh policies to each:
+
+| Bucket          | Examples                                          | Refresh policy on `rl:visible`                            |
+| --------------- | ------------------------------------------------- | --------------------------------------------------------- |
+| **External data** | Lists of items the user picks from, server-side status, counts, available options | Always refresh. The user didn't author this data; updating it doesn't lose work. |
+| **Edit buffer** | The form fields the user is filling in (config values, selections, drafts) | Only refresh when the buffer is clean (no unsaved changes). Otherwise keep the user's in-progress values. |
+
+Track a `dirty` flag locally (you already need it for `rl:dirty` postMessage). Skip the edit-buffer half of the refresh while dirty:
+
+```js
+let state = null;     // server data, populated by initial load
+let dirty = false;    // true once the user has made unsaved edits
+let refreshInFlight = false;
+
+async function refreshFromServer() {
+  if (!state || refreshInFlight) return;
+  refreshInFlight = true;
+  try {
+    const data = await fetchYourBackend();
+
+    // External data — always pick up changes.
+    if (JSON.stringify(data.externalList) !== JSON.stringify(state.externalList)) {
+      state.externalList = data.externalList;
+      renderExternalList();
+    }
+
+    // Edit buffer — only refresh when nothing to lose.
+    if (!dirty &&
+        JSON.stringify(data.config) !== JSON.stringify(state.config)) {
+      state.config = data.config;
+      renderEditBuffer();
+    }
+  } finally {
+    refreshInFlight = false;
+  }
+}
+
+window.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "rl:visible") refreshFromServer();
+});
+```
+
+Notes:
+
+- **Compare before re-rendering.** Calling `render()` on identical data is wasteful and blows away scroll position, open dropdowns, and focus. A cheap `JSON.stringify` diff prevents the flicker.
+- **Debounce concurrent fetches.** `refreshInFlight` prevents pile-ups if multiple events fire close together (`rl:visible` plus the browser's native `focus` event, etc.).
+- **Re-check `dirty` after the fetch.** A long-running refresh can return after the user starts editing. Test `dirty` again before mutating the edit buffer.
+- **Don't reload the iframe to refresh.** The dashboard captures the `embed_url` on first render and never updates the iframe's `src`, even when it refetches `GET /config` with a new `rl_token`. The intent is for the iframe to manage its own lifecycle via these messages; refreshing your data in-place keeps the user's session intact.
 
 ### CSP / frame-ancestors
 
