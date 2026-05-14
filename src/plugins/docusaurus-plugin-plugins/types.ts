@@ -1,3 +1,14 @@
+export interface PluginSeoCopy {
+  seoTitle: string;
+  seoDescription: string;
+  h1: string;
+  subhead: string;
+  platform: string;
+  useCases: { title: string; body: string }[];
+  howItWorks?: { title: string; body: string }[];
+  faqs?: { q: string; a: string }[];
+}
+
 export interface PluginData {
   id: string;
   name: string;
@@ -14,6 +25,7 @@ export interface PluginData {
   version?: string;
   date_published?: string;
   date_updated?: string;
+  seo?: PluginSeoCopy;
 }
 
 export interface PluginListJson {
