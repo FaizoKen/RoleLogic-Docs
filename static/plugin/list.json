@@ -363,6 +363,48 @@
       "version": "1.0.0",
       "date_published": "2026-05-07",
       "date_updated": "2026-05-07"
+    },
+    {
+      "id": "form-respondent-role",
+      "name": "Form Respondent Role",
+      "short_description": "Build Discord application forms, quizzes, polls, and surveys that auto-assign roles based on answers, score, or simple submission.",
+      "description": "A RoleLogic plugin that gates Discord roles behind a member-fillable form. Build forms with single choice, multi choice, dropdown, scale, short text, long text, number, email, date, agreement, and info/image/video display blocks. Quiz mode auto-grades answers server-side and shows respondents a pass/fail result; surveys grant a role on any submission. Configure conditions per-question (equals, not equals, contains, regex, between for numeric ranges) or on quiz total score, then RoleLogic grants the Discord role on submit. Built-in anti-cheat: correct answers and point values are server-side only and never sent to the browser, question order and option order shuffle per page load, quizzes are one-shot with no edit-loop oracle, and the submit endpoint is CSRF-protected. Optional Discord-membership requirement, minimum Discord account age gate, scheduling (opens-at / closes-at), Discord webhook on each submission, admin response dashboard with CSV export and per-question columns, draft auto-save, and Discord OAuth identity binding. Perfect for server applications, rules-acknowledgement quizzes, age gates, role applications, partner/whitelist forms, member onboarding surveys, knowledge-check quizzes, and any Discord role that should be earned by answering correctly or simply by submitting a form.",
+      "author": "RoleLogic",
+      "author_url": "https://rolelogic.faizo.net/docs",
+      "icon_url": "https://raw.githubusercontent.com/FaizoKen/rolelogic-docs/main/static/plugin/icons/form-respondent-role.webp",
+      "plugin_url": "https://plugin-rolelogic.faizo.net/form-respondent-role",
+      "category": "Utility",
+      "tags": [
+        "form",
+        "quiz",
+        "application",
+        "survey",
+        "poll",
+        "onboarding",
+        "screening",
+        "rules quiz",
+        "rules acknowledgement",
+        "auto-grade",
+        "pass fail",
+        "passing score",
+        "single choice",
+        "multi choice",
+        "dropdown",
+        "agreement",
+        "discord application form",
+        "discord quiz bot",
+        "discord survey bot",
+        "discord onboarding",
+        "discord whitelist form",
+        "anti-cheat",
+        "role",
+        "discord server",
+        "discord role bot"
+      ],
+      "featured": true,
+      "version": "1.0.0",
+      "date_published": "2026-05-14",
+      "date_updated": "2026-05-14"
     }
   ]
 }

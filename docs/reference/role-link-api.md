@@ -429,13 +429,20 @@ window.parent.postMessage({ type: "rl:saved" }, "*");
 
 // Optional: tell the dashboard there are unsaved changes (prompts on close).
 window.parent.postMessage({ type: "rl:dirty", dirty: true }, "*");
+
+// Optional: surface an arbitrary toast through the dashboard's notification system.
+// Use this for save errors, validation failures, or any other status the admin
+// needs to see regardless of where they've scrolled — the iframe auto-resizes
+// to content, so it has no internal viewport for an in-iframe toast to anchor to.
+window.parent.postMessage({ type: "rl:toast", message: "Save failed.", kind: "error" }, "*");
 ```
 
-| Message type | Payload                | Effect on the dashboard                                            |
-| ------------ | ---------------------- | ------------------------------------------------------------------ |
-| `rl:resize`  | `{ height: number }`   | Sets iframe height. Clamped to 200–4000 px.                        |
-| `rl:saved`   | —                      | Shows a success toast. The plugin decides whether to close itself. |
-| `rl:dirty`   | `{ dirty: boolean }`   | When `true`, the dashboard prompts before closing.                 |
+| Message type | Payload                              | Effect on the dashboard                                                                   |
+| ------------ | ------------------------------------ | ----------------------------------------------------------------------------------------- |
+| `rl:resize`  | `{ height: number }`                 | Sets iframe height. Clamped to 200–4000 px.                                               |
+| `rl:saved`   | —                                    | Shows a success toast. The plugin decides whether to close itself.                        |
+| `rl:dirty`   | `{ dirty: boolean }`                 | When `true`, the dashboard prompts before closing.                                        |
+| `rl:toast`   | `{ message: string, kind?: string }` | Shows a toast in the dashboard's notification system. `kind` is `"success"` or `"error"` (default). |
 
 #### Dashboard → iframe
 
