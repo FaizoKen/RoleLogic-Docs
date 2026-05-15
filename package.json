@@ -5,10 +5,7 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
-    "prestart": "bun run scripts/build-compact-list.ts",
     "build": "docusaurus build",
-    "prebuild": "bun run scripts/build-compact-list.ts",
-    "build:compact": "bun run scripts/build-compact-list.ts",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
