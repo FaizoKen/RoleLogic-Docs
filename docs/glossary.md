@@ -26,7 +26,7 @@ Definitions of terms used throughout the RoleLogic documentation.
 - **Action** = "THEN" part — what happens when condition matches (Add Roles, Remove Roles)
 - **Cascading** = when one rule triggers another automatically
 - **Priority** = execution order (lower numbers run first: 0, 1, 2...)
-- **Quota** = limits on rules per server (Free: 2, Premium: up to 210)
+- **Quota** = limits on rules per server (Free: 5, Premium: up to 210)
 
 ---
 
@@ -94,7 +94,7 @@ A rule that is active and processing members. Enabled rules evaluate whenever me
 
 ### Free Plan
 
-RoleLogic's base tier that includes 2 rules per server, all 9 condition types, all action types, testing sandbox, activity log, and 5 cross-server links. No time limit or credit card required.
+RoleLogic's base tier that includes 5 rules per server, all 9 condition types, all action types, testing sandbox, activity log, and 5 cross-server links. No time limit or credit card required.
 
 ---
 

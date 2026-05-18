@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 title: RoleLogic Pricing - Free Plan & Premium Tiers
-description: RoleLogic is free with 2 rules per server. Premium plans offer up to 210 rules, no watermarks, and priority support. Compare all features.
+description: RoleLogic is free with 5 rules per server. Premium plans offer up to 210 rules, no watermarks, and priority support. Compare all features.
 keywords:
   - RoleLogic pricing
   - RoleLogic free plan
@@ -24,8 +24,8 @@ RoleLogic offers a generous free plan and premium options for servers that need 
 
 | Feature               | Free           | Premium      |
 | --------------------- | -------------- | ------------ |
-| Rules per server      | 2              | Up to 210    |
-| Plugins per server    | 2              | Up to 210    |
+| Rules per server      | 5              | Up to 210    |
+| Plugins per server    | 5              | Up to 210    |
 | All condition types   | ✅             | ✅           |
 | All action types      | ✅             | ✅           |
 | Testing sandbox       | ✅             | ✅           |
@@ -38,8 +38,8 @@ RoleLogic offers a generous free plan and premium options for servers that need 
 
 The free plan includes everything you need to get started:
 
-- **2 rules per server** — enough for verification cleanup + booster rewards
-- **2 plugins per server** — connect external services to manage roles
+- **5 rules per server** — enough for verification cleanup, booster rewards, and more
+- **5 plugins per server** — connect external services to manage roles
 - **All 9 condition types** — full access to every matching option
 - **All action types** — add and remove roles freely
 - **Testing sandbox** — test rules before going live
@@ -58,7 +58,7 @@ The free plan includes everything you need to get started:
 1. Rule 1: "If has Verified → remove Unverified"
 2. Rule 2: "If has Server Booster → add VIP"
 
-That's a complete verification + booster system with just 2 rules.
+That's a complete verification + booster system with just 2 of your 5 free rules.
 
 ## Premium Plans
 
@@ -188,7 +188,7 @@ Payments are processed through Patreon: credit/debit cards and PayPal.
 
 ### Is there a free trial?
 
-The free plan (2 rules) serves as your trial. No time limit.
+The free plan (5 rules) serves as your trial. No time limit.
 
 ### Can I share premium across servers?
 

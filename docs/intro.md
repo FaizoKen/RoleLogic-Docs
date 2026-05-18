@@ -21,7 +21,7 @@ image: /img/social-preview.png
 
 # What is RoleLogic?
 
-**TL;DR:** RoleLogic is a free Discord bot that automates role management using IF-THEN rules. Free plan: 2 rules/server, all features. Premium: up to 210 rules. No coding required.
+**TL;DR:** RoleLogic is a free Discord bot that automates role management using IF-THEN rules. Free plan: 5 rules/server, all features. Premium: up to 210 rules. No coding required.
 
 ---
 
@@ -68,7 +68,7 @@ That's it. No coding, no complex setup—just simple rules that run automaticall
 
 RoleLogic is free to use with generous limits:
 
-- **2 rules per server** — enough for most basic setups
+- **5 rules per server** — enough for most setups
 - **All features unlocked** — no feature restrictions
 - **5 cross-server links** — connect multiple servers
 - **Testing sandbox** — test before going live

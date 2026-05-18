@@ -31,7 +31,7 @@ RoleLogic is a Discord bot that automatically manages roles. You create IF-THEN 
 
 Yes. The free plan includes:
 
-- 2 rules per server
+- 5 rules per server
 - All features (conditions, actions, sandbox, logs)
 - 5 cross-server links
 
@@ -51,7 +51,7 @@ Yes. We only store Discord IDs and your rule configurations. We don't store mess
 
 ### How many rules can I create?
 
-- **Free:** 2 rules per server
+- **Free:** 5 rules per server
 - **Premium:** Up to 210 rules (varies by tier)
 
 See [Plans & Pricing](./plans) for tier details.

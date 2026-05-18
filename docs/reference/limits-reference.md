@@ -23,8 +23,8 @@ Here's a summary of the most important limits:
 
 | Category                  | Limit        | Value                  |
 | ------------------------- | ------------ | ---------------------- |
-| Rules per server (free)   | Default      | 2 rules                |
-| Plugins per server (free) | Default      | 2 plugins              |
+| Rules per server (free)   | Default      | 5 rules                |
+| Plugins per server (free) | Default      | 5 plugins              |
 | Conditions per rule       | Maximum      | 10 (1 primary + 9 AND) |
 | Actions per rule          | Maximum      | 2 (add + remove)       |
 | Roles per action          | Maximum      | 250 roles              |
@@ -114,8 +114,8 @@ Quotas determine how many rules, plugins, and features you can use per server. T
 
 | Resource                | Limit                               |
 | ----------------------- | ----------------------------------- |
-| Rules per server        | 2 rules                             |
-| Plugins per server      | 2 plugins                           |
+| Rules per server        | 5 rules                             |
+| Plugins per server      | 5 plugins                           |
 | Cross-server role slots | 5 linked servers                    |
 | Webhook watermark       | Included (shows RoleLogic branding) |
 | All condition types     | ✅ Full access                      |
@@ -193,7 +193,7 @@ There's no strict limit on how many servers you can manage, but:
 
 - Each server's rules consume quota separately
 - Premium quota must be allocated to specific servers
-- You can manage unlimited servers with the free tier (2 rules each)
+- You can manage unlimited servers with the free tier (5 rules each)
 
 ### Members Per Server
 
