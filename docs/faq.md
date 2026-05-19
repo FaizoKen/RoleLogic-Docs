@@ -33,7 +33,7 @@ Yes. The free plan includes:
 
 - 5 rules per server
 - All features (conditions, actions, sandbox, logs)
-- 5 cross-server links
+- Cross-server sync to 2 other servers (premium expands this to 10)
 
 Need more rules? See [Plans & Pricing](./plans).
 
@@ -189,6 +189,19 @@ Yes. Create rules that affect roles in other servers where RoleLogic is present.
 - Role hierarchy must be correct in the TARGET server
 - "Manage Roles" permission needed in both servers
 
+### How many other servers can a guild sync to?
+
+The cross-server sync limit counts distinct destination servers, not rules:
+
+- **Free:** 2 destination servers per guild
+- **Premium (any tier):** 10 destination servers per guild
+
+If saving a rule would push you over the limit, the dashboard rejects the save and tells you the cap.
+
+### What happens to my cross-server rules if I downgrade?
+
+Nothing is deleted. RoleLogic keeps the highest-priority rules that fit your new free limit (2 distinct destination servers) and pauses the rest with a yellow "rule paused" banner in the editor. Re-subscribing reactivates them; editing or deleting also works.
+
 ---
 
 ## Premium & Billing
@@ -202,7 +215,7 @@ Yes. Create rules that affect roles in other servers where RoleLogic is present.
 
 ### What happens if I downgrade?
 
-Rules are **deactivated, not deleted**. Most recent rules stay active within your new quota. If you upgrade again, deactivated rules reactivate.
+Rules are **deactivated, not deleted**. Most recent rules stay active within your new quota. Cross-server rules that target more than 2 distinct other servers are also paused until you fit the free limit. If you upgrade again, deactivated rules reactivate automatically.
 
 ### Can I move quota between servers?
 

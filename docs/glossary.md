@@ -94,7 +94,7 @@ A rule that is active and processing members. Enabled rules evaluate whenever me
 
 ### Free Plan
 
-RoleLogic's base tier that includes 5 rules per server, all 9 condition types, all action types, testing sandbox, activity log, and 5 cross-server links. No time limit or credit card required.
+RoleLogic's base tier that includes 5 rules per server, all 9 condition types, all action types, testing sandbox, activity log, and cross-server sync to 2 other servers (premium expands to 10). No time limit or credit card required.
 
 ---
 

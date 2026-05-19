@@ -29,7 +29,8 @@ Here's a summary of the most important limits:
 | Actions per rule          | Maximum      | 2 (add + remove)       |
 | Roles per action          | Maximum      | 250 roles              |
 | Roles per condition       | Maximum      | 250 roles              |
-| Cross-server syncs        | Default      | 5 linked servers       |
+| Cross-server sync (free)  | Default      | 2 destination servers  |
+| Cross-server sync (premium) | Default    | 10 destination servers |
 | Cascade passes            | Safety limit | 100 passes             |
 
 ---
@@ -116,7 +117,7 @@ Quotas determine how many rules, plugins, and features you can use per server. T
 | ----------------------- | ----------------------------------- |
 | Rules per server        | 5 rules                             |
 | Plugins per server      | 5 plugins                           |
-| Cross-server role slots | 5 linked servers                    |
+| Cross-server sync       | Up to 2 destination servers         |
 | Webhook watermark       | Included (shows RoleLogic branding) |
 | All condition types     | ✅ Full access                      |
 | All action types        | ✅ Full access                      |
@@ -133,12 +134,13 @@ The free plan includes everything you need to get started. It's perfect for:
 
 Premium plans expand your capacity. The same quota applies to both rules and plugins:
 
-| Resource            | Premium Benefit                                        |
-| ------------------- | ------------------------------------------------------ |
-| Rules per server    | +10 to +208 additional rules (varies by tier)          |
-| Plugins per server  | +10 to +208 additional plugins (same quota as rules)   |
-| Webhook watermark   | Removed for clean notifications                        |
-| Priority support    | Faster response times                                  |
+| Resource             | Premium Benefit                                              |
+| -------------------- | ------------------------------------------------------------ |
+| Rules per server     | +10 to +208 additional rules (varies by tier)                |
+| Plugins per server   | +10 to +208 additional plugins (same quota as rules)         |
+| Cross-server sync    | Up to 10 destination servers per guild (vs. 2 on free)       |
+| Webhook watermark    | Removed for clean notifications                              |
+| Priority support     | Faster response times                                        |
 
 **Premium Tiers (total rules & plugins per server):**
 
@@ -233,7 +235,20 @@ This is a Discord security constraint, not a RoleLogic limitation. [Learn how to
 | Bot presence        | RoleLogic must be in all involved servers           |
 | Member presence     | Member must exist in both source and target servers |
 | Permissions         | "Manage Roles" required in each server              |
-| Linked server limit | 5 servers by default                                |
+| Linked server limit | 2 destination servers (free) / 10 (premium)         |
+
+#### Cross-Server Sync Limit
+
+The cross-server sync limit counts the **distinct destination servers** referenced by your enabled rules' action roles, not the number of rules or roles. One rule that touches 3 other servers consumes 3 of your slots; ten rules that all target the same server consume just 1.
+
+| Tier                 | Distinct destination servers per guild |
+| -------------------- | -------------------------------------- |
+| Free                 | 2                                      |
+| Premium (any tier)   | 10                                     |
+
+**When you try to save a rule that would push your guild over the limit**, the API rejects the save with a clear message naming the limit and (if you're free) the premium ceiling. Existing rules are not modified.
+
+**When you downgrade from premium to free**, no rules are deleted. RoleLogic walks your enabled rules in priority order and keeps the highest-priority ones whose destinations fit within the new limit; the rest are automatically paused alongside any over-quota rules. The dashboard shows them with a yellow "rule paused" banner explaining that the cross-server sync limit was exceeded. Editing or deleting the paused rules — or re-subscribing — restores them.
 
 ### @everyone Role
 

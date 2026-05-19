@@ -30,7 +30,7 @@ RoleLogic offers a generous free plan and premium options for servers that need 
 | All action types      | ✅             | ✅           |
 | Testing sandbox       | ✅             | ✅           |
 | Activity log          | ✅             | ✅           |
-| Cross-server links    | 5 servers      | 5 servers    |
+| Cross-server sync     | 2 servers      | 10 servers   |
 | Webhook notifications | With watermark | No watermark |
 | Support               | Community      | Priority     |
 
@@ -44,7 +44,7 @@ The free plan includes everything you need to get started:
 - **All action types** — add and remove roles freely
 - **Testing sandbox** — test rules before going live
 - **Activity log** — track all configuration changes
-- **5 cross-server links** — connect multiple servers
+- **Cross-server sync to 2 other servers** — connect a small network (upgrade to premium for up to 10)
 
 **Perfect for:**
 
@@ -80,7 +80,7 @@ Premium plans expand your capacity through Patreon subscription.
 - **More plugins** — Up to 210 per server
 - **No watermark** — Clean webhook notifications
 - **Priority support** — Faster response times
-- **Expanded cross-server capacity** — More linked servers
+- **Expanded cross-server sync** — 10 distinct destination servers per guild (vs. 2 on free)
 
 ### How Many Rules Do You Need?
 
@@ -150,9 +150,12 @@ When you downgrade to a lower tier or cancel:
 
 - **Rules and plugins are paused, not deleted** — Your configuration stays saved
 - **Most recent items stay active** — Within your new quota limit
+- **Cross-server rules beyond the free limit are paused** — Highest-priority rules covering up to 2 distinct destination servers stay active; the rest are paused alongside any over-quota rules
 - **Automatic reactivation on upgrade** — If you upgrade again, paused items come back
 
 **Example:** If you have 30 rules and downgrade to Tier 1 (12 slots), 18 rules are paused but preserved. The same applies to plugins. Upgrade back, and all 30 reactivate.
+
+**Cross-server example:** Your premium guild syncs to 7 other servers. If premium lapses, RoleLogic keeps the two highest-priority cross-server rules running and pauses the rest. Nothing is deleted — re-subscribing restores full reach instantly, or you can edit/delete the paused rules to clean up.
 
 ## Tips for Staying Within Quota
 

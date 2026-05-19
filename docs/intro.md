@@ -70,7 +70,7 @@ RoleLogic is free to use with generous limits:
 
 - **5 rules per server** — enough for most setups
 - **All features unlocked** — no feature restrictions
-- **5 cross-server links** — connect multiple servers
+- **Cross-server sync to 2 other servers** — premium expands this to 10
 - **Testing sandbox** — test before going live
 - **Full activity logging** — track all changes
 
@@ -109,7 +109,7 @@ Whether you need simple verification cleanup or complex multi-tier reward system
 | **Processing Speed**     | Real-time (within seconds)                                                                                     |
 | **Background Sync**      | Every 10 minutes                                                                                               |
 | **Cascade Limit**        | 100 passes (prevents infinite loops)                                                                           |
-| **Cross-Server Links**   | 5 servers (free plan)                                                                                          |
+| **Cross-Server Sync**    | 2 destination servers (free) / 10 (premium)                                                                    |
 
 ## Get Started
 
