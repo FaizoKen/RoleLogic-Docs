@@ -31,6 +31,8 @@ RoleLogic offers a generous free plan and premium options for servers that need 
 | Testing sandbox       | ✅             | ✅           |
 | Activity log          | ✅             | ✅           |
 | Cross-server sync     | 2 servers      | 10 servers   |
+| Real-time processing  | Instant        | Instant      |
+| Background sync speed  | Every ~10 min  | Every ~2 min (large servers fully catch up far faster) |
 | Webhook notifications | With watermark | No watermark |
 | Support               | Community      | Priority     |
 
@@ -45,6 +47,7 @@ The free plan includes everything you need to get started:
 - **Testing sandbox** — test rules before going live
 - **Activity log** — track all configuration changes
 - **Cross-server sync to 2 other servers** — connect a small network (upgrade to premium for up to 10)
+- **Instant real-time processing** — role changes are evaluated within seconds, with a background safety sync about every 10 minutes to catch anything missed
 
 **Perfect for:**
 
@@ -78,6 +81,7 @@ Premium plans expand your capacity through Patreon subscription.
 
 - **More rules** — Up to 210 per server
 - **More plugins** — Up to 210 per server
+- **Faster background sync** — Premium servers are re-checked about every 2 minutes instead of every 10, and each pass scans far more members. Large servers fully reconcile dramatically faster — a 100,000-member server catches up in roughly 10 minutes on premium versus a few hours on free. Real-time role changes stay instant on both plans; this speeds up how quickly the periodic safety sweep catches anything missed.
 - **No watermark** — Clean webhook notifications
 - **Priority support** — Faster response times
 - **Expanded cross-server sync** — 10 distinct destination servers per guild (vs. 2 on free)

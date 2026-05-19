@@ -85,8 +85,8 @@ Yes. Use "Add Combined Action" to add some roles AND remove others in one rule.
 
 ### How quickly do changes happen?
 
-- **Real-time:** Rules trigger immediately when roles change
-- **Background sync:** Every 10 minutes to catch any missed changes
+- **Real-time:** Rules trigger immediately when roles change — same on free and premium
+- **Background sync:** A safety sweep catches anything missed in real time — about every 10 minutes on free, about every 2 minutes on premium (and premium scans large servers far faster)
 - **Debounce:** 10-second delay to batch rapid changes
 
 ---

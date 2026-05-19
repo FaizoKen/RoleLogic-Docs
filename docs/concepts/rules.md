@@ -118,7 +118,7 @@ This creates powerful automation chains.
 
 ### Background Sync
 
-RoleLogic also runs a continuous background scan every 10 minutes to catch any missed changes.
+RoleLogic also runs a continuous background scan to catch any changes missed in real time. It runs about every 10 minutes on free servers and about every 2 minutes on premium servers, with premium also scanning large servers far faster per pass. Real-time rule processing is instant on both plans — this sweep is just the safety net.
 
 ## Creating a Rule
 

@@ -93,16 +93,16 @@ This prevents infinite loops from misconfigured rules. If your rules require mor
 
 | Process                      | Timing                              |
 | ---------------------------- | ----------------------------------- |
-| Real-time processing         | Triggered instantly on role changes |
+| Real-time processing         | Triggered instantly on role changes (all plans) |
 | Debounce delay               | 10 seconds                          |
-| Scheduled sync interval      | Every 10 minutes                    |
+| Scheduled sync interval      | Free: ~every 10 min · Premium: ~every 2 min |
 | Rule activation after update | Within 1 hour                       |
 
 **What these mean:**
 
-- **Real-time processing**: When a member's roles change, RoleLogic evaluates rules immediately
+- **Real-time processing**: When a member's roles change, RoleLogic evaluates rules immediately. This is **identical on free and premium** — the common case is always instant.
 - **Debounce delay**: Multiple rapid role changes are batched together (10 seconds) to prevent excessive processing
-- **Scheduled sync**: A full server sync runs every 10 minutes, checking up to 1,000 members per interval to catch any missed changes. For larger servers, the sync will process members in batches across multiple intervals.
+- **Scheduled sync**: A background safety sweep re-checks the whole server to catch any changes missed in real time (e.g. during a restart or Discord outage). On **free** it runs about every 10 minutes; on **premium** about every 2 minutes, and each premium pass scans far more members per cycle. For large servers this means premium fully reconciles dramatically faster — a 100,000-member server catches up in roughly 10 minutes on premium versus a few hours on free. Both plans stay safely within Discord's rate limits.
 - **Rule activation**: New or updated rules are fully active within 1 hour of saving
 
 ---
@@ -211,8 +211,9 @@ RoleLogic is built to scale with any server size:
 For very large servers:
 
 - Initial sync may take longer when first setting up
-- Real-time processing remains fast for individual changes
+- Real-time processing remains fast for individual changes (same on free and premium)
 - Batch operations (like rule changes affecting many members) are processed efficiently
+- **Premium significantly shortens full-server reconcile time** — large servers are swept more frequently and with more members per pass, so a full catch-up that takes a few hours on free completes in minutes on premium
 
 ---
 

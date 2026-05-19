@@ -106,8 +106,8 @@ Whether you need simple verification cleanup or complex multi-tier reward system
 | **Condition Types**      | 9 types (Has Some, Has All, Lacks Some, Lacks All, Exactly N, At Least N, At Most N, More Than N, Less Than N) |
 | **Conditions per Rule**  | Up to 10 (1 primary + 9 AND)                                                                                   |
 | **Actions per Rule**     | Up to 2 (Add + Remove)                                                                                         |
-| **Processing Speed**     | Real-time (within seconds)                                                                                     |
-| **Background Sync**      | Every 10 minutes                                                                                               |
+| **Processing Speed**     | Real-time (within seconds) — same on free & premium                                                            |
+| **Background Sync**      | ~Every 10 min (free) / ~every 2 min (premium)                                                                  |
 | **Cascade Limit**        | 100 passes (prevents infinite loops)                                                                           |
 | **Cross-Server Sync**    | 2 destination servers (free) / 10 (premium)                                                                    |
 
