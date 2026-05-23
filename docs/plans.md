@@ -31,7 +31,8 @@ RoleLogic offers a generous free plan and premium options for servers that need 
 | Testing sandbox       | ✅             | ✅           |
 | Activity log          | ✅             | ✅           |
 | Cross-server sync     | 2 servers      | 10 servers   |
-| Real-time processing  | Instant        | Instant      |
+| Users per role link   | 1,000          | Unlimited    |
+| Real-time response    | Within ~5 seconds | Within ~1.5 seconds (3× faster) |
 | Background sync speed  | Every ~10 min  | Every ~2 min (large servers fully catch up far faster) |
 | Webhook notifications | With watermark | No watermark |
 | Support               | Community      | Priority     |
@@ -47,7 +48,7 @@ The free plan includes everything you need to get started:
 - **Testing sandbox** — test rules before going live
 - **Activity log** — track all configuration changes
 - **Cross-server sync to 2 other servers** — connect a small network (upgrade to premium for up to 10)
-- **Instant real-time processing** — role changes are evaluated within seconds, with a background safety sync about every 10 minutes to catch anything missed
+- **Real-time response within ~5 seconds** — role changes are evaluated within a few seconds, with a background safety sync about every 10 minutes to catch anything missed
 
 **Perfect for:**
 
@@ -85,6 +86,8 @@ Premium plans expand your capacity through Patreon subscription.
 - **No watermark** — Clean webhook notifications
 - **Priority support** — Faster response times
 - **Expanded cross-server sync** — 10 distinct destination servers per guild (vs. 2 on free)
+- **Unlimited role link users** — Push as many users as you need through each role link plugin (vs. 1,000 per link on free)
+- **Faster real-time response** — When a member's roles change, premium guilds run the rule engine in about ~1.5 seconds instead of ~5 seconds. Cascading edits (rule A triggers rule B triggers rule C) feel snappier, while both plans still coalesce bursty edits safely
 
 ### How Many Rules Do You Need?
 

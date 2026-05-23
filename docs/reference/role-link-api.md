@@ -1414,7 +1414,7 @@ If the stored user count exceeds the allowed limit (e.g., after a plan downgrade
 
 | Resource                              | Free Plan | Premium    |
 | ------------------------------------- | --------- | ---------- |
-| Users per role link                   | 100       | 30,000,000 |
+| Users per role link                   | 1,000     | Unlimited  |
 | Role links per server                 | 10        | 10         |
 | Users per single `PUT /users` request | 100       | 100,000    |
 | Users per chunk in a chunked upload   | —         | 100,000    |
@@ -1813,7 +1813,7 @@ Yes. Adding a user who already exists returns `added: false` (no error). Removin
 
 ### What is the user limit?
 
-Free plan: 100 users per role link. Premium: 30,000,000 users per role link. The limit applies per individual role link, not per server.
+Free plan: 1,000 users per role link. Premium: unlimited users per role link. The limit applies per individual role link, not per server.
 
 ### What happens if the user count exceeds the limit?
 
