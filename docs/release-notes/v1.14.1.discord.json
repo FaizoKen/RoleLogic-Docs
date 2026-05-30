@@ -1,7 +1,6 @@
 {
   "username": "RoleLogic",
   "avatar_url": "https://rolelogic.faizo.net/apple-touch-icon.png",
-  "flags": 32768,
   "components": [
     {
       "type": 17,
@@ -9,16 +8,31 @@
       "components": [
         {
           "type": 10,
-          "content": "## 🎉 RoleLogic v1.14.1 is here!\n\nFaster ways to find what you need, instant log search, and a way to save up to 30% on Premium."
+          "content": "# RoleLogic v1.14.1\n<@&1409936634878759063>\n\nFaster ways to find what you need, instant log search, and a way to save up to 30% on Premium."
         },
         {
           "type": 12,
           "items": [
             {
               "media": {
-                "url": "https://rolelogic.faizo.net/social-preview.png"
+                "url": ""
               },
               "description": "RoleLogic v1.14.1 release banner"
+            },
+            {
+              "media": {
+                "url": ""
+              }
+            },
+            {
+              "media": {
+                "url": ""
+              }
+            },
+            {
+              "media": {
+                "url": ""
+              }
             }
           ]
         },
@@ -82,5 +96,6 @@
         }
       ]
     }
-  ]
+  ],
+  "flags": 32768
 }
