@@ -8,7 +8,7 @@
       "components": [
         {
           "type": 10,
-          "content": "# RoleLogic v1.14.1\n<@&1409936634878759063>\n\nFaster ways to find what you need, instant log search, and a way to save up to 30% on Premium."
+          "content": "# RoleLogic v1.14.1\n\n<@&1409936634878759063>\nFaster ways to find what you need, instant log search, and a way to save up to 30% on Premium."
         },
         {
           "type": 12,
@@ -17,22 +17,25 @@
               "media": {
                 "url": ""
               },
-              "description": "RoleLogic v1.14.1 release banner"
+              "description": "Role condition search bar with filter and grouping options"
             },
             {
               "media": {
                 "url": ""
-              }
+              },
+              "description": "Searchable log picker filtered by log name and channel"
             },
             {
               "media": {
                 "url": ""
-              }
+              },
+              "description": "Web checkout button displaying no app store fees notice"
             },
             {
               "media": {
                 "url": ""
-              }
+              },
+              "description": "Image service status monitor on the RoleLogic status page"
             }
           ]
         },
