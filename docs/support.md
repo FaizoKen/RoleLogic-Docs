@@ -85,9 +85,9 @@ Example:
 
 ### Billing & Premium
 
-- **Subscription questions**: Managed through Patreon
-- **Sync delays**: Premium status syncs within 5 minutes
-- **Refunds**: Contact Patreon support (available within 7 days)
+- **Subscription questions**: Managed through Stripe (Upgrade → Manage subscription). Existing supporters: Patreon.
+- **Sync delays**: Premium activates automatically right after Stripe checkout
+- **Refunds**: Contact support — Stripe payments can be refunded directly; legacy Patreon subscriptions through Patreon
 
 ---
 

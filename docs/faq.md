@@ -209,9 +209,9 @@ Nothing is deleted. RoleLogic keeps the highest-priority rules that fit your new
 ### How do I upgrade?
 
 1. Open **Upgrade** in your dashboard
-2. Choose a tier
-3. Subscribe through Patreon
-4. Quota syncs within 5 minutes
+2. Choose a plan (monthly or annual — annual saves the most)
+3. Subscribe securely through Stripe
+4. Quota activates automatically right after checkout
 
 ### What happens if I downgrade?
 
@@ -223,11 +223,11 @@ Yes, but there's a 7-day cooldown after assigning quota to prevent abuse.
 
 ### How do I cancel?
 
-Cancel through Patreon anytime. Features remain active until the billing period ends.
+Open **Upgrade → Manage subscription** to cancel through the Stripe billing portal anytime. Features remain active until the billing period ends. (Existing Patreon supporters cancel through Patreon.)
 
 ### Refunds?
 
-Available within 7 days through Patreon.
+Contact support for a refund. Stripe payments can be refunded directly; legacy Patreon subscriptions are refunded through Patreon.
 
 ---
 
@@ -261,7 +261,7 @@ Changes may be delayed but are queued automatically. Nothing is lost.
 
 - Messages or channel content
 - DMs or passwords
-- Payment info (Patreon handles this)
+- Payment info (handled by our payment processor, Stripe)
 
 ### How do I delete my data?
 
