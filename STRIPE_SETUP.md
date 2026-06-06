@@ -18,117 +18,71 @@ Stripe and Patreon coexist. A Stripe subscription to a price grants
 
 Stripe is **off** until `STRIPE_SECRET_KEY` is set: checkout/portal/webhook
 endpoints return 503 and the app runs Patreon-only. This makes the code safe to
-deploy before you've configured Stripe.
+deploy before Stripe is configured.
 
-## One-time setup
+Products & prices are managed by the idempotent setup script
+(`cd api && STRIPE_SECRET_KEY=sk_... bun run src/scripts/stripe-setup.ts`),
+which prints the `ROLES_QUOTA` additions for **api/.env** and the
+`VITE_UPGRADE_PLAN` JSON for **web/.env**.
 
-Do everything in **Test mode** first, validate end-to-end, then repeat with live
-keys.
+## Tax (optional)
 
-### 1. Create products & prices
+Both options below charge tax **on top** of the plan price (tax-behavior
+*exclusive*), so the listed price is what **you** receive: a $2 plan stays $2 of
+revenue and the buyer pays $2 + tax, shown as its own line in Checkout, which you
+collect and remit. (Inclusive behavior would instead carve the tax *out* of the
+$2, leaving you less.) Both are **off by default** and mutually exclusive — pick
+one. **You're responsible for whether you should collect tax at all** (thresholds,
+registration); confirm with an accountant before enabling either.
 
-```bash
-cd api
-STRIPE_SECRET_KEY=sk_test_xxx bun run src/scripts/stripe-setup.ts
-# or: npx ts-node -r tsconfig-paths/register src/scripts/stripe-setup.ts
-```
+**Option A — Stripe Tax (automatic, rate by buyer location).** The accurate
+option, but only for accounts whose *business location* Stripe Tax supports
+(US, UK, EU, Canada, Singapore, Australia, etc.). Check the
+[supported-countries table](https://docs.stripe.com/tax/supported-countries):
+if your country shows ❌ under "business location" (e.g. **Malaysia**),
+`/settings/tax` just redirects to the dashboard and this option is unavailable —
+use Option B. To enable:
 
-It creates 5 products (Small → Maximized), each with a monthly and an annual
-price (annual ≈ 2 months free), and prints:
+1. **Activate Stripe Tax** — Dashboard ▸ Tax: origin address + registrations.
+2. **Set the default tax behavior** — Tax settings ▸ "Include tax in prices" →
+   **Exclusive** (this also makes older prices without a per-price
+   `tax_behavior` tax-ready). The setup script stamps `exclusive` on prices it
+   creates (override with `STRIPE_TAX_BEHAVIOR=inclusive`).
+3. Set `STRIPE_AUTOMATIC_TAX=true` in **api/.env** and restart.
 
-- the `ROLES_QUOTA` additions (price_id → slot count) for **api/.env**
-- the full `VITE_UPGRADE_PLAN` JSON for **web/.env**
+When on, Checkout also collects a billing address (to locate the buyer) and
+offers business buyers a VAT/Tax ID field. ⚠️ Turning the flag on *before*
+Stripe Tax is active makes Checkout session creation **fail** — keep it false
+until activated. For portal-initiated upgrades, enable Stripe Tax in the
+Customer Portal settings too.
 
-The script is idempotent (matches products by metadata and prices by
-`lookup_key`), so re-running it won't create duplicates.
+**Option B — Manual fixed rate (works on any account, no activation).** You
+choose one flat percentage applied to every buyer (Stripe doesn't vary it by
+location here). This is the path for Malaysia-based accounts:
 
-### 2. Configure env
+1. Create an **exclusive** Tax rate — Dashboard ▸ Product catalog ▸ Tax rates
+   (name + %, "exclusive"), **or** run the setup script with
+   `STRIPE_TAX_PERCENT=8` (optionally `STRIPE_TAX_NAME="SST"`), which mints one
+   and prints its `txr_…` id.
+2. Set `STRIPE_TAX_RATE_ID=txr_…` in **api/.env** and restart.
 
-**api/.env**
-
-```
-STRIPE_SECRET_KEY=sk_test_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx          # from step 3
-# merge the printed Stripe price ids into the existing map:
-ROLES_QUOTA={"8971826":10, ... ,"price_smallM":10,"price_smallY":10, ...}
-```
-
-**web/.env** — paste the printed `VITE_UPGRADE_PLAN=[...]`.
-
-Optional redirect overrides (defaults derive from `WEB_REDIRECT_URI`):
-`STRIPE_SUCCESS_URL`, `STRIPE_CANCEL_URL`, `STRIPE_PORTAL_RETURN_URL`.
-
-### 3. Webhook
-
-The API verifies every webhook against `STRIPE_WEBHOOK_SECRET`. The endpoint is
-`POST <API_BASE>/api/stripe/webhook` (raw body, no auth, throttle-exempt).
-
-Subscribe the endpoint to these events:
-
-- `checkout.session.completed`
-- `customer.subscription.created`
-- `customer.subscription.updated`
-- `customer.subscription.deleted`
-- `invoice.payment_failed`
-
-**Local:**
-
-```bash
-stripe listen --forward-to localhost:3000/api/stripe/webhook
-# copy the printed whsec_... into STRIPE_WEBHOOK_SECRET, restart the API
-```
-
-**Production:** Dashboard ▸ Developers ▸ Webhooks ▸ Add endpoint → use the
-endpoint's signing secret.
-
-### 4. Customer Portal
-
-Enable the Customer Portal once (Dashboard ▸ Settings ▸ Billing ▸ Customer
-portal) and allow cancellation + plan switching + payment-method updates. The
-"Manage subscription" button on the upgrade page opens it.
-
-### 5. Tax (optional)
-
-To charge tax on subscriptions, RoleLogic uses **Stripe Tax** — it computes the
-exact VAT/GST/sales tax for each buyer's billing location and shows it as its
-own line and total inside the embedded Checkout, so the buyer sees precisely
-what they pay.
-
-It is **off by default** (`STRIPE_AUTOMATIC_TAX=false`). Turn it on only after
-both of these are true, or Checkout session creation will fail:
-
-1. **Activate Stripe Tax** — Dashboard ▸ Tax: set your origin address and the
-   places where you're registered to collect tax. (Also set a default product
-   tax category there, or pass `STRIPE_TAX_CODE` to the setup script.)
-2. **Prices are tax-ready** — every Stripe price needs a `tax_behavior`. The
-   setup script sets this on prices it creates (`exclusive` by default = tax
-   added on top; override with `STRIPE_TAX_BEHAVIOR=inclusive`). `tax_behavior`
-   is immutable, so prices created **before** tax support print a warning and
-   must be recreated (archive the old one, run the script to make a fresh price)
-   before they'll work with tax.
-
-Then set `STRIPE_AUTOMATIC_TAX=true` in **api/.env** and restart the API. When
-enabled, Checkout also collects the billing address (saved to the customer) and
-offers business buyers a VAT/Tax ID field. For tax on portal-initiated upgrades,
-enable Stripe Tax in the Customer Portal settings too.
-
-### 6. Database
-
-The `stripe_customer_id` column and `stripe_subscriptions` table ship in the
-`add_stripe` migration. Production applies it automatically via
-`prisma migrate deploy` (already in `start:docker`). Locally:
-
-```bash
-cd api && npx prisma migrate deploy   # or: npx prisma migrate dev
-```
+Checkout then adds that % on top of the plan price and it recurs on every
+invoice. Leave `STRIPE_TAX_RATE_ID` unset to charge no tax.
 
 ## Go-live checklist
 
-- [ ] Re-run the setup script with the **live** key; update env with live price ids.
-- [ ] Create a **live** webhook endpoint; set the live `STRIPE_WEBHOOK_SECRET`.
-- [ ] Enable the Customer Portal in live mode.
-- [ ] (If charging tax) Activate Stripe Tax in live mode, confirm live prices
-      have a `tax_behavior`, then set `STRIPE_AUTOMATIC_TAX=true`.
+- [ ] Re-run the setup script with the **live** key; update env with the live
+      price ids.
+- [ ] Create a **live** webhook endpoint at `POST <API_BASE>/api/stripe/webhook`
+      (raw body, no auth, throttle-exempt) subscribed to
+      `checkout.session.completed`, `customer.subscription.created`,
+      `customer.subscription.updated`, `customer.subscription.deleted`,
+      `invoice.payment_failed`; set the live `STRIPE_WEBHOOK_SECRET`.
+- [ ] Enable the Customer Portal in live mode (allow cancellation + plan
+      switching + payment-method updates).
+- [ ] (If charging tax) Either activate Stripe Tax + `STRIPE_AUTOMATIC_TAX=true`
+      (supported countries), or create a live exclusive Tax rate and set
+      `STRIPE_TAX_RATE_ID` (e.g. Malaysia). See the Tax section above.
 - [ ] Deploy; verify a real subscription end-to-end (a small plan), then the
       portal cancel flow.
 - [ ] Confirm an existing Patreon patron still syncs unchanged.
