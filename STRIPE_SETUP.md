@@ -87,7 +87,32 @@ Enable the Customer Portal once (Dashboard ▸ Settings ▸ Billing ▸ Customer
 portal) and allow cancellation + plan switching + payment-method updates. The
 "Manage subscription" button on the upgrade page opens it.
 
-### 5. Database
+### 5. Tax (optional)
+
+To charge tax on subscriptions, RoleLogic uses **Stripe Tax** — it computes the
+exact VAT/GST/sales tax for each buyer's billing location and shows it as its
+own line and total inside the embedded Checkout, so the buyer sees precisely
+what they pay.
+
+It is **off by default** (`STRIPE_AUTOMATIC_TAX=false`). Turn it on only after
+both of these are true, or Checkout session creation will fail:
+
+1. **Activate Stripe Tax** — Dashboard ▸ Tax: set your origin address and the
+   places where you're registered to collect tax. (Also set a default product
+   tax category there, or pass `STRIPE_TAX_CODE` to the setup script.)
+2. **Prices are tax-ready** — every Stripe price needs a `tax_behavior`. The
+   setup script sets this on prices it creates (`exclusive` by default = tax
+   added on top; override with `STRIPE_TAX_BEHAVIOR=inclusive`). `tax_behavior`
+   is immutable, so prices created **before** tax support print a warning and
+   must be recreated (archive the old one, run the script to make a fresh price)
+   before they'll work with tax.
+
+Then set `STRIPE_AUTOMATIC_TAX=true` in **api/.env** and restart the API. When
+enabled, Checkout also collects the billing address (saved to the customer) and
+offers business buyers a VAT/Tax ID field. For tax on portal-initiated upgrades,
+enable Stripe Tax in the Customer Portal settings too.
+
+### 6. Database
 
 The `stripe_customer_id` column and `stripe_subscriptions` table ship in the
 `add_stripe` migration. Production applies it automatically via
@@ -102,6 +127,8 @@ cd api && npx prisma migrate deploy   # or: npx prisma migrate dev
 - [ ] Re-run the setup script with the **live** key; update env with live price ids.
 - [ ] Create a **live** webhook endpoint; set the live `STRIPE_WEBHOOK_SECRET`.
 - [ ] Enable the Customer Portal in live mode.
+- [ ] (If charging tax) Activate Stripe Tax in live mode, confirm live prices
+      have a `tax_behavior`, then set `STRIPE_AUTOMATIC_TAX=true`.
 - [ ] Deploy; verify a real subscription end-to-end (a small plan), then the
       portal cancel flow.
 - [ ] Confirm an existing Patreon patron still syncs unchanged.
