@@ -25,7 +25,10 @@ Every condition has:
 - **Role Selection**: Which roles to check
 - **Threshold** (some conditions): A number to compare against
 
-Conditions evaluate to **true** (match) or **false** (no match). When true, the rule's action executes.
+Conditions evaluate to **true** (match) or **false** (no match). When true,
+the rule's **THEN** actions execute. When false, the rule's **ELSE** actions
+execute — if the rule has an ELSE branch. Rules without an ELSE branch do
+nothing on a non-match.
 
 ---
 
@@ -257,9 +260,12 @@ AND [Condition 2]
 AND [Condition 3]
 ...
 THEN [Action]
+ELSE [Action]   (optional)
 ```
 
-**All conditions must be true** for the rule to trigger.
+**All conditions must be true** for the THEN actions to trigger. If **any**
+condition is false and the rule has an ELSE branch, the ELSE actions trigger
+instead.
 
 ### Example
 
@@ -275,6 +281,47 @@ This fires when:
 1. Member is Verified, AND
 2. Member participated in 2+ events, AND
 3. Member is not Banned or Muted
+
+---
+
+## The ELSE Branch
+
+Any rule can carry an optional **ELSE** branch — actions that run when the
+condition evaluates to **false**. The ELSE branch has the same capabilities
+as THEN: Add or Remove, multiple roles, one combined action, and cross-server
+roles.
+
+### Syntax
+
+```
+IF has some of [VIP]
+THEN add Gold
+ELSE remove Gold
+```
+
+| Member Has  | Condition | Branch | Result       |
+| ----------- | --------- | ------ | ------------ |
+| [VIP]       | ✅ true   | THEN   | Gold added   |
+| [VIP, Gold] | ✅ true   | THEN   | Gold kept    |
+| [Gold]      | ❌ false  | ELSE   | Gold removed |
+| [] (none)   | ❌ false  | ELSE   | No change    |
+
+### Notes
+
+- A rule **without** an ELSE branch does nothing on a non-match — exactly the
+  pre-ELSE behavior.
+- With multiple AND conditions, ELSE fires when **any** condition fails
+  (the negation of the whole AND chain).
+- A rule with an ELSE branch acts on **every** member — one branch always
+  applies. The save-time loop check simulates both branches, so configurations
+  that would oscillate (e.g. `IF has A → remove A, ELSE add A`) are rejected
+  at save time.
+- If two rules write the same role, the **higher-priority rule wins** each
+  evaluation pass — ELSE branches compete for roles exactly like THEN actions.
+- When a member **leaves** the server, rules are evaluated as if the member
+  has no roles (this is how cross-server roles get revoked). ELSE branches
+  fire during that evaluation, just like Lacks conditions do — keep this in
+  mind for cross-server ELSE actions.
 
 ---
 

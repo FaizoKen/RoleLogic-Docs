@@ -50,6 +50,33 @@ Click **"Add New Rule"** in the sidebar or main area.
 2. **Select roles:** Pick roles to add or remove
 3. **Add combined action:** Click to both add AND remove roles
 
+### Step 3b: Add an ELSE Branch (Optional)
+
+Click **"Add ELSE Branch"** below the IF/THEN cards to add actions that run
+when the condition does **not** match.
+
+1. **Choose action type:** Add Roles or Remove Roles
+2. **Select roles:** Pick roles for the ELSE case
+3. **Add combined action:** Same as THEN — one extra add/remove block
+
+The classic use case is keeping a role in sync with a condition:
+
+```
+IF has some of [VIP]
+THEN add Gold
+ELSE remove Gold
+```
+
+Members with VIP get Gold; members without VIP lose it — one rule, both
+directions. Rules without an ELSE branch behave exactly as before: nothing
+happens when the condition doesn't match.
+
+:::tip
+A rule with an ELSE branch acts on **every** member (one branch always
+applies). The save-time loop check covers ELSE branches, but test in the
+[sandbox](./testing-sandbox) to make sure the reach is what you intend.
+:::
+
 ### Step 4: Configure Settings
 
 - **Description:** Name your rule clearly ("VIP for Boosters")
