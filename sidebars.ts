@@ -96,7 +96,7 @@ const sidebars: SidebarsConfig = {
         slug: "/release-notes",
       },
       items: [
-        "release-notes/v1.14.3",
+        "release-notes/v1.15.0",
         "release-notes/v1.14.2",
         "release-notes/v1.14.1",
         "release-notes/v1.14.0",
