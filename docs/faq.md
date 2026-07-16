@@ -221,6 +221,10 @@ Rules are **deactivated, not deleted**. Most recent rules stay active within you
 
 Yes, but there's a 7-day cooldown after assigning quota to prevent abuse.
 
+### Does premium include anything besides more rules?
+
+Yes — besides faster sync, watermark-free notifications, and expanded limits, every plan from Tier 2 ($5/mo) also unlocks premium in **[DWEEB](https://dweeb.faizo.net)**, the visual Discord webhook message builder by the same developer: Tier 2–3 include DWEEB Plus, Tier 4–5 include DWEEB Pro, applied to one server of your choice at no extra cost. See [Plans & Pricing](./plans#dweeb-premium-included).
+
 ### How do I cancel?
 
 Open **Upgrade → Manage subscription** to cancel through the Stripe billing portal anytime. Features remain active until the billing period ends. (Existing Patreon supporters cancel through Patreon.)

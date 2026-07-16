@@ -125,3 +125,4 @@ See [Placeholders Reference](../reference/placeholders-reference) for the full l
 - **[Placeholders Reference](../reference/placeholders-reference)** — Complete list
 - **[Activity Log](./activity-log)** — Track configuration changes
 - **[Best Practices](../guides/best-practices)** — Logging tips
+- **[DWEEB](https://dweeb.faizo.net)** — Our free visual builder for standalone Discord webhook messages (announcements, welcome posts, interactive panels). RoleLogic Premium from Tier 2 also unlocks [DWEEB Premium](../plans#dweeb-premium-included)

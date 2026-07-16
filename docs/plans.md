@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 title: RoleLogic Pricing - Free Plan & Premium Tiers
-description: RoleLogic is free with 5 rules per server. Premium plans offer up to 210 rules, no watermarks, and priority support. Compare all features.
+description: RoleLogic is free with 5 rules per server. Premium plans offer up to 210 rules, no watermarks, priority support, and DWEEB Premium included. Compare all features.
 keywords:
   - RoleLogic pricing
   - RoleLogic free plan
@@ -13,6 +13,8 @@ keywords:
   - RoleLogic upgrade cost
   - role automation pricing
   - how much is RoleLogic
+  - DWEEB premium included
+  - RoleLogic DWEEB bundle
 image: /img/social-preview.png
 ---
 
@@ -35,6 +37,7 @@ RoleLogic offers a generous free plan and premium options for servers that need 
 | Real-time response    | Within ~5 seconds | Within ~1.5 seconds (3× faster) |
 | Background sync speed  | Every ~10 min  | Every ~2 min (large servers fully catch up far faster) |
 | Webhook notifications | With watermark | No watermark |
+| [DWEEB Premium](https://dweeb.faizo.net) (webhook builder) | — | Plus ($5+ plans) or Pro ($10+ plans) included |
 | Support               | Community      | Priority     |
 
 ## Free Plan
@@ -66,17 +69,17 @@ That's a complete verification + booster system with just 2 of your 5 free rules
 
 ## Premium Plans
 
-Premium plans expand your capacity through Patreon subscription.
+Premium plans expand your capacity through a Stripe subscription (monthly or annual). Existing Patreon supporters keep their benefits.
 
 ### Premium Tiers
 
-| Tier       | Price     | Additional Slots | Total Rules | Total Plugins | Best For                               |
-| ---------- | --------- | ---------------- | ----------- | ------------- | -------------------------------------- |
-| **Tier 1** | $2.00/mo  | +10              | 12          | 12            | Small servers with moderate needs      |
-| **Tier 2** | $5.00/mo  | +36              | 38          | 38            | Growing servers with complex setups    |
-| **Tier 3** | $7.00/mo  | +74              | 76          | 76            | Large servers with tier systems        |
-| **Tier 4** | $10.00/mo | +130             | 132         | 132           | Very active servers with many features |
-| **Tier 5** | $14.00/mo | +208             | 210         | 210           | Enterprise/network-level automation    |
+| Tier       | Price     | Additional Slots | Total Rules | Total Plugins | DWEEB Tier Included | Best For                               |
+| ---------- | --------- | ---------------- | ----------- | ------------- | ------------------- | -------------------------------------- |
+| **Tier 1** | $2.00/mo  | +10              | 12          | 12            | —                   | Small servers with moderate needs      |
+| **Tier 2** | $5.00/mo  | +36              | 38          | 38            | DWEEB Plus          | Growing servers with complex setups    |
+| **Tier 3** | $7.00/mo  | +74              | 76          | 76            | DWEEB Plus          | Large servers with tier systems        |
+| **Tier 4** | $10.00/mo | +130             | 132         | 132           | DWEEB Pro           | Very active servers with many features |
+| **Tier 5** | $14.00/mo | +208             | 210         | 210           | DWEEB Pro           | Enterprise/network-level automation    |
 
 ### Premium Benefits
 
@@ -88,6 +91,22 @@ Premium plans expand your capacity through Patreon subscription.
 - **Expanded cross-server sync** — 10 distinct destination servers per guild (vs. 2 on free)
 - **Unlimited role link users** — Push as many users as you need through each role link plugin (vs. 1,000 per link on free)
 - **Faster real-time response** — When a member's roles change, premium guilds run the rule engine in about ~1.5 seconds instead of ~5 seconds. Cascading edits (rule A triggers rule B triggers rule C) feel snappier, while both plans still coalesce bursty edits safely
+- **DWEEB Premium included** — Tier 2 and up also unlocks premium in [DWEEB](https://dweeb.faizo.net), our visual Discord webhook message builder (see below)
+
+### DWEEB Premium Included
+
+RoleLogic shares its premium system with **[DWEEB](https://dweeb.faizo.net)** — the visual builder for Discord webhook messages from the same developer. One subscription powers both apps:
+
+| RoleLogic Plan        | DWEEB Tier Unlocked |
+| --------------------- | ------------------- |
+| Tier 2 or 3 ($5–$7)   | **DWEEB Plus**      |
+| Tier 4 or 5 ($10–$14) | **DWEEB Pro**       |
+
+- **Automatic** — sign in to DWEEB with the same Discord account and your subscription is applied to a server of your choice. No extra checkout, no extra cost.
+- **What DWEEB premium adds** — more scheduled posts, never-expiring interactive panels, more saved messages and posted history, more live co-editors, and additional custom bot identities.
+- **One server at a time** — like RoleLogic quota, DWEEB premium applies to a chosen server; you can move it or stack additional subscriptions for more servers.
+
+DWEEB itself is free to use — the core builder needs no account. The bundle simply means your RoleLogic upgrade goes further.
 
 ### How Many Rules Do You Need?
 
@@ -104,24 +123,24 @@ Premium plans expand your capacity through Patreon subscription.
 ## How to Upgrade
 
 1. Open the **Upgrade** section in your RoleLogic dashboard
-2. Choose a tier that fits your needs
-3. Complete subscription through Patreon
-4. Your quota syncs automatically within 5 minutes
+2. Choose a plan (monthly or annual — annual saves the most)
+3. Subscribe securely through Stripe
+4. Your quota activates automatically right after checkout
 5. Assign quota to your server(s)
 
 ## Managing Premium
 
 ### Changing Tiers
 
-Upgrade or downgrade anytime through Patreon. Changes sync within 5 minutes.
+Add, switch, or cancel subscriptions anytime through **Upgrade → Manage subscriptions** (the Stripe billing portal). Quota from multiple subscriptions stacks.
 
 ### Canceling
 
-Cancel through Patreon anytime. Premium features remain active until the billing period ends.
+Cancel through the Stripe billing portal anytime. Premium features remain active until the billing period ends. (Existing Patreon supporters cancel through Patreon.)
 
 ### Refunds
 
-Refunds are available within 7 days per Patreon's terms.
+Contact support for a refund. Stripe payments can be refunded directly; legacy Patreon subscriptions are refunded through Patreon.
 
 ## Quota System
 
@@ -194,7 +213,7 @@ Design rules that trigger each other for complex automation without using extra 
 
 ### What payment methods are accepted?
 
-Payments are processed through Patreon: credit/debit cards and PayPal.
+Payments are processed securely through Stripe (credit/debit cards and local payment methods). Existing Patreon supporters keep their benefits through Patreon.
 
 ### Is there a free trial?
 
@@ -212,14 +231,18 @@ Contact support for custom enterprise plans.
 
 No. Rules are deactivated but not deleted. Re-subscribe to reactivate them.
 
+### Does RoleLogic Premium include DWEEB Premium?
+
+Yes. Plans from Tier 2 ($5/mo) also unlock **DWEEB Plus**, and plans from Tier 4 ($10/mo) unlock **DWEEB Pro** in [DWEEB](https://dweeb.faizo.net), the visual Discord webhook message builder by the same developer — applied to one server of your choice at no extra cost. See [DWEEB Premium Included](#dweeb-premium-included).
+
 ---
 
 ## Ready to Upgrade?
 
 1. Log in to the RoleLogic dashboard
 2. Go to **Upgrade**
-3. Choose your tier
-4. Subscribe through Patreon
+3. Choose your plan
+4. Subscribe securely through Stripe
 5. Assign quota to your servers
 
 ---
