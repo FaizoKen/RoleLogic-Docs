@@ -2,15 +2,7 @@
 sidebar_position: 1
 title: RoleLogic Conditions Reference - Complete Guide
 description: Technical reference for all 9 RoleLogic conditions with truth tables. Has Some, Has All, Lacks, At Least N, Exactly N conditions explained.
-keywords:
-  - RoleLogic conditions reference
-  - Discord role conditions guide
-  - has roles condition syntax
-  - lacks roles condition
-  - threshold conditions reference
-  - at least N roles syntax
-  - role matching reference
-image: /img/social-preview.png
+image: /img/social-preview-og.png
 ---
 
 # Conditions Reference

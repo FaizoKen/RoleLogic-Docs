@@ -2,15 +2,7 @@
 sidebar_position: 3
 title: RoleLogic Limits & Quotas - Technical Reference
 description: Complete reference for RoleLogic system limits. Rules per server, conditions per rule, processing times, cascade limits, and quota management.
-keywords:
-  - RoleLogic limits
-  - RoleLogic quota limits
-  - rules per server limit
-  - Discord bot rate limits
-  - role automation constraints
-  - cascade limit Discord
-  - technical specifications
-image: /img/social-preview.png
+image: /img/social-preview-og.png
 ---
 
 # Limits Reference
@@ -24,7 +16,7 @@ Here's a summary of the most important limits:
 | Category                  | Limit        | Value                  |
 | ------------------------- | ------------ | ---------------------- |
 | Rules per server (free)   | Default      | 5 rules                |
-| Plugins per server (free) | Default      | 5 plugins              |
+| Integrations per server (free) | Default  | 5 integrations         |
 | Conditions per rule       | Maximum      | 10 (1 primary + 9 AND) |
 | Actions per rule          | Maximum      | 2 (add + remove)       |
 | Roles per action          | Maximum      | 250 roles              |
@@ -91,17 +83,17 @@ This prevents infinite loops from misconfigured rules. If your rules require mor
 
 ### Processing Timing
 
-| Process                      | Timing                              |
-| ---------------------------- | ----------------------------------- |
-| Real-time processing         | Triggered instantly on role changes (all plans) |
-| Debounce delay               | 10 seconds                          |
+| Process                      | Timing                                      |
+| ---------------------------- | ------------------------------------------- |
+| Event-driven processing      | Triggered automatically by role changes    |
+| Debounce delay               | Free: ~5 sec · Premium: ~1.5 sec            |
 | Scheduled sync interval      | Free: ~every 10 min · Premium: ~every 2 min |
-| Rule activation after update | Within 1 hour                       |
+| Rule activation after update | Within 1 hour                               |
 
 **What these mean:**
 
-- **Real-time processing**: When a member's roles change, RoleLogic evaluates rules immediately. This is **identical on free and premium** — the common case is always instant.
-- **Debounce delay**: Multiple rapid role changes are batched together (10 seconds) to prevent excessive processing
+- **Event-driven processing**: When a member's roles change, RoleLogic queues the member for evaluation automatically.
+- **Debounce delay**: Multiple rapid role changes are batched for about 5 seconds on Free and 1.5 seconds on Premium to avoid redundant work.
 - **Scheduled sync**: A background safety sweep re-checks the whole server to catch any changes missed in real time (e.g. during a restart or Discord outage). On **free** it runs about every 10 minutes; on **premium** about every 2 minutes, and each premium pass scans far more members per cycle. For large servers this means premium fully reconciles dramatically faster — a 100,000-member server catches up in roughly 10 minutes on premium versus a few hours on free. Both plans stay safely within Discord's rate limits.
 - **Rule activation**: New or updated rules are fully active within 1 hour of saving
 
@@ -109,14 +101,14 @@ This prevents infinite loops from misconfigured rules. If your rules require mor
 
 ## Quota Limits
 
-Quotas determine how many rules, plugins, and features you can use per server. The same quota allocation increases both your rule limit and plugin limit.
+Quotas determine how many rules and integrations you can use per server. The same quota allocation increases both limits.
 
 ### Free Plan
 
 | Resource                | Limit                               |
 | ----------------------- | ----------------------------------- |
 | Rules per server        | 5 rules                             |
-| Plugins per server      | 5 plugins                           |
+| Integrations per server | 5 integrations                      |
 | Cross-server sync       | Up to 2 destination servers         |
 | Webhook watermark       | Included (shows RoleLogic branding) |
 | All condition types     | ✅ Full access                      |
@@ -132,23 +124,23 @@ The free plan includes everything you need to get started. It's perfect for:
 
 ### Premium Plans
 
-Premium plans expand your capacity. The same quota applies to both rules and plugins:
+Premium plans expand your capacity. The same quota applies to both rules and integrations:
 
 | Resource             | Premium Benefit                                              |
 | -------------------- | ------------------------------------------------------------ |
 | Rules per server     | +10 to +208 additional rules (varies by tier)                |
-| Plugins per server   | +10 to +208 additional plugins (same quota as rules)         |
-| Cross-server sync    | Up to 10 destination servers per guild (vs. 2 on free)       |
+| Integrations per server | +10 to +208 additional integrations (same quota as rules) |
+| Cross-server sync    | Up to 10 destination servers per server (vs. 2 on free)      |
 | Webhook watermark    | Removed for clean notifications                              |
 | Priority support     | Faster response times                                        |
 
-**Premium Tiers (total rules & plugins per server):**
+**Premium tiers (total rules and integrations per server):**
 
-- Tier 1: 12 rules + 12 plugins
-- Tier 2: 38 rules + 38 plugins
-- Tier 3: 76 rules + 76 plugins
-- Tier 4: 132 rules + 132 plugins
-- Tier 5: 210 rules + 210 plugins
+- Tier 1: 15 rules + 15 integrations
+- Tier 2: 41 rules + 41 integrations
+- Tier 3: 79 rules + 79 integrations
+- Tier 4: 135 rules + 135 integrations
+- Tier 5: 213 rules + 213 integrations
 
 Check the Upgrade page in your dashboard for current pricing and options.
 
@@ -183,7 +175,7 @@ Webhooks are subject to Discord's rate limits:
 
 - High-frequency events may experience slight delays
 - Messages are queued and sent in order
-- No messages are lost—just potentially delayed
+- Delivery can be delayed or fail during Discord/API outages; check the configured channel and logs before retrying
 
 ---
 
@@ -191,27 +183,19 @@ Webhooks are subject to Discord's rate limits:
 
 ### Servers Per Account
 
-There's no strict limit on how many servers you can manage, but:
+RoleLogic does not add a separate account-wide server cap, but Discord account
+and installation limits still apply:
 
 - Each server's rules consume quota separately
 - Premium quota must be allocated to specific servers
-- You can manage unlimited servers with the free tier (5 rules each)
+- Every eligible server retains its free base quota
 
 ### Members Per Server
 
-RoleLogic is built to scale with any server size:
-
-| Server Size                   | Expected Performance       |
-| ----------------------------- | -------------------------- |
-| Small (< 1,000 members)       | Instant processing         |
-| Medium (1,000-10,000 members) | Near-instant processing    |
-| Large (10,000-50,000 members) | Fast processing            |
-| Very large (50,000+ members)  | Optimized batch processing |
-
-For very large servers:
+For large servers:
 
 - Initial sync may take longer when first setting up
-- Real-time processing remains fast for individual changes (same on free and premium)
+- Individual changes use the event-driven path and the tier-specific debounce
 - Batch operations (like rule changes affecting many members) are processed efficiently
 - **Premium significantly shortens full-server reconcile time** — large servers are swept more frequently and with more members per pass, so a full catch-up that takes a few hours on free completes in minutes on premium
 
@@ -242,12 +226,12 @@ This is a Discord security constraint, not a RoleLogic limitation. [Learn how to
 
 The cross-server sync limit counts the **distinct destination servers** referenced by your enabled rules' action roles, not the number of rules or roles. One rule that touches 3 other servers consumes 3 of your slots; ten rules that all target the same server consume just 1.
 
-| Tier                 | Distinct destination servers per guild |
-| -------------------- | -------------------------------------- |
+| Tier                 | Distinct destination servers per server |
+| -------------------- | --------------------------------------- |
 | Free                 | 2                                      |
 | Premium (any tier)   | 10                                     |
 
-**When you try to save a rule that would push your guild over the limit**, the API rejects the save with a clear message naming the limit and (if you're free) the premium ceiling. Existing rules are not modified.
+**When you try to save a rule that would push your server over the limit**, the API rejects the save with a clear message naming the limit and (if you're free) the premium ceiling. Existing rules are not modified.
 
 **When you downgrade from premium to free**, no rules are deleted. RoleLogic walks your enabled rules in priority order and keeps the highest-priority ones whose destinations fit within the new limit; the rest are automatically paused alongside any over-quota rules. The dashboard shows them with a yellow "rule paused" banner explaining that the cross-server sync limit was exceeded. Editing or deleting the paused rules — or re-subscribing — restores them.
 
@@ -316,7 +300,7 @@ View your current usage:
 
 1. Open your server's dashboard
 2. Check the sidebar for quota information
-3. See "Role Condition Quota" and "Plugin Quota" showing current usage vs. limit
+3. Review the rule and integration quota usage shown in the dashboard
 
 ### On the Upgrade Page
 
@@ -375,15 +359,15 @@ For servers with many members:
 
 ## Frequently Asked Questions
 
-### What happens when I hit the rule or plugin limit?
+### What happens when I hit the rule or integration limit?
 
-You cannot create new rules or plugins until you free up quota. Options:
+You cannot create new rules or integrations until you free up quota. Options:
 
-- Delete unused rules or plugins to make room
+- Delete unused rules or integrations to make room
 - Consolidate similar rules into one
 - Upgrade to a premium plan for more quota
 
-Existing rules and plugins continue working normally. Items beyond the quota are paused but not deleted.
+Existing rules and integrations continue working normally. Items beyond the quota are paused but not deleted.
 
 ### Can I request higher limits?
 

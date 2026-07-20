@@ -1,16 +1,8 @@
 ---
 sidebar_position: 1
-title: Visual Rule Builder - No-Code Discord Automation
-description: Create Discord role automation without coding. RoleLogic's visual rule builder lets you set up IF-THEN rules by clicking - no programming required.
-keywords:
-  - Discord rule builder
-  - no-code Discord automation
-  - visual role automation
-  - RoleLogic rule editor
-  - create Discord rules
-  - drag and drop Discord bot
-  - no coding role automation
-image: /img/social-preview.png
+title: Use the RoleLogic Visual Rule Builder
+description: Configure, test, duplicate, pause, prioritize, and troubleshoot IF-THEN rules in the RoleLogic visual dashboard.
+image: /img/social-preview-og.png
 ---
 
 # Visual Rule Builder

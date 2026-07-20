@@ -2,15 +2,7 @@
 sidebar_position: 12
 title: Discord Role Automation Glossary - Terms Explained
 description: Definitions of RoleLogic and Discord terms. Rules, conditions, actions, cascading, webhooks, quotas, role hierarchy, and more explained clearly.
-keywords:
-  - RoleLogic glossary
-  - Discord bot terminology
-  - role automation terms
-  - Discord role definitions
-  - cascading rules meaning
-  - webhook definition
-  - Discord quota meaning
-image: /img/social-preview.png
+image: /img/social-preview-og.png
 ---
 
 # Glossary
@@ -26,7 +18,7 @@ Definitions of terms used throughout the RoleLogic documentation.
 - **Action** = "THEN" part — what happens when condition matches (Add Roles, Remove Roles)
 - **Cascading** = when one rule triggers another automatically
 - **Priority** = execution order (lower numbers run first: 0, 1, 2...)
-- **Quota** = limits on rules per server (Free: 5, Premium: up to 210)
+- **Quota** = limits on rules per server (Free: 5, Premium: up to 213)
 
 ---
 
@@ -94,7 +86,7 @@ A rule that is active and processing members. Enabled rules evaluate whenever me
 
 ### Free Plan
 
-RoleLogic's base tier that includes 5 rules per server, all 9 condition types, all action types, testing sandbox, activity log, and cross-server sync to 2 other servers (premium expands to 10). No time limit or credit card required.
+RoleLogic's base tier that includes 5 rules per server, all 9 condition types, all action types, testing sandbox, activity log, and cross-server sync to 2 distinct destination servers (Premium expands this to 10). No time limit or credit card required.
 
 ---
 
@@ -102,7 +94,7 @@ RoleLogic's base tier that includes 5 rules per server, all 9 condition types, a
 
 ### Guild
 
-Discord's technical term for a "server." In RoleLogic, "guild" and "server" are used interchangeably.
+Discord's developer/API term for a server. RoleLogic's user-facing interface and documentation say **server**.
 
 ---
 
@@ -116,9 +108,9 @@ The fundamental structure of RoleLogic automation. "IF" defines the condition (w
 
 ## L
 
-### Linked Guild
+### Linked Server
 
-A server that has cross-server relationship with another server through RoleLogic rules. Rules in Server A can affect roles in Linked Guild B.
+A server that has a cross-server relationship with another server through RoleLogic rules. Rules in Server A can affect roles in linked Server B.
 
 ---
 
@@ -150,7 +142,7 @@ A number that determines the order rules execute. Lower numbers run first (0 bef
 
 ### Purge
 
-To remove all cross-server actions targeting a specific linked guild. Used to disconnect servers from cross-server relationships.
+To remove all cross-server actions targeting a specific linked server. Used to disconnect servers from cross-server relationships.
 
 ---
 
@@ -166,7 +158,7 @@ Limits on how many rules and resources you can use. Free plans have base quotas;
 
 ### Real-Time Processing
 
-RoleLogic's ability to evaluate and execute rules immediately when member roles change, typically within seconds. Complemented by a background sync every 10 minutes to catch any missed changes.
+RoleLogic's ability to evaluate and execute rules when member roles change, typically within about 5 seconds on Free or 1.5 seconds on Premium. A background safety sync runs about every 10 minutes on Free and every 2 minutes on Premium to catch missed changes.
 
 ### Role
 

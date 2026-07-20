@@ -2,16 +2,7 @@
 sidebar_position: 2
 title: All 9 RoleLogic Condition Types Explained
 description: Complete guide to RoleLogic conditions. Has Some, Has All, Lacks, At Least N, and 5 more condition types with examples and truth tables.
-keywords:
-  - RoleLogic condition types
-  - Discord role conditions
-  - has roles condition Discord
-  - lacks roles condition
-  - threshold conditions Discord
-  - at least N roles
-  - role matching automation
-  - Discord bot conditions
-image: /img/social-preview.png
+image: /img/social-preview-og.png
 ---
 
 # Condition Types

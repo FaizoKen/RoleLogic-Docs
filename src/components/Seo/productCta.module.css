@@ -1,0 +1,44 @@
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border: 1px solid color-mix(in srgb, var(--ifm-color-primary) 35%, transparent);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--ifm-color-primary) 8%, transparent);
+}
+
+.title {
+  margin: 0 0 0.4rem;
+  font-size: 1.25rem;
+}
+
+.copy {
+  max-width: 44rem;
+  margin: 0;
+}
+
+.copy > :last-child {
+  margin-bottom: 0;
+}
+
+.actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.75rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .cta,
+  .actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .actions {
+    width: 100%;
+  }
+}

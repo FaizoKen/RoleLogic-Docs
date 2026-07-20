@@ -1,27 +1,47 @@
 ---
 slug: /
 sidebar_position: 1
-title: Conditional Role Automation for Discord - Documentation
-description: Automate Discord role management with RoleLogic. Free bot that uses simple IF-THEN rules to assign roles automatically. No coding required, set up in 5 minutes.
-keywords:
-  - RoleLogic
-  - Discord role automation bot
-  - free Discord bot
-  - automatic role assignment Discord
-  - Discord role management
-  - auto role bot Discord
-  - IF THEN Discord bot
-  - role automation Discord server
-  - Discord bot for roles
-  - no-code Discord automation
-  - Discord server role bot free
-  - MEE6 alternative role bot
-image: /img/social-preview.png
+title: RoleLogic Documentation - Setup & Reference
+description: Set up RoleLogic rules, integrations, cross-server sync, permissions, testing, and troubleshooting with step-by-step Discord role automation docs.
+image: /img/social-preview-og.png
 ---
 
-# What is RoleLogic?
+import ProductCta from '@site/src/components/Seo/ProductCta';
+import StructuredData from '@site/src/components/Seo/StructuredData';
 
-**TL;DR:** RoleLogic is a free Discord bot that automates role management using IF-THEN rules. Free plan: 5 rules/server, all features. Premium: up to 210 rules. No coding required.
+# RoleLogic Documentation: Setup, Guides & Reference
+
+<StructuredData data={{
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  '@id': 'https://rolelogic.faizo.net/#software',
+  name: 'RoleLogic',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Discord',
+  description: 'Discord bot for automatic role management with no-code IF-THEN rules.',
+  url: 'https://rolelogic.faizo.net/',
+  mainEntityOfPage: 'https://rolelogic.faizo.net/docs/',
+  provider: {
+    '@id': 'https://rolelogic.faizo.net/#organization',
+  },
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+    description: 'Free plan with 5 rules and 5 integrations per server',
+    url: 'https://rolelogic.faizo.net/upgrade',
+  },
+  featureList: [
+    'Visual IF-THEN rule builder',
+    'Real-time role processing',
+    'Testing sandbox',
+    'Cross-server role management',
+    'Activity history',
+    'Webhook notifications',
+  ],
+}} />
+
+**TL;DR:** RoleLogic is a free Discord bot that adds or removes roles based on the roles a member already has. Build no-code IF-THEN rules, test them safely, and keep them running automatically. The free plan includes 5 rules per server; paid plans support up to 213.
 
 ---
 
@@ -37,6 +57,9 @@ RoleLogic uses **IF-THEN rules** to automate role changes:
 **Example:** _"If someone has the Server Booster role, give them VIP."_
 
 That's it. No coding, no complex setup—just simple rules that run automatically.
+
+For a focused walkthrough, see [how to give a Discord role based on another
+role](https://rolelogic.faizo.net/discord-conditional-roles).
 
 ## Quick Example
 
@@ -69,12 +92,12 @@ That's it. No coding, no complex setup—just simple rules that run automaticall
 RoleLogic is free to use with generous limits:
 
 - **5 rules per server** — enough for most setups
-- **All features unlocked** — no feature restrictions
-- **Cross-server sync to 2 other servers** — premium expands this to 10
+- **All 9 condition types, add/remove actions, sandbox testing, and activity logs** — core rule-building tools are included
+- **Cross-server sync to 2 distinct destination servers** — Premium expands this to 10
 - **Testing sandbox** — test before going live
 - **Full activity logging** — track all changes
 
-Need more rules? [Premium plans](./plans) offer up to 210 rules per server.
+Need more capacity? [Premium plans](./plans) offer up to 213 rules and integrations per server.
 
 ## Common Use Cases
 
@@ -106,7 +129,7 @@ Whether you need simple verification cleanup or complex multi-tier reward system
 | **Condition Types**      | 9 types (Has Some, Has All, Lacks Some, Lacks All, Exactly N, At Least N, At Most N, More Than N, Less Than N) |
 | **Conditions per Rule**  | Up to 10 (1 primary + 9 AND)                                                                                   |
 | **Actions per Rule**     | Up to 2 (Add + Remove)                                                                                         |
-| **Processing Speed**     | Real-time (within seconds) — same on free & premium                                                            |
+| **Processing Speed**     | Event-driven; about 5s debounce on Free and 1.5s on Premium                                                     |
 | **Background Sync**      | ~Every 10 min (free) / ~every 2 min (premium)                                                                  |
 | **Cascade Limit**        | 100 passes (prevents infinite loops)                                                                           |
 | **Cross-Server Sync**    | 2 destination servers (free) / 10 (premium)                                                                    |
@@ -114,6 +137,8 @@ Whether you need simple verification cleanup or complex multi-tier reward system
 ## Get Started
 
 Ready to automate your server? **[Add to Discord](https://api-rolelogic.faizo.net/api/discord/bot/invite)** to get started!
+
+<ProductCta title="Build your first automatic role rule" />
 
 1. **[Quick Start Guide](./quick-start)** — Set up your first rule in 5 minutes
 2. **[Understanding Rules](./concepts/rules)** — Learn how rules work

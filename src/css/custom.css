@@ -66,6 +66,19 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
 }
 
+.navbar__cta {
+  margin-left: 0.5rem;
+  border-radius: 0.45rem;
+  background: var(--ifm-color-primary);
+  color: #ffffff;
+}
+
+.navbar__cta:hover,
+.navbar__cta:focus-visible {
+  background: var(--ifm-color-primary-dark);
+  color: #ffffff;
+}
+
 /* Sidebar improvements */
 .menu__link {
   border-radius: 4px;
@@ -174,6 +187,11 @@ blockquote {
   .navbar__title {
     font-size: 1.1rem;
   }
+
+  .theme-doc-markdown table {
+    display: block;
+    overflow-x: auto;
+  }
 }
 
 /* Custom tip/warning/caution styling to match Discord */
@@ -206,7 +224,8 @@ blockquote {
 
 /* Smooth animations */
 a, button, .menu__link {
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease,
+    border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Focus states for accessibility */
@@ -241,6 +260,19 @@ button:focus-visible,
 .button--primary:hover {
   background-color: var(--ifm-color-primary-dark);
   border-color: var(--ifm-color-primary-dark);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Search improvements */

@@ -2,15 +2,7 @@
 sidebar_position: 4
 title: Discord Role Hierarchy - Bot Permissions Guide
 description: Learn Discord role hierarchy for bots. Position RoleLogic correctly to manage roles. Fix "Cannot manage this role" errors step by step.
-keywords:
-  - Discord role hierarchy explained
-  - bot role position Discord
-  - Manage Roles permission
-  - RoleLogic bot permissions
-  - cannot manage role fix
-  - Discord role order
-  - bot role hierarchy setup
-image: /img/social-preview.png
+image: /img/social-preview-og.png
 ---
 
 # Role Hierarchy

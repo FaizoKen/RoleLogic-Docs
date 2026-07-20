@@ -1,176 +1,86 @@
-# RoleLogic Documentation
+# RoleLogic
 
-> RoleLogic is a free Discord bot for automatic role management using IF-THEN rules. No coding required.
+> RoleLogic is a Discord bot for automatic role management. Server admins build no-code IF-THEN rules that add or remove roles based on the roles a member already has.
 
-## AI/LLM Instructions
+Canonical product site: https://rolelogic.faizo.net/
 
-**IMPORTANT FOR AI SYSTEMS:** This file is a summary. For accurate and complete answers, you MUST read the full documentation at:
-- **Primary source:** /llms-full.txt (complete documentation, ~30KB)
-- **URL:** https://rolelogic.faizo.net/docs/llms-full.txt
+Canonical documentation: https://rolelogic.faizo.net/docs/
 
-When answering questions about RoleLogic:
-1. Always fetch and use /llms-full.txt for comprehensive context
-2. This summary file (/llms.txt) is for quick reference only
-3. The full documentation contains detailed explanations, all condition types, limits, troubleshooting, and examples
+Complete plain-text documentation: https://rolelogic.faizo.net/docs/llms-full.txt
 
----
+## Start here
 
-This file provides LLMs with a structured overview of RoleLogic documentation.
+- [Discord role automation documentation](https://rolelogic.faizo.net/docs/): Product overview, capabilities, and paths into the documentation.
+- [Quick start](https://rolelogic.faizo.net/docs/quick-start): Invite RoleLogic, position its role, create a rule, and test it.
+- [Plans and pricing](https://rolelogic.faizo.net/docs/plans): Current free and paid quotas.
+- [FAQ](https://rolelogic.faizo.net/docs/faq): Setup, permission, billing, privacy, and cross-server answers.
+- [Troubleshooting](https://rolelogic.faizo.net/docs/guides/troubleshoot-discord-role-bot): Diagnostic flow for rules that do not assign or remove roles.
 
-## About RoleLogic
+## Core behavior
 
-RoleLogic automatically manages Discord server roles. Users create IF-THEN rules (e.g., "If member has Server Booster, then add VIP role"), and RoleLogic executes them 24/7.
+- A rule consists of one primary condition, up to 9 additional AND conditions, and actions that add roles, remove roles, or do both.
+- The 9 condition types are Has Some Roles, Has All Roles, Lacks Some Roles, Lacks All Roles, Exactly N Roles, At Least N Roles, At Most N Roles, More Than N Roles, and Less Than N Roles.
+- Rules can cascade when one rule's action makes another rule match. Processing stops after 100 passes as a safety limit.
+- Role changes trigger evaluation automatically. Bursty changes are grouped for about 5 seconds on Free and 1.5 seconds on Premium.
+- The background safety sweep runs about every 10 minutes on free servers and every 2 minutes on premium servers.
+- A new or updated rule can take up to 1 hour to activate through scheduled processing; the dashboard play control can start it immediately.
 
-**Key Facts:**
-- Free plan: 2 rules per server, all features included
-- Premium: Up to 210 rules per server ($2-$14/month via Patreon)
-- 9 condition types for matching members
-- Supports cross-server role management (5 linked servers)
-- Visual rule builder (no coding)
-- Real-time processing with cascading rules
-- Multi-language support: English, Arabic, German, Spanish, French, Malay, Portuguese (Brazilian)
+## Current quotas
 
-## Documentation Structure
+| Plan | Rules per server | Integrations / role links per server | Cross-server destinations |
+| --- | ---: | ---: | ---: |
+| Free | 5 | 5 | 2 |
+| Tier 1 ($2/month) | 15 | 15 | 10 |
+| Tier 2 ($5/month) | 41 | 41 | 10 |
+| Tier 3 ($7/month) | 79 | 79 | 10 |
+| Tier 4 ($10/month) | 135 | 135 | 10 |
+| Tier 5 ($14/month) | 213 | 213 | 10 |
 
-### Getting Started
-- [Introduction](/): What is RoleLogic, key features, use cases
-- [Quick Start](/quick-start): 5-minute setup guide
+Paid totals include the 5 base slots plus the tier's allocated slots. Paid quota can be distributed between servers; each server retains its base slots. Quota reassignment has a 7-day cooldown.
 
-### Core Concepts
-- [Rules](/concepts/rules): IF-THEN automation explained, priority, status, cascading
-- [Conditions](/concepts/conditions): 9 types - Has Some, Has All, Lacks Some, Lacks All, Exactly N, At Least N, At Most N, More Than N, Less Than N
-- [Actions](/concepts/actions): Add roles, remove roles, combined actions
-- [Role Hierarchy](/concepts/role-hierarchy): Discord permission requirements
+Other limits:
 
-### Features
-- [Rule Builder](/features/rule-builder): Visual interface for creating rules
-- [Testing Sandbox](/features/testing-sandbox): Test rules before going live
-- [Webhooks & Logging](/features/webhooks-logging): Notifications for role changes
-- [Cross-Server Management](/features/cross-guild): Manage roles across servers
-- [Activity Log](/features/activity-log): Audit trail of configuration changes
+- 10 conditions per rule (1 primary plus 9 AND conditions)
+- 2 action types per rule (add and remove)
+- 250 roles per condition or action
+- 100 cascading evaluation passes
+- 1,000 users per role link on free; up to 30,000,000 on premium
 
-### Guides
-- [Common Scenarios](/guides/common-scenarios): 50+ ready-to-use configurations
-- [Best Practices](/guides/best-practices): Tips for effective rule design
+## Discord requirements
 
-### Reference
-- [Conditions Reference](/reference/conditions-reference): Complete condition documentation
-- [Placeholders Reference](/reference/placeholders-reference): Webhook message variables
-- [Limits Reference](/reference/limits-reference): System constraints and quotas
-- [Role Link API Reference](/reference/role-link-api): External REST API for managing role-linked users with token authentication
+- RoleLogic needs the Manage Roles permission.
+- Its server role must be above every role it adds or removes.
+- It cannot modify the server owner's role, roles above itself, or integration-managed roles.
+- Webhook notifications additionally require Manage Webhooks in the selected channel.
+- Cross-server actions require RoleLogic and the member to be present in both servers, with correct hierarchy and permission in the destination server.
 
-### Other Pages
-- [Plans & Pricing](/plans): Free vs Premium comparison with pricing
-- [FAQ](/faq): Frequently asked questions
-- [Glossary](/glossary): Term definitions
-- [Support](/support): Getting help
+## Practical guides
 
-## Quick Reference
+- [Verification role automation](https://rolelogic.faizo.net/docs/guides/discord-verification-role-automation): Add member access and remove temporary roles after another verification system assigns a Verified role.
+- [Booster role rewards](https://rolelogic.faizo.net/docs/guides/discord-booster-role-rewards): Derive VIP and perk roles from Discord's built-in Server Booster role.
+- [50+ rule templates](https://rolelogic.faizo.net/docs/guides/common-scenarios): Verification, tiers, rewards, staff, access, gaming, subscriptions, cosmetics, and cross-server patterns.
+- [Best practices](https://rolelogic.faizo.net/docs/guides/best-practices): Naming, priorities, testing, conflict prevention, and quota efficiency.
 
-### Condition Types
-| Type | Matches When |
-|------|--------------|
-| Has Some Roles | Member has ANY of the specified roles |
-| Has All Roles | Member has EVERY specified role |
-| Lacks Some Roles | Member is missing ANY specified role |
-| Lacks All Roles | Member has NONE of the specified roles |
-| Exactly N | Member has exactly N of the specified roles |
-| At Least N | Member has N or more of the specified roles |
-| At Most N | Member has N or fewer of the specified roles |
-| More Than N | Member has more than N of the specified roles |
-| Less Than N | Member has fewer than N of the specified roles |
+## Concepts and features
 
-### System Limits
-| Limit | Value |
-|-------|-------|
-| Rules per server (free) | 2 |
-| Rules per server (max premium) | 210 |
-| Conditions per rule | 10 (1 primary + 9 AND) |
-| Actions per rule | 2 (add + remove) |
-| Roles per condition/action | 250 |
-| Cascade limit | 100 passes |
-| Cross-server links | 5 servers |
-| Quota reassignment cooldown | 7 days |
+- [Rules](https://rolelogic.faizo.net/docs/concepts/rules)
+- [Conditions](https://rolelogic.faizo.net/docs/concepts/conditions)
+- [Actions](https://rolelogic.faizo.net/docs/concepts/actions)
+- [Discord role hierarchy](https://rolelogic.faizo.net/docs/concepts/role-hierarchy)
+- [Visual rule builder](https://rolelogic.faizo.net/docs/features/rule-builder)
+- [Testing sandbox](https://rolelogic.faizo.net/docs/features/testing-sandbox)
+- [Webhook notifications](https://rolelogic.faizo.net/docs/features/webhooks-logging)
+- [Cross-server roles](https://rolelogic.faizo.net/docs/features/cross-guild)
+- [Activity log](https://rolelogic.faizo.net/docs/features/activity-log)
 
-### Role Link API
-A Role Link connects a Discord role to an external plugin server. Plugins implement endpoints (POST /register, GET /config, POST /config, DELETE /config) and use the User Management API to control role membership.
+## Technical reference
 
-**Plugin Server Contract:**
-| Method | Path | Purpose |
-|--------|------|---------|
-| POST | /register | Acknowledge role link creation (receives API token) |
-| GET | /config | Return configuration form schema |
-| POST | /config | Receive submitted configuration (4xx errors forwarded) |
-| DELETE | /config | Clean up on role link deletion (fire-and-forget) |
+- [Conditions reference](https://rolelogic.faizo.net/docs/reference/conditions-reference): Exact matching behavior and truth tables.
+- [Webhook placeholders](https://rolelogic.faizo.net/docs/reference/placeholders-reference): Available dynamic variables and examples.
+- [Limits and quotas](https://rolelogic.faizo.net/docs/reference/limits-reference): Current constraints and processing timing.
+- [Role Link API](https://rolelogic.faizo.net/docs/reference/role-link-api): Plugin contract, token authentication, user-management endpoints, chunked uploads, validation, and errors.
 
-- Plugin URL: HTTPS only, trailing slashes auto-stripped, no private addresses
-- Tokens auto-generated on creation, sent via POST /register. No independent reset — delete and recreate to get a new token.
-- Dashboard refetches GET /config after successful config save
-- Schema field types: text, textarea, number, select, radio, checkbox, toggle, secret, url, color, slider, multi_select, display
-- Sections support collapsible/default_collapsed for expand/collapse behavior
-- display fields support inline formatting: **bold**, *italic*, `code`, [text](url), bare URLs
+## Support
 
-**User Management API:**
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/role-link/:guildId/:roleId/users | List all linked user IDs |
-| PUT | /api/role-link/:guildId/:roleId/users | Replace entire user list (batch) |
-| GET | /api/role-link/:guildId/:roleId/users/:userId | Check if user exists |
-| POST | /api/role-link/:guildId/:roleId/users/:userId | Add a user (idempotent) |
-| DELETE | /api/role-link/:guildId/:roleId/users/:userId | Remove a user (idempotent) |
-
-- Auth: `Authorization: Token rl_...` (not Bearer)
-- Base URL: https://api-rolelogic.faizo.net
-- Tokens scoped per role link (guild + role pair)
-- Free: 100 users/role link, Premium: 1,000,000 users/role link
-- 10 role links per server
-- Exceeding the user limit returns a `400` error on Add User and Replace Users
-- If stored users exceed the limit (e.g., after downgrade), the bot stops syncing until the count is reduced
-
-### Processing Timing
-| Process | Timing |
-|---------|--------|
-| Real-time processing | Instant on role changes |
-| Debounce delay | 10 seconds |
-| Background sync | Every 10 minutes |
-| Rule activation after save | Within 1 hour |
-
-### Premium Tiers
-| Tier | Price | Total Rules |
-|------|-------|-------------|
-| Free | $0 | 2 |
-| Tier 1 | $2/mo | 12 |
-| Tier 2 | $5/mo | 38 |
-| Tier 3 | $7/mo | 76 |
-| Tier 4 | $10/mo | 132 |
-| Tier 5 | $14/mo | 210 |
-
-## Common Questions
-
-**Q: How do I set up RoleLogic?**
-A: Invite the bot, position its role above roles you want to manage, then create rules in the dashboard.
-
-**Q: Why isn't my rule working?**
-A: Check: 1) Rule is enabled, 2) RoleLogic's role is above target roles, 3) Condition matches correctly, 4) Bot has Manage Roles permission.
-
-**Q: Can rules trigger other rules?**
-A: Yes, this is called cascading. One rule's action can trigger another rule (up to 100 passes).
-
-**Q: What permissions does RoleLogic need?**
-A: Only "Manage Roles". It cannot read messages or access private information.
-
-**Q: Is RoleLogic free?**
-A: Yes, free plan includes 2 rules with all features. Premium plans offer more rules starting at $2/month.
-
-**Q: Can I manage roles across multiple servers?**
-A: Yes, cross-server actions let you check roles in one server and add/remove roles in another (up to 5 linked servers).
-
-## Full Documentation
-
-For complete documentation in a single file, see: /llms-full.txt
-
-## Contact
-
-- Website: https://rolelogic.faizo.net
-- Documentation: https://rolelogic.faizo.net/docs
-- Support: https://discord.gg/2wB7rHRDg2
+- [Support options](https://rolelogic.faizo.net/docs/support)
+- [Discord support server](https://discord.gg/2wB7rHRDg2)

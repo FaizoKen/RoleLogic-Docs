@@ -5,7 +5,8 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
-    "build": "docusaurus build && node scripts/emit-trailing-slash-index.mjs",
+    "build": "npm run generate:llms && docusaurus build && node scripts/emit-trailing-slash-index.mjs",
+    "generate:llms": "node scripts/generate-llms.mjs",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",

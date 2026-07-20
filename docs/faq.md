@@ -1,23 +1,52 @@
 ---
 sidebar_position: 11
-title: FAQ & Troubleshooting - RoleLogic Help Center
-description: Get answers to common RoleLogic questions. Troubleshoot issues with rules not working, permission errors, and cross-server setup. Complete help guide.
-keywords:
-  - RoleLogic FAQ
-  - RoleLogic not working fix
-  - Discord bot troubleshooting
-  - RoleLogic help
-  - role automation problems
-  - RoleLogic permission error
-  - Discord bot help
-  - RoleLogic rules not working
-  - fix role automation
-  - RoleLogic support
-  - Discord role bot issues
-image: /img/social-preview.png
+title: Discord Role Bot FAQ & Troubleshooting
+description: Answers about RoleLogic setup, limits, permissions, billing, and cross-server roles, plus fixes when a Discord bot is not assigning or removing roles.
+image: /img/social-preview-og.png
 ---
 
+import StructuredData from '@site/src/components/Seo/StructuredData';
+
 # FAQ & Troubleshooting
+
+<StructuredData data={{
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Is RoleLogic free?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. The free plan includes 5 rules and 5 integrations per server, all condition and action types, the testing sandbox, activity history, and cross-server sync to 2 destination servers.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What permissions does RoleLogic need?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'RoleLogic needs Manage Roles to add or remove Discord roles. Its role must also be above every role it manages. Webhook logs additionally need Manage Webhooks in the target channel.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How many RoleLogic rules can I create?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'The free plan includes 5 rules per server. Paid quota is added to those 5 base slots, for plan totals from 15 to 213 rules per server.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can RoleLogic manage roles across Discord servers?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. RoleLogic can check roles in one server and add or remove roles in another. The bot and member must be in both servers, with correct permissions and hierarchy in the destination server.',
+      },
+    },
+  ],
+}} />
 
 Find answers to common questions and solutions for issues.
 
@@ -32,18 +61,24 @@ RoleLogic is a Discord bot that automatically manages roles. You create IF-THEN 
 Yes. The free plan includes:
 
 - 5 rules per server
-- All features (conditions, actions, sandbox, logs)
-- Cross-server sync to 2 other servers (premium expands this to 10)
+- 5 integrations per server
+- All 9 condition types, add/remove actions, sandbox testing, and activity logs
+- Cross-server sync to 2 distinct destination servers (Premium expands this to 10)
 
 Need more rules? See [Plans & Pricing](./plans).
 
 ### What permissions does RoleLogic need?
 
-Only **"Manage Roles"**. RoleLogic cannot read messages, access DMs, or see any private information.
+For role automation, RoleLogic needs **Manage Roles**, and its server role must sit above every role it will add or remove. It cannot read messages or access DMs. If you configure webhook logs, it additionally needs **Manage Webhooks** in the target channel.
 
 ### Is my data safe?
 
-Yes. We only store Discord IDs and your rule configurations. We don't store messages, passwords, or personal information. See our Privacy Policy for details.
+RoleLogic stores Discord identifiers, rule and integration configuration, and
+the minimum account data needed for services you choose to connect. Integrations
+that require OAuth may store encrypted access or refresh tokens. RoleLogic does
+not read message or DM content, store your passwords, or receive payment-card
+details. See the [Privacy Policy](https://rolelogic.faizo.net/privacy) for the
+current details.
 
 ---
 
@@ -52,7 +87,7 @@ Yes. We only store Discord IDs and your rule configurations. We don't store mess
 ### How many rules can I create?
 
 - **Free:** 5 rules per server
-- **Premium:** Up to 210 rules (varies by tier)
+- **Premium:** Paid quota is added to the 5 base slots, for plan totals from 15 to 213 rules per server
 
 See [Plans & Pricing](./plans) for tier details.
 
@@ -85,15 +120,17 @@ Yes. Use "Add Combined Action" to add some roles AND remove others in one rule.
 
 ### How quickly do changes happen?
 
-- **Real-time:** Rules trigger immediately when roles change — same on free and premium
-- **Background sync:** A safety sweep catches anything missed in real time — about every 10 minutes on free, about every 2 minutes on premium (and premium scans large servers far faster)
-- **Debounce:** 10-second delay to batch rapid changes
+- **Event-driven:** A role change starts evaluation automatically.
+- **Debounce:** Bursty changes are grouped for about 5 seconds on Free and 1.5 seconds on Premium.
+- **Background sync:** A safety sweep catches anything missed in real time — about every 10 minutes on Free and every 2 minutes on Premium. Premium also scans more members per cycle.
 
 ---
 
 ## Troubleshooting
 
 ### My rule isn't working
+
+For the full symptom-by-symptom workflow, see [Discord role bot troubleshooting](./guides/troubleshoot-discord-role-bot).
 
 Check these in order:
 
@@ -165,7 +202,7 @@ Check in order:
 
 Normal delays:
 
-- Debounce: 10 seconds
+- Role-change debounce: about 5 seconds on Free or 1.5 seconds on Premium
 - New rule activation: up to 1 hour for full propagation
 
 For longer delays, check [Discord status](https://status.discord.com).
@@ -189,12 +226,12 @@ Yes. Create rules that affect roles in other servers where RoleLogic is present.
 - Role hierarchy must be correct in the TARGET server
 - "Manage Roles" permission needed in both servers
 
-### How many other servers can a guild sync to?
+### How many other servers can a server sync to?
 
 The cross-server sync limit counts distinct destination servers, not rules:
 
-- **Free:** 2 destination servers per guild
-- **Premium (any tier):** 10 destination servers per guild
+- **Free:** 2 destination servers per server
+- **Premium (any tier):** 10 destination servers per server
 
 If saving a rule would push you over the limit, the dashboard rejects the save and tells you the cap.
 
@@ -245,7 +282,7 @@ Yes. When other bots (MEE6, Carl-bot, etc.) change roles, RoleLogic evaluates if
 
 ### What happens during Discord outages?
 
-Changes may be delayed but are queued automatically. Nothing is lost.
+Changes may be delayed. The periodic background sweep rechecks members after normal processing resumes.
 
 ---
 
@@ -255,32 +292,32 @@ Changes may be delayed but are queued automatically. Nothing is lost.
 
 **Stored:**
 
-- Discord user IDs
-- Server IDs
-- Role IDs
-- Rule configurations
+- Discord user, server, and role IDs
+- Rule and integration configurations
 - Activity logs
+- The minimum status or account data needed for integrations you connect
+- Encrypted OAuth or API tokens when an integration needs continued access
 
 **NOT stored:**
 
 - Messages or channel content
 - DMs or passwords
-- Payment info (handled by our payment processor, Stripe)
+- Payment-card details (handled by Stripe)
 
 ### How do I delete my data?
 
-- Remove RoleLogic from your server (deletes server data)
-- Contact support for complete deletion
-- Revoke dashboard access in Discord settings
+- Remove RoleLogic from your server to stop role processing
+- Unlink connected integrations to revoke their access where supported
+- Contact support to request deletion of stored RoleLogic data; limited records may be retained when required for security, fraud prevention, or legal compliance
+- Revoke dashboard access in Discord settings to end the Discord authorization
 
 ### Is RoleLogic secure?
 
-Yes. We use:
+RoleLogic limits access and protects sensitive integration credentials with:
 
-- AES-256 encryption
-- Secure OAuth2 via Discord
-- Automatic backups
-- Minimal permissions
+- Encryption at rest for stored integration and API tokens
+- Scoped OAuth flows for Discord and connected services
+- A minimal Discord permission model centered on Manage Roles
 
 ---
 
@@ -288,7 +325,7 @@ Yes. We use:
 
 1. **Test in the sandbox** — Many issues can be diagnosed by testing
 2. **Check the Activity Log** — See what's happening with your rules
-3. **Search documentation** — Use the search bar
+3. **Browse the troubleshooting guide** — Follow the checks in order
 4. **Join the support server** — Get help from the community
 
 See [Support](./support) for contact options.

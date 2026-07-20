@@ -1,0 +1,16 @@
+/docs/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/docs/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/docs/img/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/docs/llms*.txt
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/docs/sitemap.xml
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400

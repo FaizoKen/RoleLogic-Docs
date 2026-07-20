@@ -2,15 +2,7 @@
 sidebar_position: 2
 title: RoleLogic Best Practices - Optimization Guide
 description: Expert tips for organizing and maintaining RoleLogic rules. Learn rule naming, priority management, testing strategies, and quota optimization.
-keywords:
-  - RoleLogic best practices
-  - Discord role automation tips
-  - organize Discord rules
-  - maintain role automation
-  - rule priority management
-  - Discord bot optimization
-  - role automation guide
-image: /img/social-preview.png
+image: /img/social-preview-og.png
 ---
 
 # Best Practices

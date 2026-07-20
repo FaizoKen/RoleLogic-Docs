@@ -2,15 +2,7 @@
 sidebar_position: 2
 title: Test Discord Role Rules Safely - Sandbox Mode
 description: Test RoleLogic rules before going live. Simulate role changes safely without affecting real Discord members. Preview automation results instantly.
-keywords:
-  - RoleLogic sandbox
-  - test Discord rules
-  - role automation testing
-  - preview rule changes
-  - safe Discord testing
-  - rule simulation Discord
-  - test before deploy
-image: /img/social-preview.png
+image: /img/social-preview-og.png
 ---
 
 # Testing Sandbox

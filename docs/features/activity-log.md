@@ -2,14 +2,7 @@
 sidebar_position: 5
 title: Activity Log - Track RoleLogic Configuration Changes
 description: Full audit trail for RoleLogic. See who created, modified, or deleted rules. Track configuration changes with timestamps for accountability.
-keywords:
-  - RoleLogic activity log
-  - Discord bot audit trail
-  - configuration change tracking
-  - rule modification history
-  - admin log Discord
-  - accountability tracking
-image: /img/social-preview.png
+image: /img/social-preview-og.png
 ---
 
 # Activity Log

@@ -1,31 +1,8 @@
 ---
 sidebar_position: 4
 title: Role Link API Reference — Plugin Developer Guide
-description: Complete reference for building RoleLogic Role Link plugins. Covers the plugin server contract (register, schema, config, delete endpoints), the external REST API for managing users, authentication, field types, validation, error handling, and best practices.
-keywords:
-  - RoleLogic API
-  - RoleLogic Role Link API
-  - RoleLogic plugin development
-  - Role Link plugin
-  - Role Link REST API
-  - external API
-  - token authentication
-  - Discord role API
-  - Discord role automation API
-  - REST API reference
-  - role management API
-  - manage Discord roles programmatically
-  - Discord bot API
-  - plugin schema
-  - plugin configuration
-  - role link users endpoint
-  - add user to Discord role API
-  - remove user from Discord role API
-  - batch replace Discord role users
-  - check user role API
-  - Discord snowflake
-  - role link token
-image: /img/social-preview.png
+description: Build RoleLogic Role Link plugins with REST endpoints, token authentication, config schemas, bulk user management, validation, limits, and error examples.
+image: /img/social-preview-og.png
 ---
 
 # Role Link API Reference
@@ -1414,8 +1391,8 @@ If the stored user count exceeds the allowed limit (e.g., after a plan downgrade
 
 | Resource                              | Free Plan | Premium    |
 | ------------------------------------- | --------- | ---------- |
-| Users per role link                   | 1,000     | Unlimited  |
-| Role links per server                 | 10        | 10         |
+| Users per role link                   | 1,000     | 30,000,000 |
+| Role links per server                 | 5         | Up to 213  |
 | Users per single `PUT /users` request | 100       | 100,000    |
 | Users per chunk in a chunked upload   | —         | 100,000    |
 | Chunked upload session TTL            | —         | 24 hours   |
@@ -1813,7 +1790,7 @@ Yes. Adding a user who already exists returns `added: false` (no error). Removin
 
 ### What is the user limit?
 
-Free plan: 1,000 users per role link. Premium: unlimited users per role link. The limit applies per individual role link, not per server.
+Free plan: 1,000 users per role link. Premium: up to 30,000,000 users per role link. The user limit applies per individual role link, not per server. The number of role links shares the server's integration quota: 5 free plus any paid slots assigned to that server.
 
 ### What happens if the user count exceeds the limit?
 

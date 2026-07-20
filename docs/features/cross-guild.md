@@ -1,19 +1,11 @@
 ---
 sidebar_position: 4
-title: Cross-Server Discord Roles - Multi-Server Sync
-description: Sync Discord roles across multiple servers. Manage VIP, staff, and member roles across your entire server network with RoleLogic automation.
-keywords:
-  - cross-server Discord roles
-  - multi-server role sync
-  - Discord server network
-  - linked servers roles
-  - cross-guild automation
-  - sync roles across servers
-  - Discord network management
-image: /img/social-preview.png
+title: Configure Cross-Server Actions in RoleLogic
+description: Set up and troubleshoot RoleLogic cross-server actions, including source and destination roles, permissions, server links, limits, and downgrade behavior.
+image: /img/social-preview-og.png
 ---
 
-# Cross-Server Actions
+# Configure Cross-Server Actions
 
 RoleLogic can manage roles across multiple Discord servers, not just where you create the rule.
 
@@ -61,9 +53,9 @@ Normally, rules work within one server. Cross-server actions let you:
 5. Checks hierarchy permissions in Server B
 6. Applies changes
 
-## Linked Guilds View
+## Linked Servers View
 
-Dashboard shows **Linked Guilds** section:
+The dashboard's linked-server section shows:
 
 - Servers your rules can affect
 - Manage connections
@@ -73,12 +65,12 @@ Dashboard shows **Linked Guilds** section:
 
 The cross-server sync limit counts the **distinct destination servers** your enabled rules target, not the number of rules or roles. Ten rules pointing at the same other server use just 1 slot; one rule pointing at three servers uses 3.
 
-| Tier               | Destination servers per guild |
-| ------------------ | ----------------------------- |
+| Tier               | Destination servers per server |
+| ------------------ | ------------------------------ |
 | Free               | 2                             |
 | Premium (any tier) | 10                            |
 
-If saving a rule would push your guild over the limit, RoleLogic rejects the save with a message explaining the cap and how to upgrade.
+If saving a rule would push your server over the limit, RoleLogic rejects the save with a message explaining the cap and how to upgrade.
 
 ### Downgrading
 
@@ -106,7 +98,7 @@ Cross-server rules are never deleted on downgrade. RoleLogic walks your enabled 
 
 ## Troubleshooting
 
-**"Bot and User Not in Guild"**
+**"Bot and User Not in Server"**
 
 - Member isn't in target server, or
 - RoleLogic isn't in target server
@@ -126,6 +118,7 @@ Cross-server rules are never deleted on downgrade. RoleLogic walks your enabled 
 
 ## Related
 
+- **[Cross-server role sync overview](https://rolelogic.faizo.net/discord-cross-server-role-sync)** — Compare the workflow and common server-network patterns
 - **[Testing Sandbox](./testing-sandbox)** — Test cross-server rules
 - **[Plans & Pricing](../plans)** — Cross-server quota limits
 - **[FAQ](../faq)** — Cross-server troubleshooting

@@ -2,15 +2,7 @@
 sidebar_position: 3
 title: Add & Remove Discord Roles Automatically
 description: RoleLogic actions automatically add or remove Discord roles when conditions match. Combine actions for complex role transitions and upgrades.
-keywords:
-  - add Discord roles automatically
-  - remove Discord roles bot
-  - RoleLogic actions
-  - automatic role assignment Discord
-  - role removal automation
-  - Discord role transitions
-  - combined role actions
-image: /img/social-preview.png
+image: /img/social-preview-og.png
 ---
 
 # Actions (Add & Remove Roles)

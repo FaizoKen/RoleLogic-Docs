@@ -2,15 +2,7 @@
 sidebar_position: 3
 title: Discord Webhook Notifications for Role Changes
 description: Get Discord notifications when roles change. Set up RoleLogic webhooks with custom messages using dynamic placeholders for complete audit trails.
-keywords:
-  - Discord webhook notifications
-  - role change logging Discord
-  - RoleLogic webhooks setup
-  - Discord audit trail
-  - role notification bot
-  - webhook placeholders Discord
-  - activity notifications roles
-image: /img/social-preview.png
+image: /img/social-preview-og.png
 ---
 
 # Webhooks & Notifications

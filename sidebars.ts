@@ -19,11 +19,22 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "Core Concepts",
       collapsed: false,
+      link: {
+        type: "generated-index",
+        slug: "/concepts",
+        title: "Discord Role Automation Concepts",
+        description:
+          "Understand RoleLogic rules, conditions, actions, and Discord role hierarchy before building an automation.",
+      },
       items: [
-        "concepts/rules",
-        "concepts/conditions",
-        "concepts/actions",
-        "concepts/role-hierarchy",
+        { type: "doc", id: "concepts/rules", label: "Rules" },
+        { type: "doc", id: "concepts/conditions", label: "Conditions" },
+        { type: "doc", id: "concepts/actions", label: "Actions" },
+        {
+          type: "doc",
+          id: "concepts/role-hierarchy",
+          label: "Role Hierarchy",
+        },
       ],
     },
 
@@ -32,21 +43,73 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "Features",
       collapsed: false,
+      link: {
+        type: "generated-index",
+        slug: "/features",
+        title: "RoleLogic Features",
+        description:
+          "Explore the no-code rule builder, sandbox, notifications, cross-server roles, and activity history.",
+      },
       items: [
-        "features/rule-builder",
-        "features/testing-sandbox",
-        "features/webhooks-logging",
-        "features/cross-guild",
-        "features/activity-log",
+        { type: "doc", id: "features/rule-builder", label: "Rule Builder" },
+        {
+          type: "doc",
+          id: "features/testing-sandbox",
+          label: "Testing Sandbox",
+        },
+        {
+          type: "doc",
+          id: "features/webhooks-logging",
+          label: "Webhook Notifications",
+        },
+        {
+          type: "doc",
+          id: "features/cross-guild",
+          label: "Cross-Server Roles",
+        },
+        { type: "doc", id: "features/activity-log", label: "Activity Log" },
       ],
     },
 
     // GUIDES - Practical examples
     {
       type: "category",
-      label: "Guides",
-      collapsed: true,
-      items: ["guides/common-scenarios", "guides/best-practices"],
+      label: "Solutions & Guides",
+      collapsed: false,
+      link: {
+        type: "generated-index",
+        slug: "/guides",
+        title: "Discord Role Automation Guides",
+        description:
+          "Follow practical guides for verification roles, booster rewards, troubleshooting, and reliable Discord role automation.",
+      },
+      items: [
+        {
+          type: "doc",
+          id: "guides/discord-verification-role-automation",
+          label: "Verification Roles",
+        },
+        {
+          type: "doc",
+          id: "guides/discord-booster-role-rewards",
+          label: "Booster Role Rewards",
+        },
+        {
+          type: "doc",
+          id: "guides/troubleshoot-discord-role-bot",
+          label: "Troubleshoot Role Automation",
+        },
+        {
+          type: "doc",
+          id: "guides/common-scenarios",
+          label: "Rule Templates (50+)",
+        },
+        {
+          type: "doc",
+          id: "guides/best-practices",
+          label: "Best Practices",
+        },
+      ],
     },
 
     // REFERENCE - Technical details
@@ -54,11 +117,34 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "Reference",
       collapsed: true,
+      link: {
+        type: "generated-index",
+        slug: "/reference",
+        title: "RoleLogic Technical Reference",
+        description:
+          "Look up condition behavior, webhook variables, current limits, quotas, and the Role Link API.",
+      },
       items: [
-        "reference/conditions-reference",
-        "reference/placeholders-reference",
-        "reference/limits-reference",
-        "reference/role-link-api",
+        {
+          type: "doc",
+          id: "reference/conditions-reference",
+          label: "Conditions",
+        },
+        {
+          type: "doc",
+          id: "reference/placeholders-reference",
+          label: "Webhook Placeholders",
+        },
+        {
+          type: "doc",
+          id: "reference/limits-reference",
+          label: "Limits & Quotas",
+        },
+        {
+          type: "doc",
+          id: "reference/role-link-api",
+          label: "Role Link API",
+        },
       ],
     },
 

@@ -1,17 +1,8 @@
 ---
 sidebar_position: 13
 title: RoleLogic Support - Get Help & Contact Us
-description: Get help with RoleLogic. Join the Discord support server, report bugs, request features, and find community resources. Fast response times.
-keywords:
-  - RoleLogic support
-  - RoleLogic help center
-  - contact RoleLogic
-  - Discord support server
-  - RoleLogic community
-  - report RoleLogic bug
-  - feature request Discord bot
-  - RoleLogic contact email
-image: /img/social-preview.png
+description: Get RoleLogic help, join the Discord support server, report a bug, request a feature, or find the right troubleshooting and account-support path.
+image: /img/social-preview-og.png
 ---
 
 # Support

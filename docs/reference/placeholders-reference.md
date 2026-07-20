@@ -2,15 +2,7 @@
 sidebar_position: 2
 title: Webhook Placeholders Reference - Dynamic Variables
 description: Complete list of RoleLogic webhook placeholders. User mentions, role names, server info, timestamps, and channel variables with examples.
-keywords:
-  - RoleLogic webhook placeholders
-  - Discord webhook variables
-  - dynamic message placeholders
-  - user mention placeholder
-  - role name placeholder
-  - Discord webhook customization
-  - placeholder syntax reference
-image: /img/social-preview.png
+image: /img/social-preview-og.png
 ---
 
 # Placeholders Reference

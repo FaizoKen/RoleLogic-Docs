@@ -2,21 +2,10 @@
 sidebar_position: 1
 title: 50+ Discord Role Automation Examples & Templates
 description: Ready-to-use RoleLogic rule templates. Copy configurations for verification, tier systems, VIP rewards, booster perks, staff management, and more.
-keywords:
-  - Discord role automation examples
-  - RoleLogic rule templates
-  - Discord verification bot rules
-  - tier system Discord setup
-  - VIP role automation examples
-  - booster perks Discord
-  - Discord staff management
-  - gaming server role templates
-  - achievement system Discord
-  - Discord gamification roles
-  - cross-server role examples
-  - Discord role bot templates
-image: /img/social-preview.png
+image: /img/social-preview-og.png
 ---
+
+import ProductCta from '@site/src/components/Seo/ProductCta';
 
 # Common Scenarios & Examples
 
@@ -60,9 +49,15 @@ This guide provides **50+ ready-to-use rule configurations** for popular Discord
 | [Comeback Rewards](#comebackreturn-rewards)                           | Returning member recognition         |
 | [Cross-Server Actions](#cross-server-actions)                         | Multi-server role sync               |
 
+<ProductCta title="Choose a template, then test it safely">
+  Add RoleLogic, adapt one of these IF-THEN patterns to your server's role names, and verify the outcome in the sandbox before enabling it.
+</ProductCta>
+
 ---
 
 ## Verification Systems
+
+For a complete setup with role hierarchy, combined add/remove actions, testing, and optional revocation, start with the [Discord verification role automation guide](./discord-verification-role-automation).
 
 ### Basic Verification Cleanup
 
@@ -197,6 +192,8 @@ Remember that all members have @everyone. Test this rule with @everyone selected
 ---
 
 ## VIP and Rewards
+
+Using Discord's built-in Server Booster role? The [automatic booster rewards guide](./discord-booster-role-rewards) covers both granting perks and removing them when a boost ends.
 
 ### Server Booster VIP
 
@@ -793,7 +790,6 @@ These advanced scenarios showcase creative role automation ideas for engaging co
 
 **Why it's engaging:** Members choose their color preference, and boosting "unlocks" their element. If they stop boosting, elements disappear. If they boost again, their element returns automatically based on their color!
 
-**Keywords:** Discord booster perks, conditional roles, element roles, personalized rewards
 
 ---
 
@@ -821,7 +817,6 @@ These advanced scenarios showcase creative role automation ideas for engaging co
 
 **Why it's engaging:** Creates a "gotta catch 'em all" mentality. Members are motivated to participate in different activities to earn each achievement and unlock badges.
 
-**Keywords:** Discord achievement system, badge automation, role collection, gamification
 
 ---
 
@@ -848,7 +843,6 @@ These advanced scenarios showcase creative role automation ideas for engaging co
 
 **Why it's engaging:** Members see their role literally "evolve" as they grow in the community. Each evolution feels like an upgrade, not just gaining another role.
 
-**Keywords:** Discord role evolution, progression system, role upgrades, member journey
 
 ---
 
@@ -882,7 +876,6 @@ _(Create rules for all color combinations)_
 
 **Why it's engaging:** Works perfectly with reaction role bots. Members click a new color, RoleLogic removes the old one automatically. The "Color Customized" badge shows they've personalized their profile.
 
-**Keywords:** Discord color roles, exclusive roles, self-assign roles, reaction role cleanup
 
 ---
 
@@ -914,7 +907,6 @@ _(Create rules for all color combinations)_
 
 **Why it's engaging:** Recognizes members who support the community in multiple ways. Someone who boosts AND donates AND helps at events gets special recognition.
 
-**Keywords:** Discord loyalty rewards, milestone badges, supporter tiers, community recognition
 
 ---
 
@@ -946,7 +938,6 @@ _(Create rules for all color combinations)_
 
 **Why it's engaging:** Creates tribal loyalty and competition. Members fight for their faction, and historical achievements are preserved.
 
-**Keywords:** Discord faction system, team wars, competitive roles, gaming server automation
 
 ---
 
@@ -981,7 +972,6 @@ _(Create rules for all color combinations)_
 
 **Why it's engaging:** Creates consequences for bad behavior and rewards for good behavior. Members can "redeem" themselves when warnings clear.
 
-**Keywords:** Discord reputation system, trust roles, standing system, moderation automation
 
 ---
 
@@ -1014,7 +1004,6 @@ _(Create rules for all color combinations)_
 
 **Why it's engaging:** Rewards creators who actually engage with the community, not just self-promote. Creates a pathway from "verified" to "partner."
 
-**Keywords:** Discord streamer roles, creator verification, content creator perks, partnership system
 
 ---
 
@@ -1046,7 +1035,6 @@ _(Create rules for all color combinations)_
 
 **Why it's engaging:** Creates a pathway for experienced members to give back. Mentors get recognition for helping new members succeed.
 
-**Keywords:** Discord mentorship system, community onboarding, helper rewards, member engagement
 
 ---
 
@@ -1083,7 +1071,6 @@ _(Create rules for all color combinations)_
 
 **Why it's engaging:** Perfect for RPG and gaming servers. Members identify with their class and unlock class-specific content.
 
-**Keywords:** Discord RPG roles, class system, gaming server automation, role-based permissions
 
 ---
 
@@ -1115,7 +1102,6 @@ _(Create rules for all color combinations)_
 
 **Why it's engaging:** Encourages year-round participation. Members who stick around for multiple events get increasingly valuable recognition.
 
-**Keywords:** Discord seasonal events, annual rewards, event participation, long-term engagement
 
 ---
 
@@ -1142,7 +1128,6 @@ _(Create rules for all color combinations)_
 
 **Why it's engaging:** Works alongside economy bots (UnbelievaBoat, etc.). Spending currency unlocks not just the purchased item but additional recognition.
 
-**Keywords:** Discord economy integration, shop rewards, purchase perks, currency system automation
 
 ---
 
@@ -1170,13 +1155,12 @@ _(Create rules for all color combinations)_
 
 **Why it's engaging:** Shows members they're valued even if they took a break. Returning feels welcoming, not punishing.
 
-**Keywords:** Discord returning members, re-engagement, comeback rewards, member retention
 
 ---
 
 ## Cross-Server Actions
 
-Cross-server (cross-guild) actions let you manage roles across multiple Discord servers from a single rule. These examples require RoleLogic to be in all involved servers with proper permissions.
+Cross-server actions let you manage roles across multiple Discord servers from a single rule. These examples require RoleLogic to be in all involved servers with proper permissions.
 
 ### VIP Sync Across Servers
 
@@ -1300,7 +1284,6 @@ Cross-server (cross-guild) actions let you manage roles across multiple Discord 
 - **Large communities** with regional or language-specific servers
 - **Server networks** wanting to reward loyal hub members
 
-**Keywords:** cross-server Discord, multi-server roles, linked servers, server network, cross-guild automation
 
 ---
 
@@ -1336,5 +1319,6 @@ As your server evolves, revisit these rules. Remove obsolete ones and update oth
 
 - **[Best Practices](./best-practices)** — Organize multiple scenarios effectively
 - **[FAQ](../faq)** — Troubleshooting when scenarios don't work
+- **[Troubleshooting](./troubleshoot-discord-role-bot)** — Diagnose hierarchy, permission, condition, and conflict issues
 - **[Conditions Reference](../reference/conditions-reference)** — All condition types explained
 - **[Support](../support)** — Get help with custom scenarios
