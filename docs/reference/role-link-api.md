@@ -1385,6 +1385,8 @@ When you modify the user list (Add, Remove, or Replace), RoleLogic automatically
 
 If the stored user count exceeds the allowed limit (e.g., after a plan downgrade), the bot **stops syncing** the role link entirely until the count is reduced.
 
+If the server has **more role links than its plan's integration slots** (e.g., after a plan downgrade), the newest links beyond the allowance are **paused**: the dashboard shows "Integration paused", the bot stops syncing them, and every User Management API call for them returns a `403` error until the server upgrades or deletes other role links. Pausing is fully reversible — the stored user list is kept, and syncing resumes automatically once the link is back within the slot allowance.
+
 ---
 
 ## Limits
@@ -1398,6 +1400,7 @@ If the stored user count exceeds the allowed limit (e.g., after a plan downgrade
 | Chunked upload session TTL            | —         | 24 hours   |
 
 - Exceeding the per-role-link user limit on **Add User**, **Replace Users**, or **Commit Upload** returns a `400` error with a message indicating the maximum allowed.
+- Role links beyond the server's slot count (e.g. after a downgrade) are **paused**: the bot stops syncing them and all User Management API calls for them return a `403` error (see [Role Sync Behavior](#role-sync-behavior)).
 - The error message includes a hint to upgrade if on the free plan.
 - Use the [chunked upload flow](#upload-users-chunked) for any list larger than 100,000 users — a single `PUT /users` with more than 100,000 IDs is rejected.
 - For multi-million-user role links, the initial bulk application to Discord is rate-limited by Discord and can take **days** to complete. Steady-state incremental changes (adds/removes) apply within seconds.
@@ -1426,6 +1429,7 @@ All errors return a JSON object with `statusCode` and `message`:
 | `401`       | Invalid authorization scheme. Use: Token \<token\> | Wrong scheme (e.g., `Bearer` instead of `Token`)                                   |
 | `403`       | Invalid or revoked token                           | Token doesn't match the guild/role pair, or was reset                              |
 | `403`       | This role link is disabled                         | Role link exists but is disabled in the dashboard                                  |
+| `403`       | This role link is paused — integration slots quota exceeded | The link is beyond the server's integration slot allowance (e.g. after a plan downgrade). Resolves when the server upgrades or deletes other role links |
 | `404`       | Role link not found                                | No role link exists for this guild/role combination                                |
 | `404`       | Upload session not found                           | `upload_id` does not exist, already committed, or expired after 24 h               |
 
