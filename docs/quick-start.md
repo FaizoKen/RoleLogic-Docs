@@ -120,9 +120,9 @@ This means: _"...then remove the Unverified role"_
 
 ### Save
 
-Click **"Save Changes"**. Your rule activates within 1 hour.
+Click **"Save Changes"**. RoleLogic checks how many members the rule would change and says so in the save message: an ordinary rule goes live about a minute later, and a rule that would change many members at once waits for you to review the numbers and confirm.
 
-**Want it immediately?** Click the **Play button** to activate right away.
+**Want to know before saving?** Click **Check impact** next to Save Changes to see the same estimate without saving anything.
 
 ## Step 5: Test Your Rule
 

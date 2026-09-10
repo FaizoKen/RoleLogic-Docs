@@ -12,11 +12,12 @@ The Activity Log tracks every change to your RoleLogic configuration. It's your 
 ## What It Tracks
 
 - Rule creation, updates, deletions
+- Safe Apply events: rules held, confirmed, resumed; deployments started, paused, finished; undos
 - Webhook/log configuration changes
 - Server settings modifications
 - Quota changes
 
-**Note:** This tracks _configuration_ changes, not role changes to members (that's [Webhook Logs](./webhooks-logging)).
+The same page also carries **Role changes** — a per-member history of every role the bot added or removed (see below). Real-time notifications for individual members are still the job of [Webhook Logs](./webhooks-logging).
 
 ## Why Use It?
 
@@ -62,6 +63,16 @@ Filter by:
 - **Action type:** Only creates, only updates, etc.
 - **Entity type:** Only rules, only logs, etc.
 - **Combined:** "Update" + "Rule" = all rule modifications
+
+## Role Changes
+
+Under the configuration log sits a second list: every role the bot added or removed, one line per member and role, with the rule condition behind it, where it came from (a member update, the scheduled sweep, a deployment, an integration, a cross-server rule, or an undo), and what happened (applied, already so, no permission, member left, failed, skipped).
+
+- **Filter by member** — paste a member ID, or click one in the list, to answer "why did this person lose that role?" in one place.
+- **Filter by outcome** — for example, only the changes Discord refused.
+- **reverted by someone** marks a change a moderator or another bot has since undone.
+
+History is kept for 30 days on Free servers and 90 days on Premium.
 
 ## Activity Log Channel
 

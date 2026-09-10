@@ -27,7 +27,8 @@ Open the dashboard and inspect the rule status:
 
 - **Enabled:** available for processing.
 - **Disabled:** saved but intentionally inactive.
-- **Pending:** waiting for its scheduled activation; use the play control if you need to start it now.
+- **Pending:** saved and going live shortly; the status bar shows when.
+- **On hold:** saved but waiting for your confirmation or a fix; the status bar gives the reason.
 - **Stopped:** RoleLogic detected repeated reversals or another conflict. Fix the conflict before restarting it.
 
 Saving a rule does not guarantee that its condition currently matches a member.
@@ -84,7 +85,7 @@ Role changes trigger evaluation automatically. Rapid changes are grouped for
 about 10 seconds on Free and 1.5 seconds on Premium. The background safety sweep
 runs about every 30 minutes on Free and every 2 minutes on Premium.
 
-New or updated rules can take up to one hour to activate through the scheduled path; use the play control to start one immediately.
+A saved rule goes live about a minute after you save it. A change that would affect many members is held until you confirm it in the dashboard instead; see [Safe Apply](../concepts/rules#safe-apply).
 
 ## 7. Diagnose Cross-Server Rules
 
@@ -111,7 +112,7 @@ The rule logic is sound. Focus on permission, hierarchy, member presence, curren
 
 ### The rule keeps stopping
 
-RoleLogic can stop a rule after repeated reverted actions. Find the system removing or restoring the same role, resolve that conflict, and then re-enable the rule.
+RoleLogic stops a server's rules when its changes keep being reverted. Find the system removing or restoring the same role, resolve that conflict, and then press **Start Live** in the dashboard.
 
 ### Webhook notifications are missing
 

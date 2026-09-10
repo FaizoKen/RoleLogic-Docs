@@ -153,7 +153,7 @@ The role is above RoleLogic in the hierarchy.
 
 ### My rule keeps getting stopped
 
-RoleLogic stops rules when it detects conflicts (100+ reverted actions per hour).
+RoleLogic stops a server's rules when its own changes are being undone faster than normal — by default once 5% of what it did recently (at least 10 and at most 20 changes) has been reverted within 20 minutes.
 
 **Common causes:**
 
@@ -161,7 +161,17 @@ RoleLogic stops rules when it detects conflicts (100+ reverted actions per hour)
 - A moderator manually reverting changes
 - Two of your rules conflicting
 
-**Fix:** Identify the conflict, resolve it, then re-enable the rule.
+**Fix:** Identify the conflict, resolve it, then press **Start Live** in the dashboard. The rule set is estimated again before it goes live.
+
+### My rule says "on hold"
+
+Saving estimated that the rule would change many members at once, so RoleLogic saved it without sending it to the bot. Open the rule and press **Review and apply** to see the numbers — how many members, which roles, why it was held — and apply it with one click. Nothing changes until you do.
+
+A rule is also put on hold when the bot loses permission over a role it manages, when a role its conditions depend on is deleted, or after its changes were undone. The status bar says which, and **Resume** lifts it once the cause is fixed. A rule is never held just for changing many members once it is live.
+
+### Can I undo a change RoleLogic made?
+
+Yes, for 24 hours after a deployment finishes. The status bar above your rules shows **Undo changes** for the last deployment; it puts every role back except roles that have changed again since, which are left alone. The **Activity Log** also has a per-member history of every role the bot added or removed.
 
 ### Rule works for some members but not others
 
@@ -203,7 +213,7 @@ Check in order:
 Normal delays:
 
 - Role-change debounce: about 10 seconds on Free or 1.5 seconds on Premium
-- New rule activation: up to 1 hour for full propagation
+- New rule activation: about a minute after saving; large changes wait for your confirmation
 
 For longer delays, check [Discord status](https://status.discord.com).
 

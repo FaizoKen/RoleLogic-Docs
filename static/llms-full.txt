@@ -201,9 +201,9 @@ This means: _"...then remove the Unverified role"_
 
 ### Save
 
-Click **"Save Changes"**. Your rule activates within 1 hour.
+Click **"Save Changes"**. RoleLogic checks how many members the rule would change and says so in the save message: an ordinary rule goes live about a minute later, and a rule that would change many members at once waits for you to review the numbers and confirm.
 
-**Want it immediately?** Click the **Play button** to activate right away.
+**Want to know before saving?** Click **Check impact** next to Save Changes to see the same estimate without saving anything.
 
 ## Step 5: Test Your Rule
 
@@ -318,12 +318,13 @@ Rule A runs first, then Rule B.
 
 Rules can be:
 
-| Status       | Meaning                        |
-| ------------ | ------------------------------ |
-| **Enabled**  | Active and processing          |
-| **Disabled** | Saved but not running          |
-| **Pending**  | Queued, waiting for first sync |
-| **Stopped**  | Auto-stopped due to conflicts  |
+| Status       | Meaning                                                                 |
+| ------------ | ----------------------------------------------------------------------- |
+| **Enabled**  | Active and processing                                                   |
+| **Disabled** | Saved but not running                                                   |
+| **Pending**  | Queued, waiting for first sync                                          |
+| **On hold**  | Saved, but withheld from the bot until you confirm it or fix a problem  |
+| **Stopped**  | Auto-stopped because its changes were being undone (see [Safe Apply](#safe-apply)) |
 
 ## How Rules Process
 
@@ -366,7 +367,52 @@ RoleLogic also runs a continuous background scan to catch changes missed by even
 2. **Set condition:** Choose type and select roles
 3. **Set action:** Choose add or remove, select roles
 4. **Add description:** Name your rule clearly
-5. **Save:** Rule activates within 1 hour (or click Play for immediate)
+5. **Save:** RoleLogic estimates how many members the rule would change. Ordinary rules go live about a minute later; a rule that would change many members at once waits for one confirmation click (see [Safe Apply](#safe-apply))
+
+## Safe Apply
+
+Most rule mistakes are small — a condition typed the wrong way round, a remove where an add was meant. What makes them expensive is scale: one wrong rule can touch thousands of members before anyone notices. Safe Apply is how RoleLogic keeps a wrong rule from becoming a wrong server.
+
+### Estimate before apply
+
+Every save is a dry run first. The bot works out, from the live member list, exactly which members would gain or lose which roles under the new rule set, and the dashboard tells you:
+
+- how many members are affected, and how many role additions and removals that is;
+- which roles, largest first, with the share of that role's holders it would touch;
+- whether the change goes live on its own or needs your confirmation, and why.
+
+There is nothing extra to run. The save message gives the number of members, and until an ordinary change goes live the status bar keeps its estimate beside the countdown. To see it before saving, use **Check impact** next to Save Changes in the rule editor.
+
+### Auto, or confirm
+
+A change goes live by itself after a short settle window (about a minute — time to catch a typo) when it stays under the server's thresholds. It is put **on hold** and shown to you for a single informed click when it would:
+
+- remove a role from about 3% of the server or more (at least 10 members, and at most 100 before trust widens it);
+- remove a role from a quarter or more of the members who hold it (at least 10);
+- add a role to a large share of the server;
+- grant a role that carries moderation permissions;
+- remove roles in a rule that matches every member or has an else branch — the classic sign of an inverted condition.
+
+A held rule is saved and enabled, but the bot does not receive it. Nothing changes until you press **Apply** in the review dialog. If other role conditions changed after the numbers were shown, **Apply** checks again first: a change now under the thresholds goes ahead, and otherwise the dialog shows the current numbers for you to review. Servers with a history of clean deployments earn wider thresholds over time; a safety stop, a paused staged rollout or an undo resets them.
+
+If the bot cannot estimate a change at that moment — while it restarts, for instance — the change is held the same way instead of going live unchecked. The review dialog says the impact could not be checked: test the rule first, or apply it if you are sure it is right.
+
+### Applying in stages
+
+The largest changes are applied to a small slice of members first — staff before everyone else — and then held for a few minutes. If moderators start undoing those first changes, RoleLogic pauses instead of continuing. You can also press **Continue now** to skip the wait, or **Stop** at any time.
+
+### Undo
+
+Every role the bot adds or removes is recorded. For 24 hours after a deployment finishes you can press **Undo changes** to put every role back — except roles that have changed again since (by a moderator, another bot or another rule), which are left alone. The rules that made the change are put on hold so they do not redo it.
+
+### When a rule is put on hold by the bot
+
+Besides the impact gate, the bot itself holds a rule when it can no longer act on it safely:
+
+- **Hierarchy** — the bot lost permission over a role the rule manages. Move the bot's role above it, then press **Resume**.
+- **Role deleted** — a role the condition depends on is gone. Edit the rule, then resume.
+
+The bot never holds a rule just for changing many members. Once a change has passed the checks above, large bursts — an event role handed to hundreds of members at once — run at your plan's normal pace.
 
 ## Combining Conditions
 
@@ -876,7 +922,7 @@ applies). The save-time loop check covers ELSE branches, but test in the
 
 ### Step 5: Save
 
-Click **"Save Changes"**. Rule activates immediately if enabled.
+Click **"Save Changes"**. RoleLogic estimates how many members the rule would change and shows the result straight away: in the save message, and beside the go-live time in the status bar, where **Details** lists the roles involved. An ordinary rule goes live about a minute later (press **Pause Live** before then to stop it); one that would change many members at once is put on hold and shown to you for a single confirmation click. **Check impact**, next to Save Changes, runs the same estimate before you save.
 
 ## Managing Rules
 
@@ -896,12 +942,13 @@ Deleted rules cannot be recovered.
 
 ## Rule Status
 
-| Status   | Color  | Meaning                       |
-| -------- | ------ | ----------------------------- |
-| Enabled  | Green  | Active and processing         |
-| Disabled | Gray   | Saved but not running         |
-| Pending  | Yellow | Queued, waiting for sync      |
-| Stopped  | Red    | Auto-stopped due to conflicts |
+| Status   | Color  | Meaning                                                    |
+| -------- | ------ | ---------------------------------------------------------- |
+| Enabled  | Green  | Active and processing                                      |
+| Disabled | Gray   | Saved but not running                                      |
+| Pending  | Yellow | Queued, waiting for sync                                   |
+| On hold  | Amber  | Saved, waiting for your confirmation or a fix              |
+| Stopped  | Red    | Auto-stopped because its changes were being undone         |
 
 ## Tips
 
@@ -1007,6 +1054,10 @@ If no rules matched, either:
 - Conditions don't match test roles
 - Rule is working correctly by not matching
 
+### Loop Detected
+
+If the result shows a red **These role conditions loop** notice, the selected roles make your rules undo each other without end. The real bot behaves the same way: it stops evaluating and changes nothing for that member. Fix the conflict before going live.
+
 ## Testing Cascades
 
 The sandbox accurately simulates cascading:
@@ -1028,7 +1079,7 @@ The sandbox accurately simulates cascading:
 
 - **Doesn't test permissions** — Role hierarchy issues won't show
 - **Instant results** — Real execution has slight latency
-- **Current rules only** — Save changes before testing new versions
+- **Current rules only** — Save changes before testing new versions. For a member-count estimate of an unsaved draft, use **Check impact** in the rule editor instead.
 
 ---
 
@@ -1289,11 +1340,12 @@ The Activity Log tracks every change to your RoleLogic configuration. It's your 
 ## What It Tracks
 
 - Rule creation, updates, deletions
+- Safe Apply events: rules held, confirmed, resumed; deployments started, paused, finished; undos
 - Webhook/log configuration changes
 - Server settings modifications
 - Quota changes
 
-**Note:** This tracks _configuration_ changes, not role changes to members (that's [Webhook Logs](https://rolelogic.faizo.net/docs/features/webhooks-logging)).
+The same page also carries **Role changes** — a per-member history of every role the bot added or removed (see below). Real-time notifications for individual members are still the job of [Webhook Logs](https://rolelogic.faizo.net/docs/features/webhooks-logging).
 
 ## Why Use It?
 
@@ -1339,6 +1391,16 @@ Filter by:
 - **Action type:** Only creates, only updates, etc.
 - **Entity type:** Only rules, only logs, etc.
 - **Combined:** "Update" + "Rule" = all rule modifications
+
+## Role Changes
+
+Under the configuration log sits a second list: every role the bot added or removed, one line per member and role, with the rule condition behind it, where it came from (a member update, the scheduled sweep, a deployment, an integration, a cross-server rule, or an undo), and what happened (applied, already so, no permission, member left, failed, skipped).
+
+- **Filter by member** — paste a member ID, or click one in the list, to answer "why did this person lose that role?" in one place.
+- **Filter by outcome** — for example, only the changes Discord refused.
+- **reverted by someone** marks a change a moderator or another bot has since undone.
+
+History is kept for 30 days on Free servers and 90 days on Premium.
 
 ## Activity Log Channel
 
@@ -1609,7 +1671,8 @@ Open the dashboard and inspect the rule status:
 
 - **Enabled:** available for processing.
 - **Disabled:** saved but intentionally inactive.
-- **Pending:** waiting for its scheduled activation; use the play control if you need to start it now.
+- **Pending:** saved and going live shortly; the status bar shows when.
+- **On hold:** saved but waiting for your confirmation or a fix; the status bar gives the reason.
 - **Stopped:** RoleLogic detected repeated reversals or another conflict. Fix the conflict before restarting it.
 
 Saving a rule does not guarantee that its condition currently matches a member.
@@ -1666,7 +1729,7 @@ Role changes trigger evaluation automatically. Rapid changes are grouped for
 about 10 seconds on Free and 1.5 seconds on Premium. The background safety sweep
 runs about every 30 minutes on Free and every 2 minutes on Premium.
 
-New or updated rules can take up to one hour to activate through the scheduled path; use the play control to start one immediately.
+A saved rule goes live about a minute after you save it. A change that would affect many members is held until you confirm it in the dashboard instead; see [Safe Apply](https://rolelogic.faizo.net/docs/concepts/rules#safe-apply).
 
 ## 7. Diagnose Cross-Server Rules
 
@@ -1693,7 +1756,7 @@ The rule logic is sound. Focus on permission, hierarchy, member presence, curren
 
 ### The rule keeps stopping
 
-RoleLogic can stop a rule after repeated reverted actions. Find the system removing or restoring the same role, resolve that conflict, and then re-enable the rule.
+RoleLogic stops a server's rules when its changes keep being reverted. Find the system removing or restoring the same role, resolve that conflict, and then press **Start Live** in the dashboard.
 
 ### Webhook notifications are missing
 
@@ -3768,7 +3831,7 @@ The role is above RoleLogic in the hierarchy.
 
 ### My rule keeps getting stopped
 
-RoleLogic stops rules when it detects conflicts (100+ reverted actions per hour).
+RoleLogic stops a server's rules when its own changes are being undone faster than normal — by default once 5% of what it did recently (at least 10 and at most 20 changes) has been reverted within 20 minutes.
 
 **Common causes:**
 
@@ -3776,7 +3839,17 @@ RoleLogic stops rules when it detects conflicts (100+ reverted actions per hour)
 - A moderator manually reverting changes
 - Two of your rules conflicting
 
-**Fix:** Identify the conflict, resolve it, then re-enable the rule.
+**Fix:** Identify the conflict, resolve it, then press **Start Live** in the dashboard. The rule set is estimated again before it goes live.
+
+### My rule says "on hold"
+
+Saving estimated that the rule would change many members at once, so RoleLogic saved it without sending it to the bot. Open the rule and press **Review and apply** to see the numbers — how many members, which roles, why it was held — and apply it with one click. Nothing changes until you do.
+
+A rule is also put on hold when the bot loses permission over a role it manages, when a role its conditions depend on is deleted, or after its changes were undone. The status bar says which, and **Resume** lifts it once the cause is fixed. A rule is never held just for changing many members once it is live.
+
+### Can I undo a change RoleLogic made?
+
+Yes, for 24 hours after a deployment finishes. The status bar above your rules shows **Undo changes** for the last deployment; it puts every role back except roles that have changed again since, which are left alone. The **Activity Log** also has a per-member history of every role the bot added or removed.
 
 ### Rule works for some members but not others
 
@@ -3818,7 +3891,7 @@ Check in order:
 Normal delays:
 
 - Role-change debounce: about 10 seconds on Free or 1.5 seconds on Premium
-- New rule activation: up to 1 hour for full propagation
+- New rule activation: about a minute after saving; large changes wait for your confirmation
 
 For longer delays, check [Discord status](https://status.discord.com).
 
@@ -4375,7 +4448,8 @@ RoleLogic's graphical interface for creating rules. Users select conditions and 
 | **Enabled**  | Rule is active and processing          |
 | **Disabled** | Rule is saved but not running          |
 | **Pending**  | Rule is queued, waiting for sync       |
-| **Stopped**  | Rule was auto-stopped due to conflicts |
+| **On hold**  | Saved, but waiting for your confirmation or a fix |
+| **Stopped**  | Auto-stopped because the bot's changes were being undone |
 
 ---
 
@@ -5135,14 +5209,14 @@ This prevents infinite loops from misconfigured rules. If your rules require mor
 | Event-driven processing      | Triggered automatically by role changes    |
 | Debounce delay               | Free: ~10 sec · Premium: ~1.5 sec            |
 | Scheduled sync interval      | Free: ~every 30 min · Premium: ~every 2 min |
-| Rule activation after update | Within 1 hour                               |
+| Rule activation after update | About 1 minute (held changes: when you confirm) |
 
 **What these mean:**
 
 - **Event-driven processing**: When a member's roles change, RoleLogic queues the member for evaluation automatically.
 - **Debounce delay**: Multiple rapid role changes are batched for about 10 seconds on Free and 1.5 seconds on Premium to avoid redundant work.
 - **Scheduled sync**: A background safety sweep re-checks the whole server to catch any changes missed in real time (e.g. during a restart or Discord outage). On **free** it runs about every 30 minutes; on **premium** about every 2 minutes, and each premium pass scans far more members per cycle. For large servers this means premium fully reconciles dramatically faster — a 100,000-member server catches up in roughly 10 minutes on premium versus about 10 hours on free. Both plans stay safely within Discord's rate limits.
-- **Rule activation**: New or updated rules are fully active within 1 hour of saving
+- **Rule activation**: A saved change settles for about a minute before the bot acts on it, so a typo can still be fixed. Changes above the Safe Apply thresholds (below), or that the bot could not check at the time, are held until you confirm them.
 
 ---
 
@@ -5298,30 +5372,64 @@ The cross-server sync limit counts the **distinct destination servers** referenc
 
 ## Safety Limits
 
-RoleLogic includes automatic safety features to prevent runaway automation.
+RoleLogic includes automatic safety features to prevent runaway automation. See [Safe Apply](https://rolelogic.faizo.net/docs/concepts/rules#safe-apply) for how they fit together.
+
+### Safe Apply Thresholds
+
+Every save is estimated against the live member list before the bot acts. A change is held for a confirmation click when it crosses any of these.
+
+| Gate                          | Threshold                                                               |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| Removals per role             | 3% of members, never below 10 or above 100, × trust                     |
+| Removals as a share of a role | 25% of the role's current holders (at least 10) — never scales          |
+| Additions per role            | 20% of members, never below 25 or above 1,000, × trust                  |
+| Privileged role granted       | Always held (Administrator, Manage Roles/Server/Channels, Ban, Kick, …) |
+| Structural removal            | Always held (the rule removes roles and matches every member or has an else branch) |
+| Cross-server change           | Always shown; judged against the removal and addition thresholds of the server the rule belongs to |
+
+**Trust** starts at ×1 and rises ×1.5 for every deployment that stays clean for 72 hours, up to ×8. A safety stop, a paused staged rollout or an undo resets it to ×1. Each gate is checked per role, and a change is held when it reaches the threshold.
+
+| Parameter                       | Free              | Premium           |
+| ------------------------------- | ----------------- | ----------------- |
+| Settle window before going live | ~60 seconds       | ~60 seconds       |
+| Staged rollout (first slice)    | 2% of affected members, at least 25, staff first | same |
+| Staged rollout hold             | 10 minutes        | 5 minutes         |
+| Undo window after a deployment  | 24 hours          | 24 hours          |
+| Role-change history kept        | 30 days           | 90 days           |
+
+A staged rollout is used when a single role loses 4× the removal threshold or more, or when a privileged role is granted — and only when more than 25 members are affected.
 
 ### Reverted Action Detection
 
-If RoleLogic detects that its changes are being repeatedly undone (usually indicating a conflict with another bot or manual intervention), it will automatically stop the rule.
+If RoleLogic's changes are being undone faster than normal (another bot, a moderator, or two rules fighting), it stops the server's rules and clears anything still queued.
 
-| Parameter        | Value                      |
-| ---------------- | -------------------------- |
-| Detection window | 1 hour                     |
-| Action threshold | 100 reverted actions       |
-| Result           | Rule automatically stopped |
+| Parameter        | Value                                                                     |
+| ---------------- | ------------------------------------------------------------------------- |
+| Detection window | 20 minutes                                                                |
+| Action threshold | 5% of the bot's own changes in the window, at least 10 and at most 20    |
+| During a staged rollout | 10% of the first slice, at least 3 — pauses the deployment instead |
+| Result           | Rules stopped; queued work discarded; trust reset                          |
 
 **When this triggers:**
 
-- The rule status changes to "Stopped"
-- No further processing occurs for that rule
-- You'll see a notification in your dashboard
+- The status banner turns red and names the safety stop
+- No further processing occurs for that server
 - The Activity Log records the event
+- Roles already changed stay as they are — use **Undo changes** on the deployment if needed
 
 **To resolve:**
 
 1. Identify what's conflicting (another bot, manual changes, etc.)
 2. Fix the underlying conflict
-3. Re-enable the rule from the dashboard
+3. Press **Start Live** in the dashboard — the whole rule set is estimated again first
+
+### Large Bursts After Going Live
+
+Once a rule is live there is no cap on how many roles it may change: an event or seasonal role can move hundreds of members at once. Those changes are paced by your plan's processing speed (see [Processing Timing](#processing-timing)) and Discord's rate limits, never paused for their size. Setup mistakes are caught before a change runs instead — every save and every **Start** is estimated against the thresholds above, and a change the bot cannot estimate at that moment waits for your confirmation.
+
+### Role Link Removal Gate
+
+An integration that sends a member list shrinking by a quarter or more (at least 10 members), or emptying it, has the removal held until the server owner confirms it in the dashboard — or the link is marked as a trusted integration. See the [Role Link API](https://rolelogic.faizo.net/docs/reference/role-link-api#large-removals-need-a-confirmation).
 
 ### Cascade Limit
 
@@ -6587,6 +6695,37 @@ A JSON array of Discord user ID strings (17–20 digits each):
 
 **Timeout:** This endpoint has a **2-minute timeout**. If you hit the 100,000-user cap with a `413` or want to upload lists that don't fit in a single request, use the [chunked upload flow](#upload-users-chunked).
 
+#### Large removals need a confirmation
+
+A replace (or a chunked-upload commit) that would **remove a quarter or more of the current list, and at least 10 members** — or empty a non-empty list — is refused before anything is written. RoleLogic records the attempted removal for the dashboard and answers:
+
+```http
+HTTP/1.1 409 Conflict
+```
+
+```json
+{
+  "errors": {
+    "error": "confirm_required",
+    "code": "shrink",
+    "change_id": "8f0c9b4e-6a2f-4d0b-9f1e-2b7c1c0f3a11",
+    "previous": 1200,
+    "next": 300,
+    "removals": 900,
+    "message": "This write would remove 900 of 1200 users from the role link. Confirm it in the RoleLogic dashboard, or retry the same request with the header X-RoleLink-Confirm: <change_id> within one hour. Mark the link as a trusted integration to skip this check."
+  },
+  "requestId": "…"
+}
+```
+
+Three ways forward:
+
+1. **The server owner confirms it in the dashboard.** The attempted removal is shown on the Role Link card with an **Apply removals** button. Confirming opens a one-hour window in which the integration can send the list again and the shrink is accepted without a further prompt. The list itself was not stored, so the integration has to resend it.
+2. **Retry with the header.** Send the request again with `X-RoleLink-Confirm: <change_id>` within one hour of the `409`. Each refusal issues a new `change_id`; use the one from the latest response. Use this when the shrink is intentional and driven by your own operator.
+3. **Mark the link as a trusted integration.** The owner can tick **Trusted integration** on the Role Link; shrinks for that link are then never held. Meant for integrations the server operates itself.
+
+Additions are never gated, and neither are removals below the threshold. `DELETE /users/:userId` is unaffected.
+
 ---
 
 ### Upload Users (Chunked)
@@ -6706,6 +6845,7 @@ Atomically replaces the entire live user list with the users staged in this sess
 - If the staged user count exceeds your plan's limit, the commit is rejected with a `400` error and the staging data is preserved so you can inspect or cancel it.
 - After a successful commit, the bot is notified to sync role assignments on Discord. For very large lists, the initial bulk application to Discord is rate-limited by Discord itself and can take **days** for multi-million-user role links (see [Role Sync Behavior](#role-sync-behavior)).
 - Committing a session with **zero chunks** is allowed and results in an empty user list (equivalent to `PUT /users` with `[]`).
+- A commit that would remove a quarter or more of the current list (at least 10 members) is held for a confirmation and answers `409 confirm_required` — see [Large removals need a confirmation](#large-removals-need-a-confirmation). The staged data is kept until it is confirmed, retried with the confirmation header, or cancelled.
 
 **Timeout:** Up to **30 minutes** for the atomic swap on very large lists. Typical commits for &lt; 1M users finish in seconds.
 
@@ -6887,6 +7027,7 @@ All errors return a JSON object with `statusCode` and `message`:
 | `403`       | This role link is disabled                         | Role link exists but is disabled in the dashboard                                  |
 | `403`       | This role link is paused — integration slots quota exceeded | The link is beyond the server's integration slot allowance (e.g. after a plan downgrade). Resolves when the server upgrades or deletes other role links |
 | `404`       | Role link not found                                | No role link exists for this guild/role combination                                |
+| `409`       | `confirm_required` (`code: "shrink"`)             | The write would remove 25% or more of the list (at least 10 members), or empty it. Confirm in the dashboard, retry with `X-RoleLink-Confirm`, or mark the link trusted — see [Large removals need a confirmation](#large-removals-need-a-confirmation) |
 | `404`       | Upload session not found                           | `upload_id` does not exist, already committed, or expired after 24 h               |
 
 ### Plugin Server Errors (Shown to Admins)
@@ -7265,6 +7406,10 @@ Use the [chunked upload flow](#upload-users-chunked): start a session with `POST
 ### How long do chunked upload sessions last?
 
 Sessions expire **24 hours** after creation if not committed or cancelled. Expired sessions and their staged users are garbage-collected automatically. You can cancel a session early with `DELETE /users/upload/:uploadId` to free staging storage immediately.
+
+### Why did a replace return 409 confirm_required?
+
+The new list would remove a quarter or more of the current members (and at least 10), or empty the list. RoleLogic holds such a shrink so a bug on the integration's side — an empty response, a partial export — cannot strip a role from a whole community unnoticed. Retry with the `X-RoleLink-Confirm` header set to the `change_id` from the response within an hour, ask the server owner to confirm it in the dashboard, or have the link marked as a trusted integration. See [Large removals need a confirmation](#large-removals-need-a-confirmation).
 
 ### How quickly do role changes take effect on Discord?
 

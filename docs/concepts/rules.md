@@ -69,12 +69,13 @@ Rule A runs first, then Rule B.
 
 Rules can be:
 
-| Status       | Meaning                        |
-| ------------ | ------------------------------ |
-| **Enabled**  | Active and processing          |
-| **Disabled** | Saved but not running          |
-| **Pending**  | Queued, waiting for first sync |
-| **Stopped**  | Auto-stopped due to conflicts  |
+| Status       | Meaning                                                                 |
+| ------------ | ----------------------------------------------------------------------- |
+| **Enabled**  | Active and processing                                                   |
+| **Disabled** | Saved but not running                                                   |
+| **Pending**  | Queued, waiting for first sync                                          |
+| **On hold**  | Saved, but withheld from the bot until you confirm it or fix a problem  |
+| **Stopped**  | Auto-stopped because its changes were being undone (see [Safe Apply](#safe-apply)) |
 
 ## How Rules Process
 
@@ -117,7 +118,52 @@ RoleLogic also runs a continuous background scan to catch changes missed by even
 2. **Set condition:** Choose type and select roles
 3. **Set action:** Choose add or remove, select roles
 4. **Add description:** Name your rule clearly
-5. **Save:** Rule activates within 1 hour (or click Play for immediate)
+5. **Save:** RoleLogic estimates how many members the rule would change. Ordinary rules go live about a minute later; a rule that would change many members at once waits for one confirmation click (see [Safe Apply](#safe-apply))
+
+## Safe Apply
+
+Most rule mistakes are small — a condition typed the wrong way round, a remove where an add was meant. What makes them expensive is scale: one wrong rule can touch thousands of members before anyone notices. Safe Apply is how RoleLogic keeps a wrong rule from becoming a wrong server.
+
+### Estimate before apply
+
+Every save is a dry run first. The bot works out, from the live member list, exactly which members would gain or lose which roles under the new rule set, and the dashboard tells you:
+
+- how many members are affected, and how many role additions and removals that is;
+- which roles, largest first, with the share of that role's holders it would touch;
+- whether the change goes live on its own or needs your confirmation, and why.
+
+There is nothing extra to run. The save message gives the number of members, and until an ordinary change goes live the status bar keeps its estimate beside the countdown. To see it before saving, use **Check impact** next to Save Changes in the rule editor.
+
+### Auto, or confirm
+
+A change goes live by itself after a short settle window (about a minute — time to catch a typo) when it stays under the server's thresholds. It is put **on hold** and shown to you for a single informed click when it would:
+
+- remove a role from about 3% of the server or more (at least 10 members, and at most 100 before trust widens it);
+- remove a role from a quarter or more of the members who hold it (at least 10);
+- add a role to a large share of the server;
+- grant a role that carries moderation permissions;
+- remove roles in a rule that matches every member or has an else branch — the classic sign of an inverted condition.
+
+A held rule is saved and enabled, but the bot does not receive it. Nothing changes until you press **Apply** in the review dialog. If other role conditions changed after the numbers were shown, **Apply** checks again first: a change now under the thresholds goes ahead, and otherwise the dialog shows the current numbers for you to review. Servers with a history of clean deployments earn wider thresholds over time; a safety stop, a paused staged rollout or an undo resets them.
+
+If the bot cannot estimate a change at that moment — while it restarts, for instance — the change is held the same way instead of going live unchecked. The review dialog says the impact could not be checked: test the rule first, or apply it if you are sure it is right.
+
+### Applying in stages
+
+The largest changes are applied to a small slice of members first — staff before everyone else — and then held for a few minutes. If moderators start undoing those first changes, RoleLogic pauses instead of continuing. You can also press **Continue now** to skip the wait, or **Stop** at any time.
+
+### Undo
+
+Every role the bot adds or removes is recorded. For 24 hours after a deployment finishes you can press **Undo changes** to put every role back — except roles that have changed again since (by a moderator, another bot or another rule), which are left alone. The rules that made the change are put on hold so they do not redo it.
+
+### When a rule is put on hold by the bot
+
+Besides the impact gate, the bot itself holds a rule when it can no longer act on it safely:
+
+- **Hierarchy** — the bot lost permission over a role the rule manages. Move the bot's role above it, then press **Resume**.
+- **Role deleted** — a role the condition depends on is gone. Edit the rule, then resume.
+
+The bot never holds a rule just for changing many members. Once a change has passed the checks above, large bursts — an event role handed to hundreds of members at once — run at your plan's normal pace.
 
 ## Combining Conditions
 

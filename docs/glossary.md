@@ -253,7 +253,8 @@ RoleLogic's graphical interface for creating rules. Users select conditions and 
 | **Enabled**  | Rule is active and processing          |
 | **Disabled** | Rule is saved but not running          |
 | **Pending**  | Rule is queued, waiting for sync       |
-| **Stopped**  | Rule was auto-stopped due to conflicts |
+| **On hold**  | Saved, but waiting for your confirmation or a fix |
+| **Stopped**  | Auto-stopped because the bot's changes were being undone |
 
 ---
 

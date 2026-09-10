@@ -89,14 +89,14 @@ This prevents infinite loops from misconfigured rules. If your rules require mor
 | Event-driven processing      | Triggered automatically by role changes    |
 | Debounce delay               | Free: ~10 sec · Premium: ~1.5 sec            |
 | Scheduled sync interval      | Free: ~every 30 min · Premium: ~every 2 min |
-| Rule activation after update | Within 1 hour                               |
+| Rule activation after update | About 1 minute (held changes: when you confirm) |
 
 **What these mean:**
 
 - **Event-driven processing**: When a member's roles change, RoleLogic queues the member for evaluation automatically.
 - **Debounce delay**: Multiple rapid role changes are batched for about 10 seconds on Free and 1.5 seconds on Premium to avoid redundant work.
 - **Scheduled sync**: A background safety sweep re-checks the whole server to catch any changes missed in real time (e.g. during a restart or Discord outage). On **free** it runs about every 30 minutes; on **premium** about every 2 minutes, and each premium pass scans far more members per cycle. For large servers this means premium fully reconciles dramatically faster — a 100,000-member server catches up in roughly 10 minutes on premium versus about 10 hours on free. Both plans stay safely within Discord's rate limits.
-- **Rule activation**: New or updated rules are fully active within 1 hour of saving
+- **Rule activation**: A saved change settles for about a minute before the bot acts on it, so a typo can still be fixed. Changes above the Safe Apply thresholds (below), or that the bot could not check at the time, are held until you confirm them.
 
 ---
 
@@ -252,30 +252,64 @@ The cross-server sync limit counts the **distinct destination servers** referenc
 
 ## Safety Limits
 
-RoleLogic includes automatic safety features to prevent runaway automation.
+RoleLogic includes automatic safety features to prevent runaway automation. See [Safe Apply](../concepts/rules#safe-apply) for how they fit together.
+
+### Safe Apply Thresholds
+
+Every save is estimated against the live member list before the bot acts. A change is held for a confirmation click when it crosses any of these.
+
+| Gate                          | Threshold                                                               |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| Removals per role             | 3% of members, never below 10 or above 100, × trust                     |
+| Removals as a share of a role | 25% of the role's current holders (at least 10) — never scales          |
+| Additions per role            | 20% of members, never below 25 or above 1,000, × trust                  |
+| Privileged role granted       | Always held (Administrator, Manage Roles/Server/Channels, Ban, Kick, …) |
+| Structural removal            | Always held (the rule removes roles and matches every member or has an else branch) |
+| Cross-server change           | Always shown; judged against the removal and addition thresholds of the server the rule belongs to |
+
+**Trust** starts at ×1 and rises ×1.5 for every deployment that stays clean for 72 hours, up to ×8. A safety stop, a paused staged rollout or an undo resets it to ×1. Each gate is checked per role, and a change is held when it reaches the threshold.
+
+| Parameter                       | Free              | Premium           |
+| ------------------------------- | ----------------- | ----------------- |
+| Settle window before going live | ~60 seconds       | ~60 seconds       |
+| Staged rollout (first slice)    | 2% of affected members, at least 25, staff first | same |
+| Staged rollout hold             | 10 minutes        | 5 minutes         |
+| Undo window after a deployment  | 24 hours          | 24 hours          |
+| Role-change history kept        | 30 days           | 90 days           |
+
+A staged rollout is used when a single role loses 4× the removal threshold or more, or when a privileged role is granted — and only when more than 25 members are affected.
 
 ### Reverted Action Detection
 
-If RoleLogic detects that its changes are being repeatedly undone (usually indicating a conflict with another bot or manual intervention), it will automatically stop the rule.
+If RoleLogic's changes are being undone faster than normal (another bot, a moderator, or two rules fighting), it stops the server's rules and clears anything still queued.
 
-| Parameter        | Value                      |
-| ---------------- | -------------------------- |
-| Detection window | 1 hour                     |
-| Action threshold | 100 reverted actions       |
-| Result           | Rule automatically stopped |
+| Parameter        | Value                                                                     |
+| ---------------- | ------------------------------------------------------------------------- |
+| Detection window | 20 minutes                                                                |
+| Action threshold | 5% of the bot's own changes in the window, at least 10 and at most 20    |
+| During a staged rollout | 10% of the first slice, at least 3 — pauses the deployment instead |
+| Result           | Rules stopped; queued work discarded; trust reset                          |
 
 **When this triggers:**
 
-- The rule status changes to "Stopped"
-- No further processing occurs for that rule
-- You'll see a notification in your dashboard
+- The status banner turns red and names the safety stop
+- No further processing occurs for that server
 - The Activity Log records the event
+- Roles already changed stay as they are — use **Undo changes** on the deployment if needed
 
 **To resolve:**
 
 1. Identify what's conflicting (another bot, manual changes, etc.)
 2. Fix the underlying conflict
-3. Re-enable the rule from the dashboard
+3. Press **Start Live** in the dashboard — the whole rule set is estimated again first
+
+### Large Bursts After Going Live
+
+Once a rule is live there is no cap on how many roles it may change: an event or seasonal role can move hundreds of members at once. Those changes are paced by your plan's processing speed (see [Processing Timing](#processing-timing)) and Discord's rate limits, never paused for their size. Setup mistakes are caught before a change runs instead — every save and every **Start** is estimated against the thresholds above, and a change the bot cannot estimate at that moment waits for your confirmation.
+
+### Role Link Removal Gate
+
+An integration that sends a member list shrinking by a quarter or more (at least 10 members), or emptying it, has the removal held until the server owner confirms it in the dashboard — or the link is marked as a trusted integration. See the [Role Link API](./role-link-api#large-removals-need-a-confirmation).
 
 ### Cascade Limit
 

@@ -1147,6 +1147,37 @@ A JSON array of Discord user ID strings (17–20 digits each):
 
 **Timeout:** This endpoint has a **2-minute timeout**. If you hit the 100,000-user cap with a `413` or want to upload lists that don't fit in a single request, use the [chunked upload flow](#upload-users-chunked).
 
+#### Large removals need a confirmation
+
+A replace (or a chunked-upload commit) that would **remove a quarter or more of the current list, and at least 10 members** — or empty a non-empty list — is refused before anything is written. RoleLogic records the attempted removal for the dashboard and answers:
+
+```http
+HTTP/1.1 409 Conflict
+```
+
+```json
+{
+  "errors": {
+    "error": "confirm_required",
+    "code": "shrink",
+    "change_id": "8f0c9b4e-6a2f-4d0b-9f1e-2b7c1c0f3a11",
+    "previous": 1200,
+    "next": 300,
+    "removals": 900,
+    "message": "This write would remove 900 of 1200 users from the role link. Confirm it in the RoleLogic dashboard, or retry the same request with the header X-RoleLink-Confirm: <change_id> within one hour. Mark the link as a trusted integration to skip this check."
+  },
+  "requestId": "…"
+}
+```
+
+Three ways forward:
+
+1. **The server owner confirms it in the dashboard.** The attempted removal is shown on the Role Link card with an **Apply removals** button. Confirming opens a one-hour window in which the integration can send the list again and the shrink is accepted without a further prompt. The list itself was not stored, so the integration has to resend it.
+2. **Retry with the header.** Send the request again with `X-RoleLink-Confirm: <change_id>` within one hour of the `409`. Each refusal issues a new `change_id`; use the one from the latest response. Use this when the shrink is intentional and driven by your own operator.
+3. **Mark the link as a trusted integration.** The owner can tick **Trusted integration** on the Role Link; shrinks for that link are then never held. Meant for integrations the server operates itself.
+
+Additions are never gated, and neither are removals below the threshold. `DELETE /users/:userId` is unaffected.
+
 ---
 
 ### Upload Users (Chunked)
@@ -1266,6 +1297,7 @@ Atomically replaces the entire live user list with the users staged in this sess
 - If the staged user count exceeds your plan's limit, the commit is rejected with a `400` error and the staging data is preserved so you can inspect or cancel it.
 - After a successful commit, the bot is notified to sync role assignments on Discord. For very large lists, the initial bulk application to Discord is rate-limited by Discord itself and can take **days** for multi-million-user role links (see [Role Sync Behavior](#role-sync-behavior)).
 - Committing a session with **zero chunks** is allowed and results in an empty user list (equivalent to `PUT /users` with `[]`).
+- A commit that would remove a quarter or more of the current list (at least 10 members) is held for a confirmation and answers `409 confirm_required` — see [Large removals need a confirmation](#large-removals-need-a-confirmation). The staged data is kept until it is confirmed, retried with the confirmation header, or cancelled.
 
 **Timeout:** Up to **30 minutes** for the atomic swap on very large lists. Typical commits for &lt; 1M users finish in seconds.
 
@@ -1447,6 +1479,7 @@ All errors return a JSON object with `statusCode` and `message`:
 | `403`       | This role link is disabled                         | Role link exists but is disabled in the dashboard                                  |
 | `403`       | This role link is paused — integration slots quota exceeded | The link is beyond the server's integration slot allowance (e.g. after a plan downgrade). Resolves when the server upgrades or deletes other role links |
 | `404`       | Role link not found                                | No role link exists for this guild/role combination                                |
+| `409`       | `confirm_required` (`code: "shrink"`)             | The write would remove 25% or more of the list (at least 10 members), or empty it. Confirm in the dashboard, retry with `X-RoleLink-Confirm`, or mark the link trusted — see [Large removals need a confirmation](#large-removals-need-a-confirmation) |
 | `404`       | Upload session not found                           | `upload_id` does not exist, already committed, or expired after 24 h               |
 
 ### Plugin Server Errors (Shown to Admins)
@@ -1825,6 +1858,10 @@ Use the [chunked upload flow](#upload-users-chunked): start a session with `POST
 ### How long do chunked upload sessions last?
 
 Sessions expire **24 hours** after creation if not committed or cancelled. Expired sessions and their staged users are garbage-collected automatically. You can cancel a session early with `DELETE /users/upload/:uploadId` to free staging storage immediately.
+
+### Why did a replace return 409 confirm_required?
+
+The new list would remove a quarter or more of the current members (and at least 10), or empty the list. RoleLogic holds such a shrink so a bug on the integration's side — an empty response, a partial export — cannot strip a role from a whole community unnoticed. Retry with the `X-RoleLink-Confirm` header set to the `change_id` from the response within an hour, ask the server owner to confirm it in the dashboard, or have the link marked as a trusted integration. See [Large removals need a confirmation](#large-removals-need-a-confirmation).
 
 ### How quickly do role changes take effect on Discord?
 

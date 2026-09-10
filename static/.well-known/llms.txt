@@ -23,7 +23,7 @@ Complete plain-text documentation: https://rolelogic.faizo.net/docs/llms-full.tx
 - Rules can cascade when one rule's action makes another rule match. Processing stops after 100 passes as a safety limit.
 - Role changes trigger evaluation automatically. Bursty changes are grouped for about 10 seconds on Free and 1.5 seconds on Premium.
 - The background safety sweep runs about every 30 minutes on free servers and every 2 minutes on premium servers.
-- A new or updated rule can take up to 1 hour to activate through scheduled processing; the dashboard play control can start it immediately.
+- A saved rule goes live about a minute after saving. Safe Apply estimates every save first; a change that would affect many members, grant a role with moderation permissions, or remove roles from everyone waits for a confirmation in the dashboard. Role changes made by a deployment can be undone for 24 hours.
 
 ## Current quotas
 

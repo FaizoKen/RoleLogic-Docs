@@ -90,6 +90,10 @@ If no rules matched, either:
 - Conditions don't match test roles
 - Rule is working correctly by not matching
 
+### Loop Detected
+
+If the result shows a red **These role conditions loop** notice, the selected roles make your rules undo each other without end. The real bot behaves the same way: it stops evaluating and changes nothing for that member. Fix the conflict before going live.
+
 ## Testing Cascades
 
 The sandbox accurately simulates cascading:
@@ -111,7 +115,7 @@ The sandbox accurately simulates cascading:
 
 - **Doesn't test permissions** — Role hierarchy issues won't show
 - **Instant results** — Real execution has slight latency
-- **Current rules only** — Save changes before testing new versions
+- **Current rules only** — Save changes before testing new versions. For a member-count estimate of an unsaved draft, use **Check impact** in the rule editor instead.
 
 ---
 
