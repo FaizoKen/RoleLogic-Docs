@@ -20,6 +20,8 @@ A Role Link connects a **Discord role** to your **plugin server**. The flow is:
 5. Your plugin uses the **User Management API** (token-authenticated REST API) to add or remove users from the role link.
 6. RoleLogic's bot syncs the user list to Discord role assignments automatically.
 
+If the chosen role already has members, the dashboard shows how many and asks the admin what happens to them before the link is created — hand the role over to your plugin, or keep the current members on the list from the start. See [Members who already had the role](#members-who-already-had-the-role).
+
 As a plugin developer, you need to implement **two things**:
 
 - A **plugin server** that serves a configuration schema and accepts config submissions.
@@ -163,6 +165,8 @@ User-Agent: RoleLogic/1.0
 3. Return a `200` response to confirm the registration.
 
 **Error handling:** If your server returns a non-2xx response or is unreachable, the role link is **not created**. RoleLogic returns a `502 Bad Gateway` error to the admin.
+
+**Existing members:** if the admin chose to keep the members who already had the role, the link's user list is already populated when this call arrives, and [`GET /users`](#list-users) reports them in `user_count`. See [Members who already had the role](#members-who-already-had-the-role).
 
 **Timeout:** 5 seconds.
 
@@ -1178,6 +1182,15 @@ Three ways forward:
 
 Additions are never gated, and neither are removals below the threshold. `DELETE /users/:userId` is unaffected.
 
+#### Members who already had the role
+
+A role can have members before it is ever linked — a hand-assigned supporter role, say. From the first sync on, your plugin's list decides who has the role, so those members would lose it the moment your plugin sends a list without them; a removal below the threshold above would not even be held. The dashboard therefore counts the role's current holders before the link is created and asks the admin what happens to them:
+
+- **Hand the role over.** Nothing changes until your plugin's first list arrives. Members not on it lose the role then, and a removal of a quarter or more of the current holders (at least 10) is held exactly as described above.
+- **Keep the current members.** RoleLogic adds the current holders to the link's user list before it calls [`POST /register`](#post-register), so `GET /users` reports them in `user_count` from the start and the first sync changes nothing. They stay on the list until your plugin removes them or replaces the list, and a replacement that drops them is judged by the shrink check like any other. Offered only when RoleLogic has an exact count of the role's members and the role has no more of them than the plan's synced limit (see [Limits](#limits)).
+
+For a plugin this means: treat users you did not add like any others. A full rebuild with `PUT /users` or a chunked upload replaces them (subject to the confirmation above); incremental `POST` and `DELETE` calls leave them in place. A plugin that only ever adds users keeps those members indefinitely — which is what the admin chose.
+
 ---
 
 ### Upload Users (Chunked)
@@ -1862,6 +1875,10 @@ Sessions expire **24 hours** after creation if not committed or cancelled. Expir
 ### Why did a replace return 409 confirm_required?
 
 The new list would remove a quarter or more of the current members (and at least 10), or empty the list. RoleLogic holds such a shrink so a bug on the integration's side — an empty response, a partial export — cannot strip a role from a whole community unnoticed. Retry with the `X-RoleLink-Confirm` header set to the `change_id` from the response within an hour, ask the server owner to confirm it in the dashboard, or have the link marked as a trusted integration. See [Large removals need a confirmation](#large-removals-need-a-confirmation).
+
+### Why does `GET /users` list users my plugin never added?
+
+When the role link was created, the role already had members and the admin chose to keep them: RoleLogic added them to the list before calling your `POST /register`. Treat them like any other users — a full replace drops them (a large drop is held for confirmation), incremental calls leave them alone. See [Members who already had the role](#members-who-already-had-the-role).
 
 ### How quickly do role changes take effect on Discord?
 

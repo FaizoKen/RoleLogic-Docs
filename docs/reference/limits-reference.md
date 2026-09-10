@@ -311,6 +311,17 @@ Once a rule is live there is no cap on how many roles it may change: an event or
 
 An integration that sends a member list shrinking by a quarter or more (at least 10 members), or emptying it, has the removal held until the server owner confirms it in the dashboard — or the link is marked as a trusted integration. See the [Role Link API](./role-link-api#large-removals-need-a-confirmation).
 
+### Existing Members on a New Role Link
+
+A Role Link hands a role to an integration: from the first sync on, the integration's list decides who has it. When the chosen role already has members, the dashboard counts them before the link is created and asks what happens to them:
+
+| Choice | Effect |
+| ------ | ------ |
+| **Hand the role over** | Members not on the integration's list lose the role at its first sync. A removal of a quarter or more of them (at least 10) is held by the removal gate above. |
+| **Keep the current members** | They are added to the link's list right away, so the first sync changes nothing and a later list that drops them goes through the removal gate. Offered when the count is exact and the role has no more members than the plan's synced-users limit (100 on Free). |
+
+The count comes from the bot's own member pass. For servers above 250,000 members it is an estimate from a sample, marked as such, and keeping members is not offered. If the bot cannot count at the moment, the dialog says so and only handing the role over is possible. A link cannot be created on a role with members without one of these choices.
+
 ### Cascade Limit
 
 | Limit          | Value                  |
