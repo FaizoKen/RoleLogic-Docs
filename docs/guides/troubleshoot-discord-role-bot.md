@@ -114,6 +114,10 @@ The rule logic is sound. Focus on permission, hierarchy, member presence, curren
 
 RoleLogic stops a server's rules when its changes keep being reverted. Find the system removing or restoring the same role, resolve that conflict, and then press **Start Live** in the dashboard.
 
+### A deployment says Failed
+
+The status bar says why in plain words — the role conditions changed between the check and the start, another deployment was still running, or the member list could not be read from Discord — and the bot's exact message is behind the info toggle. When nothing was applied, the role conditions are still live and the background sync applies them at its normal pace, without the staged rollout or **Undo changes**. To get those back, press **Pause Live** and then **Start Live** to run the deployment again; if the cause was the member list, wait a minute first. Dismiss the row once you have read it.
+
 ### Webhook notifications are missing
 
 Confirm the rule actually triggers, the log is attached to it, and RoleLogic has `Manage Webhooks` in the target channel.

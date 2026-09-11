@@ -265,7 +265,9 @@ Every save is estimated against the live member list before the bot acts. A chan
 | Additions per role            | 20% of members, never below 25 or above 1,000, × trust                  |
 | Privileged role granted       | Always held (Administrator, Manage Roles/Server/Channels, Ban, Kick, …) |
 | Structural removal            | Always held (the rule removes roles and matches every member or has an else branch) |
-| Cross-server change           | Always shown; judged against the removal and addition thresholds of the server the rule belongs to |
+| Cross-server change           | Counted against the destination server's current members; judged against the source server's removal and addition thresholds, and against the quarter-of-holders rule when that server's holders are known |
+
+When a destination server's members cannot be read at that moment (the gateway budget for member lists is spent, or Discord does not answer in time), its numbers are an upper bound and the whole estimate is marked as such, naming the server. A member list read for an estimate is reused for about a minute, so saving, checking the impact and applying in a row read each server once.
 
 **Trust** starts at ×1 and rises ×1.5 for every deployment that stays clean for 72 hours, up to ×8. A safety stop, a paused staged rollout or an undo resets it to ×1. Each gate is checked per role, and a change is held when it reaches the threshold.
 

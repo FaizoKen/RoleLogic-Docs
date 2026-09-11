@@ -134,12 +134,14 @@ Every save is a dry run first. The bot works out, from the live member list, exa
 
 There is nothing extra to run. The save message gives the number of members, and until an ordinary change goes live the status bar keeps its estimate beside the countdown. To see it before saving, use **Check impact** next to Save Changes in the rule editor.
 
+Roles the rule changes in other servers are counted too, against each destination server's current members: a member counts only if they are in that server and would really gain or lose the role there. Those changes are part of the headline numbers, and below the role list there is one line per destination server (*Also in Lounge: +12 / −3*). If RoleLogic cannot read a destination server's members at that moment — its gateway budget for member lists is spent, or Discord does not answer in time — that server's numbers are an upper bound: the whole estimate is marked **Estimate** and *Things to double-check* names the server. If RoleLogic is not in the destination server, or the role there has been deleted, the dialog says so and those changes are not counted — it identifies the server by name, or by its id when RoleLogic is no longer a member. A role the bot cannot manage there is counted and flagged, since Discord will reject the change.
+
 ### Auto, or confirm
 
 A change goes live by itself after a short settle window (about a minute — time to catch a typo) when it stays under the server's thresholds. It is put **on hold** and shown to you for a single informed click when it would:
 
 - remove a role from about 3% of the server or more (at least 10 members, and at most 100 before trust widens it);
-- remove a role from a quarter or more of the members who hold it (at least 10);
+- remove a role from a quarter or more of the members who hold it (at least 10), here or in a destination server;
 - add a role to a large share of the server;
 - grant a role that carries moderation permissions;
 - remove roles in a rule that matches every member or has an else branch — the classic sign of an inverted condition.
@@ -150,11 +152,15 @@ If the bot cannot estimate a change at that moment — while it restarts, for in
 
 ### Applying in stages
 
-The largest changes are applied to a small slice of members first — staff before everyone else — and then held for a few minutes. If moderators start undoing those first changes, RoleLogic pauses instead of continuing. You can also press **Continue now** to skip the wait, or **Stop** at any time.
+The largest changes are applied to a small slice of members first — staff before everyone else — and then held for a few minutes. If moderators start undoing those first changes, RoleLogic pauses instead of continuing. You can also press **Continue now** to skip the wait, or **Stop** at any time. Roles the rule changes in other servers are part of the first slice and of the progress count, like the local ones.
 
 ### Undo
 
-Every role the bot adds or removes is recorded. For 24 hours after a deployment finishes you can press **Undo changes** to put every role back — except roles that have changed again since (by a moderator, another bot or another rule), which are left alone. The rules that made the change are put on hold so they do not redo it.
+Every role the bot adds or removes is recorded. For 24 hours after a deployment finishes you can press **Undo changes** to put every role back — except roles that have changed again since (by a moderator, another bot or another rule), which are left alone. Roles the deployment changed in other servers are put back too. The rules that made the change are put on hold so they do not redo it.
+
+### When a deployment stops early
+
+A deployment that cannot finish says why in the status bar, in plain words: the role conditions changed between the check and the start, another deployment was still running, the member list could not be read from Discord, and so on. The bot's exact message is behind the info toggle. When nothing was applied, the role conditions are still live, and the background sync applies them at its normal pace — without the staged rollout or Undo. To run the deployment again with those, press **Pause Live** and then **Start Live**. Once you have read the row, you can dismiss it.
 
 ### When a rule is put on hold by the bot
 

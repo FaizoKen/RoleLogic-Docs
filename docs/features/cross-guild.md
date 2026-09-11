@@ -53,6 +53,10 @@ Normally, rules work within one server. Cross-server actions let you:
 5. Checks hierarchy permissions in Server B
 6. Applies changes
 
+## Safety
+
+Cross-server changes go through [Safe Apply](../concepts/rules#safe-apply) like local ones. When you save, the roles the rule would change in each destination server are counted against that server's current members and shown below the role list, one line per server; they count toward the confirmation thresholds, are part of a staged rollout, and are put back by **Undo changes**. If RoleLogic is not in a destination server, or the role there was deleted, the review dialog says so.
+
 ## Linked Servers View
 
 The dashboard's linked-server section shows:
