@@ -256,7 +256,7 @@ RoleLogic includes automatic safety features to prevent runaway automation. See 
 
 ### Safe Apply Thresholds
 
-Every save is estimated against the live member list before the bot acts. A change is held for a confirmation click when it crosses any of these.
+Every save is estimated against the live member list before the bot acts. A change is held for a confirmation click when it crosses any of these. Members the conditions already match — nothing to add or remove — are reported for clarity but count toward none of them.
 
 | Gate                          | Threshold                                                               |
 | ----------------------------- | ----------------------------------------------------------------------- |

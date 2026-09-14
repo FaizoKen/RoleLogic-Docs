@@ -129,8 +129,11 @@ Most rule mistakes are small — a condition typed the wrong way round, a remove
 Every save is a dry run first. The bot works out, from the live member list, exactly which members would gain or lose which roles under the new rule set, and the dashboard tells you:
 
 - how many members are affected, and how many role additions and removals that is;
+- how many members **already match** — the conditions apply to them, and their roles are already as the conditions want them, so nothing is written;
 - which roles, largest first, with the share of that role's holders it would touch;
 - whether the change goes live on its own or needs your confirmation, and why.
+
+A condition that has already run changes nobody, and the dialog says so — but *0 changes* is not *0 members*. The members it still applies to are counted separately: the member tile shows how many already match, each role line shows how many already have (or already lack) that role beside the number it would change, and a destination server's line shows the same for that server. Members who already match are never written to and count toward none of the safety thresholds; only the changes do.
 
 There is nothing extra to run. The save message gives the number of members, and until an ordinary change goes live the status bar keeps its estimate beside the countdown. To see it before saving, use **Check impact** next to Save Changes in the rule editor.
 
