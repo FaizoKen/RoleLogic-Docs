@@ -130,7 +130,7 @@ Yes. Use "Add Combined Action" to add some roles AND remove others in one rule.
 
 ### My rule isn't working
 
-For the full symptom-by-symptom workflow, see [Discord role bot troubleshooting](./guides/troubleshoot-discord-role-bot).
+For the full symptom-by-symptom workflow, see [Troubleshoot RoleLogic Rules](./guides/troubleshoot-discord-role-bot).
 
 Check these in order:
 

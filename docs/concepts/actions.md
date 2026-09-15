@@ -120,3 +120,5 @@ You can select roles from other servers where RoleLogic is present.
 - **[Role Hierarchy](./role-hierarchy)** — Permission requirements
 - **[Cross-Server](../features/cross-guild)** — Manage roles across servers
 - **[Testing Sandbox](../features/testing-sandbox)** — Test actions safely
+- **[Remove a Discord role when another one is added](https://rolelogic.faizo.net/discord-remove-role-when-role-added)** — Exclusive roles and tier ladders with remove actions
+- **[What a Discord role bot does](https://rolelogic.faizo.net/discord-role-bot)** — Everything RoleLogic can automate

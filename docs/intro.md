@@ -111,6 +111,8 @@ Need more capacity? [Premium plans](./plans) offer up to 210 rules and integrati
 
 See [Common Scenarios](./guides/common-scenarios) for 50+ ready-to-use configurations.
 
+For the bigger picture, including roles based on verified accounts or another server, see [what a Discord role bot does](https://rolelogic.faizo.net/discord-role-bot).
+
 ## Who Uses RoleLogic?
 
 RoleLogic works for Discord servers of any size:

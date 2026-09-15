@@ -1,14 +1,16 @@
 ---
-title: Discord Role Bot Not Working? Fix It
-description: Diagnose a Discord bot that is not assigning or removing roles. Check hierarchy, permissions, conditions, rule state, conflicts, and cross-server setup.
+title: "Troubleshoot Rules: Status, Sandbox & Deployments"
+description: "Fix a RoleLogic rule that is not changing roles: check rule status, reproduce the member in the sandbox, read deployment results, and trace reversals."
 image: /img/social-preview-og.png
 ---
 
 import ProductCta from '@site/src/components/Seo/ProductCta';
 
-# Fix a Discord Role Bot That Is Not Assigning Roles
+# Troubleshoot RoleLogic Rules
 
-Most Discord role automation failures come from one of four places: the bot cannot manage the target role, the rule is not active, the member does not match the condition, or another automation reverses the result. Use this order so you can isolate the cause quickly.
+This runbook is for a RoleLogic rule that is not adding or removing roles the way you expect. It leans on RoleLogic's own tools (rule status, the testing sandbox, deployment results, and the logs that trace reversals) alongside the Discord settings every rule depends on. Work through it in order so you can isolate the cause quickly.
+
+If you are troubleshooting a Discord bot in general, not a RoleLogic rule, start with [Fix a Discord bot that is not assigning roles](https://rolelogic.faizo.net/discord-bot-not-assigning-roles). It covers the causes that apply to any role bot.
 
 ## Fast Diagnostic Checklist
 
@@ -58,7 +60,7 @@ Discord only lets a bot modify roles below the bot's highest role.
 3. Drag it above each role used in an add or remove action.
 4. Save the hierarchy.
 
-RoleLogic cannot modify the server owner's role, roles above itself, or roles managed by another integration. Reading a source role and modifying a target role are different: only the target must be manageable.
+RoleLogic cannot modify the server owner's role, roles above itself, or [roles managed by another integration](../concepts/role-hierarchy#integration-managed-roles). Reading a source role and modifying a target role are different: only the target must be manageable.
 
 [See diagrams and edge cases in the role hierarchy guide](../concepts/role-hierarchy).
 
@@ -77,7 +79,7 @@ If a role appears and then disappears, the original action probably succeeded. C
 - a moderator changing the role manually;
 - a Discord integration that owns or synchronizes the role.
 
-Use [webhook notifications](../features/webhooks-logging) for member role changes and the [activity log](../features/activity-log) for configuration changes. They answer different questions.
+To see which side removed the role, open **Activity Log → [Role changes](../features/activity-log#role-changes)** and filter by the member. It lists every role RoleLogic added or removed for them, with the rule behind it and where the change came from, so a removal by another RoleLogic rule, a cross-server rule, or a Role Link shows up there. If RoleLogic's add is the latest entry for that role and the role is gone anyway, something outside RoleLogic removed it; Discord's audit log (**Server Settings → Audit Log**) shows who. [Webhook notifications](../features/webhooks-logging) post a rule's changes to a channel as they happen, and the configuration entries in the [activity log](../features/activity-log) show who edited a rule and when.
 
 ## 6. Check Processing Timing
 
@@ -127,5 +129,7 @@ Confirm the rule actually triggers, the log is attached to it, and RoleLogic has
 </ProductCta>
 
 ## Still Stuck?
+
+If every step above checks out and the role still won't change, compare with the general checklist in [Fix a Discord bot that is not assigning roles](https://rolelogic.faizo.net/discord-bot-not-assigning-roles).
 
 Collect the server ID, affected rule, target role, approximate time, and what the sandbox showed. Then use the [RoleLogic support options](../support) so the issue can be reproduced without sharing sensitive credentials.

@@ -98,7 +98,7 @@ Unverified
 
 ## Step 4: Create Your First Rule
 
-Let's create a simple rule: remove "Unverified" when someone gets "Member".
+Let's create a simple rule: remove "Unverified" when someone gets "Member". The same pattern keeps any two roles apart; see how to [remove a Discord role when another one is added](https://rolelogic.faizo.net/discord-remove-role-when-role-added).
 
 ### Open the Rule Editor
 
@@ -158,6 +158,7 @@ Use webhook logs to monitor member role changes. The **Activity Log** records ed
 ### Get Ideas
 
 - **[Common Scenarios](./guides/common-scenarios)** — 50+ ready-to-use configurations
+- **[Set up a Discord autorole that repairs itself](https://rolelogic.faizo.net/discord-autorole-bot)** — Give every new member a role, and correct anyone the join event missed
 
 ### Advanced Features
 

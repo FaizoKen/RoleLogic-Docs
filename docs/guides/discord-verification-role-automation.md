@@ -8,7 +8,7 @@ import ProductCta from '@site/src/components/Seo/ProductCta';
 
 # Automate Discord Roles After Verification
 
-RoleLogic can turn a `Verified` role into the rest of your onboarding flow. When a verification bot or moderator assigns `Verified`, one RoleLogic rule can add member access and remove temporary roles automatically.
+RoleLogic can turn a `Verified` role into the rest of your onboarding flow. When a verification bot or moderator assigns `Verified`, one RoleLogic rule can add member access and remove temporary roles automatically. Dropping `Unverified` this way is one case of a general pattern: [remove a Discord role when another one is added](https://rolelogic.faizo.net/discord-remove-role-when-role-added).
 
 :::note[What RoleLogic does]
 RoleLogic does not perform the identity or CAPTCHA check itself. It reacts to the Discord role created by your existing verification process.
@@ -87,7 +87,7 @@ Use this only when every legitimate member is expected to keep `Verified`. Test 
 | Members receive access too early | Condition uses `Has Some` for a multi-step flow | Use `Has All Roles` when every prerequisite is required |
 | Access returns after removal | Another rule or bot is adding it | Check the activity and webhook logs, then remove the conflict |
 
-For a full diagnostic sequence, use [Discord role bot troubleshooting](./troubleshoot-discord-role-bot).
+For a full diagnostic sequence, use [Troubleshoot RoleLogic Rules](./troubleshoot-discord-role-bot).
 
 <ProductCta title="Automate the handoff after verification">
   Add RoleLogic to your server and build this flow with one combined rule. The verification check stays with your current system; RoleLogic handles the role cleanup and access handoff.

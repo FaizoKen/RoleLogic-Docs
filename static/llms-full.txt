@@ -85,6 +85,8 @@ Need more capacity? [Premium plans](https://rolelogic.faizo.net/docs/plans) offe
 
 See [Common Scenarios](https://rolelogic.faizo.net/docs/guides/common-scenarios) for 50+ ready-to-use configurations.
 
+For the bigger picture, including roles based on verified accounts or another server, see [what a Discord role bot does](https://rolelogic.faizo.net/discord-role-bot).
+
 ## Who Uses RoleLogic?
 
 RoleLogic works for Discord servers of any size:
@@ -179,7 +181,7 @@ Unverified
 
 ## Step 4: Create Your First Rule
 
-Let's create a simple rule: remove "Unverified" when someone gets "Member".
+Let's create a simple rule: remove "Unverified" when someone gets "Member". The same pattern keeps any two roles apart; see how to [remove a Discord role when another one is added](https://rolelogic.faizo.net/discord-remove-role-when-role-added).
 
 ### Open the Rule Editor
 
@@ -238,6 +240,7 @@ Use webhook logs to monitor member role changes. The **Activity Log** records ed
 ### Get Ideas
 
 - **[Common Scenarios](https://rolelogic.faizo.net/docs/guides/common-scenarios)** — 50+ ready-to-use configurations
+- **[Set up a Discord autorole that repairs itself](https://rolelogic.faizo.net/discord-autorole-bot)** — Give every new member a role, and correct anyone the join event missed
 
 ### Advanced Features
 
@@ -717,20 +720,22 @@ You can select roles from other servers where RoleLogic is present.
 - **[Role Hierarchy](https://rolelogic.faizo.net/docs/concepts/role-hierarchy)** — Permission requirements
 - **[Cross-Server](https://rolelogic.faizo.net/docs/features/cross-guild)** — Manage roles across servers
 - **[Testing Sandbox](https://rolelogic.faizo.net/docs/features/testing-sandbox)** — Test actions safely
+- **[Remove a Discord role when another one is added](https://rolelogic.faizo.net/discord-remove-role-when-role-added)** — Exclusive roles and tier ladders with remove actions
+- **[What a Discord role bot does](https://rolelogic.faizo.net/discord-role-bot)** — Everything RoleLogic can automate
 
 ---
 
 Source: https://rolelogic.faizo.net/docs/concepts/role-hierarchy
 
-# Role Hierarchy
+# Discord Role Hierarchy
 
-Discord has security rules about which roles can manage others. This is essential to understand for RoleLogic to work.
+Discord ranks every role in a server by its position in **Server Settings → Roles**, and that order decides who can manage which roles. It applies to bots and moderators alike, and it is essential to understand for RoleLogic to work.
 
 ## The Basic Rule
 
-**A bot can only manage roles that are BELOW its own role in the server's role list.**
+**A bot can only manage roles that are BELOW its own highest role in the server's role list.**
 
-This is a Discord security feature, not a RoleLogic limitation.
+Members follow the same rule: a moderator with the **Manage Roles** permission can only assign, remove, or edit roles below their own highest role. Only the server owner is exempt. This is a Discord security feature, not a RoleLogic limitation.
 
 ## Example
 
@@ -765,6 +770,46 @@ Unverified
 
 You don't need RoleLogic at the very top. Just above the roles it needs to manage.
 
+## Moving a Role Above Another Role
+
+The role list reads top to bottom: every role outranks the roles below it. To change the order:
+
+1. Open **Server Settings → Roles**
+2. Drag the role up or down the list
+3. Save
+
+You can only move roles that sit below your own highest role, and only to positions below it. To reorder roles higher than yours, ask the server owner or someone whose highest role is above them. `@everyone` always stays at the bottom.
+
+For a bot, move the **bot's role** above the roles it should manage, or move those roles below it. Either way, what counts is the bot's highest role.
+
+## "Above Your Highest Role" Errors
+
+When a bot says it can't use a role because the role is **above my highest role**, it has hit Discord's hierarchy rule: the role is not below the bot's own highest role. Moderators run into the same wall when they try to give a member a role that ranks at or above their own. Discord only allows assigning roles below the assigner's highest role, so even that highest role itself can't be given to someone else.
+
+- **For a bot:** drag the bot's role above the role it should assign ([how to reorder roles](#reorder-roles)). If RoleLogic put a rule on hold because of it, press **Resume** afterwards.
+- **For a moderator:** ask the server owner, or someone whose highest role is above that role, to assign it for you or move your role higher.
+
+Moderation follows the same ranking: a bot or member can only kick, ban, or change the nickname of members whose highest role is lower than their own.
+
+## Administrator Does Not Override Role Position
+
+The **Administrator** permission grants every permission and bypasses channel permission overwrites, but it does not change where a role sits in the list. A bot or member with Administrator still can't assign, remove, or edit a role at or above their highest role, or kick or ban a member whose highest role is at or above theirs. Only the server owner ignores role position.
+
+So giving a bot Administrator doesn't fix a hierarchy error; moving its role does. RoleLogic doesn't need Administrator: **Manage Roles** and the right position are enough for role automation.
+
+## Roles Managed by an Integration
+
+Some roles are controlled by Discord or by an integration rather than by your server's staff. No bot can assign them, however high its own role sits:
+
+- **Bot roles** — the role Discord creates for a bot when you invite it, named after the bot. You can move it and edit its permissions, but it belongs to that bot alone and can't be given to anyone else.
+- **Server Booster** — Discord adds and removes it as members start and stop boosting.
+- **Linked Roles** — roles with connection requirements. Members claim them themselves once their connected accounts meet the requirements.
+- **Other integration roles** — roles another integration creates and keeps in sync.
+
+RoleLogic can still read these roles in a condition; only the roles it adds or removes must be manageable. For example, a rule can check **Server Booster** and add your own **VIP** role, as in [automatic booster role rewards](https://rolelogic.faizo.net/docs/guides/discord-booster-role-rewards). If an action targets one of these roles, point it at a role your server owns instead.
+
+This is different from RoleLogic's own integrations, which assign an ordinary server role that you pick. Like any other target, that role only needs to sit below RoleLogic.
+
 ## The Manage Roles Permission
 
 RoleLogic also needs the **"Manage Roles"** permission (requested during invite).
@@ -779,8 +824,8 @@ To verify:
 
 - The action fails for roles above RoleLogic
 - Other roles in the same action may still work
-- An error appears in your dashboard
-- The rule continues processing other members
+- The refused change shows as **no permission** in the Activity Log's [Role changes](https://rolelogic.faizo.net/docs/features/activity-log#role-changes) history
+- If Discord keeps refusing a role, RoleLogic puts every rule that changes it **on hold**, with the reason in the status bar; move RoleLogic above that role, then press **Resume**
 
 ## Common Setups
 
@@ -828,7 +873,7 @@ RoleLogic can manage almost everything (use carefully).
 
 ### "Cannot manage this role"
 
-The target role is above RoleLogic. Drag RoleLogic higher in server settings.
+The target role is above RoleLogic. Drag RoleLogic higher in server settings. If the role is [managed by an integration](#integration-managed-roles), no position fixes it; target a role your server owns instead.
 
 ### Rules work for some roles but not others
 
@@ -840,6 +885,8 @@ Check hierarchy for each role. Some may be manageable while others aren't.
 2. Confirm RoleLogic is above target roles
 3. Check rules are enabled
 4. Verify conditions actually match
+
+If the hierarchy checks out and roles still don't change, work through the other causes in order with [Fix a Discord bot that is not assigning roles](https://rolelogic.faizo.net/discord-bot-not-assigning-roles), or use [Troubleshoot RoleLogic Rules](https://rolelogic.faizo.net/docs/guides/troubleshoot-discord-role-bot) for rule status, the sandbox, and deployments.
 
 ## Tips
 
@@ -853,6 +900,7 @@ Check hierarchy for each role. Some may be manageable while others aren't.
 
 - **[Quick Start](https://rolelogic.faizo.net/docs/quick-start)** — Initial setup
 - **[Understanding Rules](https://rolelogic.faizo.net/docs/concepts/rules)** — Create effective rules
+- **[Fix a Discord bot that is not assigning roles](https://rolelogic.faizo.net/discord-bot-not-assigning-roles)** — The causes that apply to any role bot, checked in order
 - **[FAQ](https://rolelogic.faizo.net/docs/faq)** — Common questions
 
 ---
@@ -1476,7 +1524,7 @@ Source: https://rolelogic.faizo.net/docs/guides/discord-verification-role-automa
 
 # Automate Discord Roles After Verification
 
-RoleLogic can turn a `Verified` role into the rest of your onboarding flow. When a verification bot or moderator assigns `Verified`, one RoleLogic rule can add member access and remove temporary roles automatically.
+RoleLogic can turn a `Verified` role into the rest of your onboarding flow. When a verification bot or moderator assigns `Verified`, one RoleLogic rule can add member access and remove temporary roles automatically. Dropping `Unverified` this way is one case of a general pattern: [remove a Discord role when another one is added](https://rolelogic.faizo.net/discord-remove-role-when-role-added).
 
 :::note[What RoleLogic does]
 RoleLogic does not perform the identity or CAPTCHA check itself. It reacts to the Discord role created by your existing verification process.
@@ -1555,7 +1603,7 @@ Use this only when every legitimate member is expected to keep `Verified`. Test 
 | Members receive access too early | Condition uses `Has Some` for a multi-step flow | Use `Has All Roles` when every prerequisite is required |
 | Access returns after removal | Another rule or bot is adding it | Check the activity and webhook logs, then remove the conflict |
 
-For a full diagnostic sequence, use [Discord role bot troubleshooting](https://rolelogic.faizo.net/docs/guides/troubleshoot-discord-role-bot).
+For a full diagnostic sequence, use [Troubleshoot RoleLogic Rules](https://rolelogic.faizo.net/docs/guides/troubleshoot-discord-role-bot).
 
   Add RoleLogic to your server and build this flow with one combined rule. The verification check stays with your current system; RoleLogic handles the role cleanup and access handoff.
 
@@ -1663,9 +1711,11 @@ Use [rule priority and clear names](https://rolelogic.faizo.net/docs/guides/best
 
 Source: https://rolelogic.faizo.net/docs/guides/troubleshoot-discord-role-bot
 
-# Fix a Discord Role Bot That Is Not Assigning Roles
+# Troubleshoot RoleLogic Rules
 
-Most Discord role automation failures come from one of four places: the bot cannot manage the target role, the rule is not active, the member does not match the condition, or another automation reverses the result. Use this order so you can isolate the cause quickly.
+This runbook is for a RoleLogic rule that is not adding or removing roles the way you expect. It leans on RoleLogic's own tools (rule status, the testing sandbox, deployment results, and the logs that trace reversals) alongside the Discord settings every rule depends on. Work through it in order so you can isolate the cause quickly.
+
+If you are troubleshooting a Discord bot in general, not a RoleLogic rule, start with [Fix a Discord bot that is not assigning roles](https://rolelogic.faizo.net/discord-bot-not-assigning-roles). It covers the causes that apply to any role bot.
 
 ## Fast Diagnostic Checklist
 
@@ -1715,7 +1765,7 @@ Discord only lets a bot modify roles below the bot's highest role.
 3. Drag it above each role used in an add or remove action.
 4. Save the hierarchy.
 
-RoleLogic cannot modify the server owner's role, roles above itself, or roles managed by another integration. Reading a source role and modifying a target role are different: only the target must be manageable.
+RoleLogic cannot modify the server owner's role, roles above itself, or [roles managed by another integration](https://rolelogic.faizo.net/docs/concepts/role-hierarchy#integration-managed-roles). Reading a source role and modifying a target role are different: only the target must be manageable.
 
 [See diagrams and edge cases in the role hierarchy guide](https://rolelogic.faizo.net/docs/concepts/role-hierarchy).
 
@@ -1734,7 +1784,7 @@ If a role appears and then disappears, the original action probably succeeded. C
 - a moderator changing the role manually;
 - a Discord integration that owns or synchronizes the role.
 
-Use [webhook notifications](https://rolelogic.faizo.net/docs/features/webhooks-logging) for member role changes and the [activity log](https://rolelogic.faizo.net/docs/features/activity-log) for configuration changes. They answer different questions.
+To see which side removed the role, open **Activity Log → [Role changes](https://rolelogic.faizo.net/docs/features/activity-log#role-changes)** and filter by the member. It lists every role RoleLogic added or removed for them, with the rule behind it and where the change came from, so a removal by another RoleLogic rule, a cross-server rule, or a Role Link shows up there. If RoleLogic's add is the latest entry for that role and the role is gone anyway, something outside RoleLogic removed it; Discord's audit log (**Server Settings → Audit Log**) shows who. [Webhook notifications](https://rolelogic.faizo.net/docs/features/webhooks-logging) post a rule's changes to a channel as they happen, and the configuration entries in the [activity log](https://rolelogic.faizo.net/docs/features/activity-log) show who edited a rule and when.
 
 ## 6. Check Processing Timing
 
@@ -1782,6 +1832,8 @@ Confirm the rule actually triggers, the log is attached to it, and RoleLogic has
   Open RoleLogic's sandbox to reproduce the member's role combination, then enable the corrected rule when the preview matches your intent.
 
 ## Still Stuck?
+
+If every step above checks out and the role still won't change, compare with the general checklist in [Fix a Discord bot that is not assigning roles](https://rolelogic.faizo.net/discord-bot-not-assigning-roles).
 
 Collect the server ID, affected rule, target role, approximate time, and what the sandbox showed. Then use the [RoleLogic support options](https://rolelogic.faizo.net/docs/support) so the issue can be reproduced without sharing sensitive credentials.
 
@@ -3825,7 +3877,7 @@ Yes. Use "Add Combined Action" to add some roles AND remove others in one rule.
 
 ### My rule isn't working
 
-For the full symptom-by-symptom workflow, see [Discord role bot troubleshooting](https://rolelogic.faizo.net/docs/guides/troubleshoot-discord-role-bot).
+For the full symptom-by-symptom workflow, see [Troubleshoot RoleLogic Rules](https://rolelogic.faizo.net/docs/guides/troubleshoot-discord-role-bot).
 
 Check these in order:
 

@@ -61,7 +61,9 @@ function stripSiteComponents(markdown) {
     .replace(/^import .*from ['"]@site\/src\/components\/Seo\/.*;\r?\n/gm, "")
     .replace(/<StructuredData[\s\S]*?\}\} \/>\r?\n?/g, "")
     .replace(/^<\/?ProductCta[^>]*>\r?\n?/gm, "")
-    .replace(/^<ProductCta[^>]*\/>\r?\n?/gm, "");
+    .replace(/^<ProductCta[^>]*\/>\r?\n?/gm, "")
+    // Explicit heading IDs, written MDX-escaped: "## Title \{#id}".
+    .replace(/[ \t]*\\\{#[^}\s]+\}[ \t]*(?=\r?$)/gm, "");
 }
 
 function routeFor(relativePath) {
