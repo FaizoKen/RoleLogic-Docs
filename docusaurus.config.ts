@@ -62,6 +62,11 @@ const config: Config = {
   // Keep site-wide markup limited to facts that apply on every documentation
   // route. Page-specific FAQ and HowTo markup lives with the relevant page.
   headTags: [
+    // Google Analytics in basic consent mode: this stub only queues calls on
+    // window.dataLayer. There is deliberately no gtag.js <script> tag here;
+    // /consent.js loads gtag.js once the visitor accepts analytics, so nothing
+    // reaches Google before that. Page views come from
+    // src/clientModules/analytics.ts.
     {
       tagName: "script",
       attributes: {},
@@ -83,15 +88,21 @@ const config: Config = {
           send_page_view: false,
           anonymize_ip: true,
           allow_google_signals: false,
-          allow_ad_personalization_signals: false
+          allow_ad_personalization_signals: false,
+          cookie_domain: "none"
         });
       `,
     },
     {
       tagName: "script",
       attributes: {
-        async: "true",
-        src: `https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`,
+        // Root path on purpose, not BASE_URL: the main site serves one
+        // consent.js at /consent.js, so the SPA, the static pages and the
+        // docs share a single stored choice and banner.
+        src: "/consent.js",
+        "data-ga-id": GA_TRACKING_ID,
+        // Site-config headTags only accept string values.
+        defer: "defer",
       },
     },
     {
@@ -193,11 +204,8 @@ const config: Config = {
             });
           },
         },
-        // SEO: Google Tag Manager (if needed in future)
-        // gtag: {
-        //   trackingID: 'G-XXXXXXXXXX',
-        //   anonymizeIP: true,
-        // },
+        // Analytics is wired through headTags + /consent.js. Do not enable the
+        // preset's gtag option: it loads gtag.js before the visitor consents.
       } satisfies Preset.Options,
     ],
   ],
@@ -299,6 +307,33 @@ const config: Config = {
           ],
         },
         {
+          // Main-site answer pages. Labels are the navLabel values in the
+          // main repo's web/scripts/answer-page-registry.ts; keep them in sync.
+          title: "Use cases",
+          items: [
+            {
+              label: "Discord role bot",
+              href: `${APP_URL}/discord-role-bot`,
+            },
+            {
+              label: "Role Conditions",
+              href: `${APP_URL}/discord-conditional-roles`,
+            },
+            {
+              label: "Cross-Server Sync",
+              href: `${APP_URL}/discord-cross-server-role-sync`,
+            },
+            {
+              label: "Roles not working?",
+              href: `${APP_URL}/discord-bot-not-assigning-roles`,
+            },
+            {
+              label: "Integrations",
+              href: `${APP_URL}/integrations/`,
+            },
+          ],
+        },
+        {
           title: "Product",
           items: [
             {
@@ -308,6 +343,10 @@ const config: Config = {
             {
               label: "Add to Discord",
               href: BOT_INVITE_URL,
+            },
+            {
+              label: "Pricing",
+              to: "/plans",
             },
             {
               label: "Premium Plans",
@@ -338,6 +377,12 @@ const config: Config = {
             {
               label: "Terms of Service",
               href: `${APP_URL}/terms`,
+            },
+            {
+              // Raw HTML so the href stays exactly "#cookie-settings", which
+              // /consent.js intercepts to reopen its banner. A link item would
+              // be flagged by the broken-anchor check on every page.
+              html: '<a class="footer__link-item" href="#cookie-settings">Cookie settings</a>',
             },
           ],
         },
