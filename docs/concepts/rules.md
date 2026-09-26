@@ -151,7 +151,9 @@ A change goes live by itself after a short settle window (about a minute — tim
 
 A held rule is saved and enabled, but the bot does not receive it. Nothing changes until you press **Apply** in the review dialog. If other role conditions changed after the numbers were shown, **Apply** checks again first: a change now under the thresholds goes ahead, and otherwise the dialog shows the current numbers for you to review. Servers with a history of clean deployments earn wider thresholds over time; a safety stop, a paused staged rollout or an undo resets them.
 
-If the bot cannot estimate a change at that moment — while it restarts, for instance — the change is held the same way instead of going live unchecked. The review dialog says the impact could not be checked: test the rule first, or apply it if you are sure it is right.
+If the bot cannot estimate a change at that moment — while it restarts, for instance — the change is held the same way instead of going live unchecked. The review dialog says the impact could not be checked: test the rule first, or apply it if you are sure it is right. This only happens to a change someone is making (a save, **Start Live**, a resume): role conditions that are already running are never paused because a check nobody asked for could not run.
+
+When RoleLogic's own role moves up, or it is given **Manage Roles**, roles it could not change before come within its reach, and role conditions that were waiting on them would catch up all at once. RoleLogic measures that catch-up first. If it crosses the thresholds above, the role conditions involved are held for your confirmation, like a save, and the review dialog says why; otherwise, or if it cannot be measured, they keep running. Reordering, renaming or recolouring roles without moving any of them past RoleLogic's role checks nothing.
 
 ### Applying in stages
 
