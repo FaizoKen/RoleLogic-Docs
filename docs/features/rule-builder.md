@@ -77,7 +77,7 @@ applies). The save-time loop check covers ELSE branches, but test in the
 
 ### Step 5: Save
 
-Click **"Save Changes"**. RoleLogic estimates how many members the rule would change and shows the result straight away: in the save message, and beside the go-live time in the status bar, where **Details** lists the roles involved. An ordinary rule goes live about a minute later (press **Pause Live** before then to stop it); one that would change many members at once is put on hold and shown to you for a single confirmation click. **Check impact**, next to Save Changes, runs the same estimate before you save.
+Click **"Save Changes"**. RoleLogic estimates how many members the rule would change and shows the result straight away: in the save message, and beside the go-live time in the status bar, where **Details** lists the roles involved. An ordinary rule goes live about a minute later (press **Pause Live** before then to stop it); one that would change many members at once waits for a single confirmation click. An edit to a rule that is already running waits beside it: the rule keeps running as it was until you apply the edit, and **Discard changes** drops the edit instead. **Check impact**, next to Save Changes, runs the same estimate before you save.
 
 ## Managing Rules
 
@@ -103,6 +103,7 @@ Deleted rules cannot be recovered.
 | Disabled | Gray   | Saved but not running                                      |
 | Pending  | Yellow | Queued, waiting for sync                                   |
 | On hold  | Amber  | Saved, waiting for your confirmation or a fix              |
+| Changes waiting | Amber | Running as it was; your saved edit waits for confirmation |
 | Stopped  | Red    | Auto-stopped because its changes were being undone         |
 
 ## Tips

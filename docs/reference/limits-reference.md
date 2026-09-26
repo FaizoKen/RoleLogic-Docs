@@ -96,7 +96,7 @@ This prevents infinite loops from misconfigured rules. If your rules require mor
 - **Event-driven processing**: When a member's roles change, RoleLogic queues the member for evaluation automatically.
 - **Debounce delay**: Multiple rapid role changes are batched for about 10 seconds on Free and 1.5 seconds on Premium to avoid redundant work.
 - **Scheduled sync**: A background safety sweep re-checks the whole server to catch any changes missed in real time (e.g. during a restart or Discord outage). On **free** it runs about every 30 minutes; on **premium** about every 2 minutes, and each premium pass scans far more members per cycle. For large servers this means premium fully reconciles dramatically faster — a 100,000-member server catches up in roughly 10 minutes on premium versus about 10 hours on free. Both plans stay safely within Discord's rate limits.
-- **Rule activation**: A saved change settles for about a minute before the bot acts on it, so a typo can still be fixed. Changes above the Safe Apply thresholds (below), or that the bot could not check at the time, are held until you confirm them.
+- **Rule activation**: A saved change settles for about a minute before the bot acts on it, so a typo can still be fixed. Changes above the Safe Apply thresholds (below), or that the bot could not check at the time, are held until you confirm them. An edit to a rule that is running waits beside it: the rule keeps running as it was until you confirm the edit.
 
 ---
 

@@ -167,7 +167,11 @@ RoleLogic stops a server's rules when its own changes are being undone faster th
 
 Saving estimated that the rule would change many members at once, so RoleLogic saved it without sending it to the bot. Open the rule and press **Review and apply** to see the numbers — how many members, which roles, why it was held — and apply it with one click. Nothing changes until you do.
 
-A rule is also put on hold when the bot loses permission over a role it manages, when a role its conditions depend on is deleted, or after its changes were undone. The status bar says which, and **Resume** lifts it once the cause is fixed. A rule is never held just for changing many members once it is live.
+A rule is also put on hold when the bot loses permission over a role it manages, when a role its conditions depend on is deleted, or after its changes were undone. The status bar says which, and **Resume** lifts it once the cause is fixed. A rule that is live is never paused for how many members it changes as it runs: the checks happen when a change is saved, started or deleted.
+
+### My rule says "Changes waiting for your confirmation"
+
+You edited a rule that was already running, and the edit would change many members at once (or the bot could not check it at the time). The rule keeps running exactly as it was; your edit is saved beside it. Open the rule — the editor shows your saved edit — and press **Review and apply** to see the numbers and apply it, or **Discard changes** to drop it and keep the rule as it is. Nothing from the edit happens until you apply it — an AI assistant connected to RoleLogic cannot switch the rule on or off meanwhile either. Rule optimization waits while any edit is waiting, since it has to check the rules that will actually run.
 
 ### Can I undo a change RoleLogic made?
 

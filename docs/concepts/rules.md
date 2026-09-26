@@ -75,6 +75,7 @@ Rules can be:
 | **Disabled** | Saved but not running                                                   |
 | **Pending**  | Queued, waiting for first sync                                          |
 | **On hold**  | Saved, but withheld from the bot until you confirm it or fix a problem  |
+| **Changes waiting** | Running as it was; an edit you saved waits for your confirmation |
 | **Stopped**  | Auto-stopped because its changes were being undone (see [Safe Apply](#safe-apply)) |
 
 ## How Rules Process
@@ -143,7 +144,7 @@ Roles the rule changes in other servers are counted too, against each destinatio
 
 ### Auto, or confirm
 
-A change goes live by itself after a short settle window (about a minute — time to catch a typo) when it stays under the server's thresholds. It is put **on hold** and shown to you for a single informed click when it would:
+A change goes live by itself after a short settle window (about a minute — time to catch a typo) when it stays under the server's thresholds. It waits for your confirmation, shown to you for a single informed click, when it would:
 
 - remove a role from about 3% of the server or more (at least 10 members, and at most 100 before trust widens it);
 - remove a role from a quarter or more of the members who hold it (at least 10), here or in a destination server;
@@ -153,9 +154,14 @@ A change goes live by itself after a short settle window (about a minute — tim
 
 Each limit is per role, across every role condition that changes it: two conditions each removing a role from 40 members count as 80.
 
-A held role condition is withdrawn from the bot until you apply it: it stops acting, and members keep the roles they have. For a new role condition that is all it takes — without it, nothing it would cause can happen. An edit that reaches other role conditions (switching one off, say, hands the members it held a role for to the next condition down) also pauses the conditions it reaches, and RoleLogic checks that pausing them does not hand members on in turn; if it would, every condition that changes the same roles waits instead. The review dialog lists every role condition on hold. A condition paused only because your change reached it goes back to work by itself once you edit that change again or delete it, if letting it run is then within the limits. Resuming a paused role condition that turns out to be over the limits puts that condition back on hold, exactly as it was.
+While a change waits, what runs is what ran before it:
 
-A held rule is saved and enabled, but the bot does not receive it. Nothing changes until you press **Apply** in the review dialog. If other role conditions changed after the numbers were shown, **Apply** checks again first: a change now under the thresholds goes ahead, and otherwise the dialog shows the current numbers for you to review. Servers with a history of clean deployments earn wider thresholds over time; a safety stop, a paused staged rollout or an undo resets them.
+- **An edit to a role condition that is running** waits beside it. The condition keeps running exactly as it was — including the roles it keeps other conditions away from — until you apply the edit, so nothing the edit would change happens early, on it or on any other condition. The rule editor opens your saved edit under **Changes waiting for your confirmation**, with **Review and apply** and **Discard changes**; discarding drops the edit and leaves the condition exactly as it is. Saving again replaces the waiting edit and is checked afresh. This covers switching a running condition off, too: it keeps running until you confirm. An edit that leaves the condition in its place keeps it there even if other conditions are added or removed meanwhile.
+- **A new role condition**, or an edit to one that is not running (switched off, or already on hold), is saved and withdrawn from the bot until you apply it — without it, nothing it would cause can happen, and members keep the roles they have.
+
+Deleting a role condition takes effect at once. If that hands members to other conditions over the limits, the conditions it reaches are put on hold, and RoleLogic checks that holding them does not hand members on in turn; if it would, every condition that changes the same roles waits instead. The review dialog lists every role condition that waits, and whether it keeps running meanwhile. A condition paused only because a deletion reached it goes back to work by itself when that confirmation is replaced by a newer change, if letting it run is then within the limits. Resuming a paused role condition that turns out to be over the limits puts that condition back on hold, exactly as it was.
+
+Nothing a held change does happens until you press **Apply** in the review dialog. An edit is written at that moment, with the same checks as a save: the roles it uses must still exist and be ones RoleLogic can manage, you must still manage every server it reaches, and it must not duplicate another condition or close a loop. If any of that changed, it is refused and keeps waiting. If other role conditions changed after the numbers were shown, **Apply** checks again first: a change now under the thresholds goes ahead — unless it moves its condition, whose new place may now sit among different conditions — and otherwise the dialog shows the current numbers for you to review. An edit that reaches another server is dropped if that server is unlinked from this one while it waits. Servers with a history of clean deployments earn wider thresholds over time; a safety stop, a paused staged rollout or an undo resets them.
 
 A paused server stays paused when you save: nothing goes live until you press **Start Live**, which checks the whole set first. A server whose rules were stopped by a safety stop starts again on the next save or delete, so that change is checked the same way as Start — everything the rules would do, not only your edit — and what the check names waits for your confirmation, as it would on Start.
 
