@@ -256,20 +256,20 @@ RoleLogic includes automatic safety features to prevent runaway automation. See 
 
 ### Safe Apply Thresholds
 
-Every save is estimated against the live member list before the bot acts. A change is held for a confirmation click when it crosses any of these. Members the conditions already match — nothing to add or remove — are reported for clarity but count toward none of them.
+Every save is estimated against the live member list before the bot acts. A change is held for a confirmation click when it crosses any of these. What is judged is what the change itself does, compared with the role conditions running now: a change it causes in another role condition counts (switching one off can hand its members to the next), and changes that were already waiting before it do not. Members the conditions already match — nothing to add or remove — are reported for clarity but count toward none of them.
 
 | Gate                          | Threshold                                                               |
 | ----------------------------- | ----------------------------------------------------------------------- |
 | Removals per role             | 3% of members, never below 10 or above 100, × trust                     |
 | Removals as a share of a role | 25% of the role's current holders (at least 10) — never scales          |
 | Additions per role            | 20% of members, never below 25 or above 1,000, × trust                  |
-| Privileged role granted       | Always held (Administrator, Manage Roles/Server/Channels, Ban, Kick, …) |
+| Privileged role granted       | Always held (Administrator, Manage Roles/Server/Channels, Ban, Kick, …) — in this server or a destination server, by that server's own permissions |
 | Structural removal            | Always held (the rule removes roles and matches every member or has an else branch) |
 | Cross-server change           | Counted against the destination server's current members; judged against the source server's removal and addition thresholds, and against the quarter-of-holders rule when that server's holders are known |
 
 When a destination server's members cannot be read at that moment (the gateway budget for member lists is spent, or Discord does not answer in time), its numbers are an upper bound and the whole estimate is marked as such, naming the server. A member list read for an estimate is reused for about a minute, so saving, checking the impact and applying in a row read each server once.
 
-**Trust** starts at ×1 and rises ×1.5 for every deployment that stays clean for 72 hours, up to ×8. A safety stop, a paused staged rollout or an undo resets it to ×1. Each gate is checked per role, and a change is held when it reaches the threshold.
+**Trust** starts at ×1 and rises ×1.5 for every deployment that stays clean for 72 hours, up to ×8. A safety stop, a paused staged rollout or an undo resets it to ×1. Each gate is checked per role, adding up every role condition that changes that role — two conditions each removing it from 40 members count as 80 — and a change is held when it reaches the threshold.
 
 | Parameter                       | Free              | Premium           |
 | ------------------------------- | ----------------- | ----------------- |
@@ -303,7 +303,7 @@ If RoleLogic's changes are being undone faster than normal (another bot, a moder
 
 1. Identify what's conflicting (another bot, manual changes, etc.)
 2. Fix the underlying conflict
-3. Press **Start Live** in the dashboard — the whole rule set is estimated again first
+3. Press **Start Live** in the dashboard — the whole rule set is estimated again first. Saving or deleting a role condition also starts the rules again after a safety stop, and is checked the same way: the whole set, not only the edit
 
 ### Large Bursts After Going Live
 

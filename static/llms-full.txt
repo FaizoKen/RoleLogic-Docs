@@ -385,9 +385,11 @@ Every save is a dry run first. The bot works out, from the live member list, exa
 - which roles, largest first, with the share of that role's holders it would touch;
 - whether the change goes live on its own or needs your confirmation, and why.
 
+The numbers are for what your change does. Each member is evaluated under the role conditions running now and under the new set in the same pass, so a change counts when it exists only because of your edit — even when it lands on a different role condition. That matters when conditions share a role: the first one to act on a role holds it, so switching a condition off, narrowing it or moving it down can hand its members to the next one, whose else branch may then remove the role. Changes that were already waiting before your edit (in a paused server, or from another save still in its settle window) go out with it; the dialog counts them in the totals and says how many there are, and they don't count toward the thresholds.
+
 A condition that has already run changes nobody, and the dialog says so — but *0 changes* is not *0 members*. The members it still applies to are counted separately: the member tile shows how many already match, each role line shows how many already have (or already lack) that role beside the number it would change, and a destination server's line shows the same for that server. Members who already match are never written to and count toward none of the safety thresholds; only the changes do.
 
-There is nothing extra to run. The save message gives the number of members, and until an ordinary change goes live the status bar keeps its estimate beside the countdown. To see it before saving, use **Check impact** next to Save Changes in the rule editor.
+There is nothing extra to run. The save message gives the number of members, and until an ordinary change goes live the status bar keeps its estimate beside the countdown. To see it before saving, use **Check impact** next to Save Changes in the rule editor. It measures exactly what Save would — the rule set in the order the save leaves it, against what runs now — and tells you what the save would do: go live, wait for your confirmation (naming any other role condition it would pause too), or be refused (a draft that forms a loop with other role conditions, or names a role the bot cannot manage, cannot be saved). If you keep editing while it checks, the dialog says the numbers are for the earlier draft and offers **Check again**. A draft that switches the condition off shows what the other conditions do without it.
 
 Roles the rule changes in other servers are counted too, against each destination server's current members: a member counts only if they are in that server and would really gain or lose the role there. Those changes are part of the headline numbers, and below the role list there is one line per destination server (*Also in Lounge: +12 / −3*). If RoleLogic cannot read a destination server's members at that moment — its gateway budget for member lists is spent, or Discord does not answer in time — that server's numbers are an upper bound: the whole estimate is marked **Estimate** and *Things to double-check* names the server. If RoleLogic is not in the destination server, or the role there has been deleted, the dialog says so and those changes are not counted — it identifies the server by name, or by its id when RoleLogic is no longer a member. A role the bot cannot manage there is counted and flagged, since Discord will reject the change.
 
@@ -398,10 +400,16 @@ A change goes live by itself after a short settle window (about a minute — tim
 - remove a role from about 3% of the server or more (at least 10 members, and at most 100 before trust widens it);
 - remove a role from a quarter or more of the members who hold it (at least 10), here or in a destination server;
 - add a role to a large share of the server;
-- grant a role that carries moderation permissions;
+- grant a role that carries moderation permissions, here or in a destination server (judged by that server's permissions);
 - remove roles in a rule that matches every member or has an else branch — the classic sign of an inverted condition.
 
+Each limit is per role, across every role condition that changes it: two conditions each removing a role from 40 members count as 80.
+
+A held role condition is withdrawn from the bot until you apply it: it stops acting, and members keep the roles they have. For a new role condition that is all it takes — without it, nothing it would cause can happen. An edit that reaches other role conditions (switching one off, say, hands the members it held a role for to the next condition down) also pauses the conditions it reaches, and RoleLogic checks that pausing them does not hand members on in turn; if it would, every condition that changes the same roles waits instead. The review dialog lists every role condition on hold. A condition paused only because your change reached it goes back to work by itself once you edit that change again or delete it, if letting it run is then within the limits. Resuming a paused role condition that turns out to be over the limits puts that condition back on hold, exactly as it was.
+
 A held rule is saved and enabled, but the bot does not receive it. Nothing changes until you press **Apply** in the review dialog. If other role conditions changed after the numbers were shown, **Apply** checks again first: a change now under the thresholds goes ahead, and otherwise the dialog shows the current numbers for you to review. Servers with a history of clean deployments earn wider thresholds over time; a safety stop, a paused staged rollout or an undo resets them.
+
+A paused server stays paused when you save: nothing goes live until you press **Start Live**, which checks the whole set first. A server whose rules were stopped by a safety stop starts again on the next save or delete, so that change is checked the same way as Start — everything the rules would do, not only your edit — and what the check names waits for your confirmation, as it would on Start.
 
 If the bot cannot estimate a change at that moment — while it restarts, for instance — the change is held the same way instead of going live unchecked. The review dialog says the impact could not be checked: test the rule first, or apply it if you are sure it is right. This only happens to a change someone is making (a save, **Start Live**, a resume): role conditions that are already running are never paused because a check nobody asked for could not run.
 
@@ -5447,20 +5455,20 @@ RoleLogic includes automatic safety features to prevent runaway automation. See 
 
 ### Safe Apply Thresholds
 
-Every save is estimated against the live member list before the bot acts. A change is held for a confirmation click when it crosses any of these. Members the conditions already match — nothing to add or remove — are reported for clarity but count toward none of them.
+Every save is estimated against the live member list before the bot acts. A change is held for a confirmation click when it crosses any of these. What is judged is what the change itself does, compared with the role conditions running now: a change it causes in another role condition counts (switching one off can hand its members to the next), and changes that were already waiting before it do not. Members the conditions already match — nothing to add or remove — are reported for clarity but count toward none of them.
 
 | Gate                          | Threshold                                                               |
 | ----------------------------- | ----------------------------------------------------------------------- |
 | Removals per role             | 3% of members, never below 10 or above 100, × trust                     |
 | Removals as a share of a role | 25% of the role's current holders (at least 10) — never scales          |
 | Additions per role            | 20% of members, never below 25 or above 1,000, × trust                  |
-| Privileged role granted       | Always held (Administrator, Manage Roles/Server/Channels, Ban, Kick, …) |
+| Privileged role granted       | Always held (Administrator, Manage Roles/Server/Channels, Ban, Kick, …) — in this server or a destination server, by that server's own permissions |
 | Structural removal            | Always held (the rule removes roles and matches every member or has an else branch) |
 | Cross-server change           | Counted against the destination server's current members; judged against the source server's removal and addition thresholds, and against the quarter-of-holders rule when that server's holders are known |
 
 When a destination server's members cannot be read at that moment (the gateway budget for member lists is spent, or Discord does not answer in time), its numbers are an upper bound and the whole estimate is marked as such, naming the server. A member list read for an estimate is reused for about a minute, so saving, checking the impact and applying in a row read each server once.
 
-**Trust** starts at ×1 and rises ×1.5 for every deployment that stays clean for 72 hours, up to ×8. A safety stop, a paused staged rollout or an undo resets it to ×1. Each gate is checked per role, and a change is held when it reaches the threshold.
+**Trust** starts at ×1 and rises ×1.5 for every deployment that stays clean for 72 hours, up to ×8. A safety stop, a paused staged rollout or an undo resets it to ×1. Each gate is checked per role, adding up every role condition that changes that role — two conditions each removing it from 40 members count as 80 — and a change is held when it reaches the threshold.
 
 | Parameter                       | Free              | Premium           |
 | ------------------------------- | ----------------- | ----------------- |
@@ -5494,7 +5502,7 @@ If RoleLogic's changes are being undone faster than normal (another bot, a moder
 
 1. Identify what's conflicting (another bot, manual changes, etc.)
 2. Fix the underlying conflict
-3. Press **Start Live** in the dashboard — the whole rule set is estimated again first
+3. Press **Start Live** in the dashboard — the whole rule set is estimated again first. Saving or deleting a role condition also starts the rules again after a safety stop, and is checked the same way: the whole set, not only the edit
 
 ### Large Bursts After Going Live
 
