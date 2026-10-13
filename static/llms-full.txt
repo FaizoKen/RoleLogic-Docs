@@ -6828,10 +6828,12 @@ HTTP/1.1 409 Conflict
 Three ways forward:
 
 1. **The server owner confirms it in the dashboard.** The attempted removal is shown on the Role Link card with an **Apply removals** button. Confirming opens a one-hour window in which the integration can send the list again and the shrink is accepted without a further prompt. The list itself was not stored, so the integration has to resend it.
-2. **Retry with the header.** Send the request again with `X-RoleLink-Confirm: <change_id>` within one hour of the `409`. Each refusal issues a new `change_id`; use the one from the latest response. Use this when the shrink is intentional and driven by your own operator.
+2. **Retry with the header.** Send the request again with `X-RoleLink-Confirm: <change_id>` within one hour of the `409`. Sending the same list again within that hour is refused with the same `change_id`; a different list, or one sent after the hour, gets a new one. Use the one from the latest response. Use this when the shrink is intentional and driven by your own operator.
 3. **Mark the link as a trusted integration.** The owner can tick **Trusted integration** on the Role Link; shrinks for that link are then never held. Meant for integrations the server operates itself.
 
 Additions are never gated, and neither are removals below the threshold. `DELETE /users/:userId` is unaffected.
+
+A held removal is posted to the server's activity log once. Your integration sending the same list again, or the bot finding the same difference on its next sync, updates the held removal without posting again; one that nobody has answered is posted again after a day. A disabled link holds nothing: writes to it are accepted as sent, turning a link off clears its held removal, and when it is turned back on the bot compares the list with who has the role and holds a large removal then.
 
 #### Members who already had the role
 
