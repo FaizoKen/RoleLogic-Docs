@@ -64,8 +64,8 @@ const config: Config = {
   headTags: [
     // Google Analytics in basic consent mode: this stub only queues calls on
     // window.dataLayer. There is deliberately no gtag.js <script> tag here;
-    // /consent.js loads gtag.js once the visitor accepts analytics, so nothing
-    // reaches Google before that. Page views come from
+    // /consent.js loads gtag.js unless the visitor opted out, so nothing
+    // reaches Google before it has checked. Page views come from
     // src/clientModules/analytics.ts.
     {
       tagName: "script",
@@ -98,7 +98,7 @@ const config: Config = {
       attributes: {
         // Root path on purpose, not BASE_URL: the main site serves one
         // consent.js at /consent.js, so the SPA, the static pages and the
-        // docs share a single stored choice and banner.
+        // docs share a single stored opt-out.
         src: "/consent.js",
         "data-ga-id": GA_TRACKING_ID,
         // Site-config headTags only accept string values.
@@ -205,7 +205,8 @@ const config: Config = {
           },
         },
         // Analytics is wired through headTags + /consent.js. Do not enable the
-        // preset's gtag option: it loads gtag.js before the visitor consents.
+        // preset's gtag option: it loads gtag.js even for visitors who opted
+        // out.
       } satisfies Preset.Options,
     ],
   ],
@@ -404,12 +405,6 @@ const config: Config = {
             {
               label: "Terms of Service",
               href: `${APP_URL}/terms`,
-            },
-            {
-              // Raw HTML so the href stays exactly "#cookie-settings", which
-              // /consent.js intercepts to reopen its banner. A link item would
-              // be flagged by the broken-anchor check on every page.
-              html: '<a class="footer__link-item" href="#cookie-settings">Cookie settings</a>',
             },
           ],
         },

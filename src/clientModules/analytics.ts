@@ -20,7 +20,7 @@ const SNOWFLAKE = /(^|\D)\d{17,20}(?!\d)/g;
 /**
  * Queue a GA4 event. The inline stub in docusaurus.config.ts defines
  * window.gtag before any client module runs, and /consent.js loads gtag.js
- * only after the visitor accepts analytics; until then events just wait on
+ * unless the visitor opted out; until then events just wait on
  * window.dataLayer. Analytics is best-effort, so neither building the payload
  * nor sending it may break a click or a route change.
  */
