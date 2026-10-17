@@ -90,6 +90,7 @@ Use [rule priority and clear names](./best-practices) when several reward rules 
 
 ## Related Guides
 
+- [Server Booster role bot: perks, FAQs and examples](https://rolelogic.faizo.net/discord-server-booster-role-bot)
 - [Conditional Discord role automation overview](https://rolelogic.faizo.net/discord-conditional-roles)
 - [VIP and rewards templates](./common-scenarios#vip-and-rewards)
 - [How rule conditions work](../concepts/conditions)

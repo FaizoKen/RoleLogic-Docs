@@ -95,6 +95,7 @@ For a full diagnostic sequence, use [Troubleshoot RoleLogic Rules](./troubleshoo
 
 ## Related Guides
 
+- [Verify member accounts before granting a role](https://rolelogic.faizo.net/discord-verification-bot)
 - [Browse external verification and activity integrations](https://rolelogic.faizo.net/integrations/)
 - [50+ Discord role automation templates](./common-scenarios)
 - [Conditions explained](../concepts/conditions)

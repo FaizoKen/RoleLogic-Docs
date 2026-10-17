@@ -417,6 +417,8 @@ You can add up to 9 AND conditions and combine Add + Remove actions in one rule.
 
 **Note:** Test carefully with @everyone in the sandbox!
 
+This is an autorole: it lands within seconds of joining and keeps applying to anyone who lacks the role. See [the Discord autorole bot guide](https://rolelogic.faizo.net/discord-autorole-bot) for more patterns.
+
 ---
 
 ### Complete Onboarding

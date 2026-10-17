@@ -307,8 +307,10 @@ const config: Config = {
           ],
         },
         {
-          // Main-site answer pages. Labels are the navLabel values in the
-          // main repo's web/scripts/answer-page-registry.ts; keep them in sync.
+          // Main-site answer pages, all nine, so every docs page links to each
+          // one (the static pages' footers already do). Labels are the
+          // navLabel values in the main repo's
+          // web/scripts/answer-page-registry.ts; keep them in sync.
           title: "Use cases",
           items: [
             {
@@ -316,20 +318,45 @@ const config: Config = {
               href: `${APP_URL}/discord-role-bot`,
             },
             {
+              label: "Autorole bot",
+              href: `${APP_URL}/discord-autorole-bot`,
+            },
+            {
               label: "Role Conditions",
               href: `${APP_URL}/discord-conditional-roles`,
             },
+            {
+              label: "Exclusive Roles",
+              href: `${APP_URL}/discord-remove-role-when-role-added`,
+            },
+            {
+              label: "Booster Roles",
+              href: `${APP_URL}/discord-server-booster-role-bot`,
+            },
+          ],
+        },
+        {
+          title: "Sync & help",
+          items: [
             {
               label: "Cross-Server Sync",
               href: `${APP_URL}/discord-cross-server-role-sync`,
             },
             {
-              label: "Roles not working?",
-              href: `${APP_URL}/discord-bot-not-assigning-roles`,
+              label: "Verification",
+              href: `${APP_URL}/discord-verification-bot`,
             },
             {
               label: "Integrations",
               href: `${APP_URL}/integrations/`,
+            },
+            {
+              label: "Bot comparison",
+              href: `${APP_URL}/discord-role-bot-alternative`,
+            },
+            {
+              label: "Roles not working?",
+              href: `${APP_URL}/discord-bot-not-assigning-roles`,
             },
           ],
         },

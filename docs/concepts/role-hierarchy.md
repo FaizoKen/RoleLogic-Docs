@@ -1,13 +1,19 @@
 ---
 sidebar_position: 4
-title: "Discord Role Hierarchy Explained: Bots, Mods & Fixes"
-description: How Discord role hierarchy decides who can manage which roles, for bots and moderators alike, and how to fix "above my highest role" and "cannot manage this role".
+title: "Discord Role Hierarchy: Change Role Order & Fix Bot Errors"
+description: Drag a role up in Server Settings → Roles to make it outrank others. Why a role won't move, and how to fix "above my highest role" and other bot errors.
 image: /img/social-preview-og.png
 ---
 
 # Discord Role Hierarchy
 
 Discord ranks every role in a server by its position in **Server Settings → Roles**, and that order decides who can manage which roles. It applies to bots and moderators alike, and it is essential to understand for RoleLogic to work.
+
+:::tip[Quick answer]
+
+To make a role higher, open **Server Settings → Roles**, drag it up the list, and save. On mobile, tap **Reorder** first. You can only move roles that sit below your own highest role; the server owner can move any of them.
+
+:::
 
 ## The Basic Rule
 
@@ -26,6 +32,40 @@ Member         ← CAN manage
 Unverified     ← CAN manage
 @everyone      ← CAN manage
 ```
+
+## Moving a Role Above Another Role \{#reorder-roles}
+
+The role list reads top to bottom: every role outranks the roles below it. To change the order:
+
+**On desktop or in a browser**
+
+1. Open **Server Settings → Roles**
+2. Drag the role up or down the list
+3. Save
+
+**On mobile**
+
+1. Open the server menu and tap **Settings → Roles**
+2. Tap **Reorder**
+3. Drag the role by its handle, then save
+
+You can only move roles that sit below your own highest role, and only to positions below it. To reorder roles higher than yours, ask the server owner or someone whose highest role is above them. `@everyone` always stays at the bottom.
+
+For a bot, move the **bot's role** above the roles it should manage, or move those roles below it. Either way, what counts is the bot's highest role.
+
+### Why Can't I Drag a Role? \{#cant-move-role}
+
+- **It's above your highest role.** Your highest role is the top-most role you hold. You can't drag anything at or above it, and you can't drop a role above it either. Only someone ranked higher, or the server owner, can change that part of the list.
+- **You don't have Manage Roles.** Without the **Manage Roles** permission (or Administrator), the role list is read-only.
+- **It's `@everyone`.** It is always the lowest role and never moves.
+- **You're on mobile and didn't tap Reorder.** The list only becomes draggable in reorder mode.
+- **You didn't save.** The new order isn't kept until you save the change.
+
+The server owner can move every role, whatever roles they hold.
+
+### Is Admin Higher Than Moderator? \{#admin-vs-moderator}
+
+Discord has no built-in Admin or Moderator rank. Whichever role sits higher in the list outranks the other, whatever it is called. **Administrator** is a permission, not a position: it doesn't move a role up the list ([see below](#administrator-does-not-override-role-position)).
 
 ## Setting Up RoleLogic's Position
 
@@ -48,18 +88,6 @@ Unverified
 
 You don't need RoleLogic at the very top. Just above the roles it needs to manage.
 
-## Moving a Role Above Another Role \{#reorder-roles}
-
-The role list reads top to bottom: every role outranks the roles below it. To change the order:
-
-1. Open **Server Settings → Roles**
-2. Drag the role up or down the list
-3. Save
-
-You can only move roles that sit below your own highest role, and only to positions below it. To reorder roles higher than yours, ask the server owner or someone whose highest role is above them. `@everyone` always stays at the bottom.
-
-For a bot, move the **bot's role** above the roles it should manage, or move those roles below it. Either way, what counts is the bot's highest role.
-
 ## "Above Your Highest Role" Errors \{#above-your-highest-role}
 
 When a bot says it can't use a role because the role is **above my highest role**, it has hit Discord's hierarchy rule: the role is not below the bot's own highest role. Moderators run into the same wall when they try to give a member a role that ranks at or above their own. Discord only allows assigning roles below the assigner's highest role, so even that highest role itself can't be given to someone else.
@@ -68,6 +96,23 @@ When a bot says it can't use a role because the role is **above my highest role*
 - **For a moderator:** ask the server owner, or someone whose highest role is above that role, to assign it for you or move your role higher.
 
 Moderation follows the same ranking: a bot or member can only kick, ban, or change the nickname of members whose highest role is lower than their own.
+
+## Bot Role Error Messages, Decoded \{#bot-error-messages}
+
+Every role bot words the hierarchy error differently, but almost all of them come down to the same few causes. Find the message you are seeing:
+
+| The message says | What it means | Fix |
+| --- | --- | --- |
+| **Missing Permissions** (Discord error 50013) | The bot lacks **Manage Roles**, or the role or member it is acting on ranks at or above the bot's highest role. | Grant **Manage Roles**, then [move the bot's role above the target role](#reorder-roles). |
+| "...above my highest role" / "higher than my highest role" | Hierarchy: the role is not below the bot's own highest role. | [Move the bot's role above it](#reorder-roles). |
+| "All given roles have to be below me and not managed" | Two checks at once: each role must be below the bot's highest role, **and** must not be [managed by an integration](#integration-managed-roles). | Move the bot's role up. If the role is managed, pick a role your server owns instead. |
+| "Please check if bot's role is above the role you are trying to give" | Hierarchy, as above. | [Move the bot's role above it](#reorder-roles). |
+| "Cannot manage this role" | Hierarchy, or the role is managed by an integration. | Move the bot's role up; if that changes nothing, the role is [managed](#integration-managed-roles). |
+| "This role is automatically managed by an integration" | The role belongs to a bot, Server Booster, Linked Roles, or another integration. | Nobody can assign it by hand. Use a role your server owns. |
+| **Unknown Role** (Discord error 10011) | The role no longer exists, usually because it was deleted. | Select the role again in the bot's settings or rule. |
+| **Missing Access** (Discord error 50001) | The bot can't see the server or channel it is acting in. | Check the bot is still in the server and can view the channel. |
+
+If none of these match, work through [the four causes in order](https://rolelogic.faizo.net/discord-bot-not-assigning-roles): hierarchy, permission, condition, then something undoing the change.
 
 ## Administrator Does Not Override Role Position \{#administrator-does-not-override-role-position}
 
