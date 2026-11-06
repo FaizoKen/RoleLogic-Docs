@@ -5379,6 +5379,8 @@ Quotas determine how many rules and integrations you can use per server. The sam
 
 **About held role-link users:** a free role link syncs its lowest 100 user IDs. If an integration qualifies more people than that, the extras are stored and held rather than dropped — the link keeps working for the 100 it syncs, and the held users receive their role automatically the moment you upgrade, with no re-upload and no action from the integration. Which users are held is decided by user ID, so the synced set does not rotate between syncs.
 
+**Users who are not in the server don't take a slot.** Someone on the list who left, was kicked or banned, or never joined is skipped: on its next sync (about every 30 minutes on free) the bot gives their slot to the next user in line, and the role link card shows how many on the list aren't in the server. If they come back, they get their slot back. There is nothing to remove by hand.
+
 The free plan includes everything you need to get started. It's perfect for:
 
 - Small servers testing RoleLogic
@@ -6737,7 +6739,7 @@ The User Management API lets your plugin programmatically control which Discord 
 
 | Method   | Endpoint                                                                                        | Description                                                |
 | -------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| `GET`    | [`/api/role-link/:guildId/:roleId/users`](#list-users)                                          | Get all user IDs linked to this role                       |
+| `GET`    | [`/api/role-link/:guildId/:roleId/users`](#list-users)                                          | Get the user counts and limits for this role               |
 | `PUT`    | [`/api/role-link/:guildId/:roleId/users`](#replace-users-batch-set)                             | Replace entire user list atomically (up to 100,000 users)  |
 | `POST`   | [`/api/role-link/:guildId/:roleId/users/upload`](#upload-users-chunked)                         | Start a chunked upload session (for lists &gt; 100,000)    |
 | `POST`   | [`/api/role-link/:guildId/:roleId/users/upload/:uploadId/chunk`](#2-append-a-chunk)             | Append a chunk of user IDs to a session                    |
@@ -6784,7 +6786,7 @@ Tokens cannot be reset independently. To regenerate a token, you must **delete a
 
 ### List Users
 
-Retrieve all Discord user IDs currently linked to this role.
+Get how many users are linked to this role and the limits that apply. Use it to size a full replace before you send it.
 
 ```http
 GET /api/role-link/:guildId/:roleId/users
@@ -6800,11 +6802,27 @@ GET /api/role-link/:guildId/:roleId/users
 
 ```json
 {
-  "data": ["123456789012345678", "234567890123456789"]
+  "data": {
+    "user_count": 105,
+    "user_limit": 10000,
+    "synced_limit": 100,
+    "synced_count": 100,
+    "pending_count": 3,
+    "absent_count": 2
+  }
 }
 ```
 
-`data` is an array of Discord user ID strings. Returns an empty array `[]` if no users are linked.
+| Field           | Meaning                                                                                       |
+| --------------- | --------------------------------------------------------------------------------------------- |
+| `user_count`    | Users stored on the list.                                                                     |
+| `user_limit`    | The most a write may contain (the *stored* limit). Cap your qualifying set here.              |
+| `synced_limit`  | How many users get the role (the *synced* limit).                                             |
+| `synced_count`  | Users who get the role now.                                                                   |
+| `pending_count` | Users waiting for a synced slot (free plan only).                                             |
+| `absent_count`  | Users on the list who are not in the server, so they take no slot (free plan, over the synced limit only). |
+
+The response does not list the user IDs themselves. To check one user, use [Check User](#check-user).
 
 ---
 
@@ -7145,6 +7163,8 @@ When you modify the user list (Add, Remove, or Replace), RoleLogic automatically
 
 If the stored user count exceeds the plan's **sync limit** (e.g., after a plan downgrade), the link keeps working: the bot syncs the lowest `sync limit` user IDs and **holds** the rest. Held users are stored, not discarded — they are simply not assigned the role yet, and they activate automatically the moment the server upgrades, with no re-upload. Which users are held is decided by user ID order, so the synced set stays the same between syncs rather than rotating.
 
+Users on the list who are **not in the server** — they left, were kicked or banned, or never joined — do not take one of those synced slots. On each sync the bot checks who on the list is in the server, and a slot that belonged to someone who is gone goes to the next user in line in that same sync. If they come back, they get their slot back. Keep sending them like any other user: there is nothing to remove, and `GET /users` reports them as `absent_count`.
+
 If the server has **more role links than its plan's integration slots** (e.g., after a plan downgrade), the newest links beyond the allowance are **paused**: the dashboard shows "Integration paused", the bot stops syncing them, and every User Management API call for them returns a `403` error until the server upgrades or deletes other role links. Pausing is fully reversible — the stored user list is kept, and syncing resumes automatically once the link is back within the slot allowance.
 
 ---
@@ -7160,8 +7180,8 @@ If the server has **more role links than its plan's integration slots** (e.g., a
 | Users per chunk in a chunked upload   | —         | 100,000    |
 | Chunked upload session TTL            | —         | 24 hours   |
 
-- **Synced vs. stored.** On the free plan these differ deliberately. Writes are accepted up to the *stored* limit, and the lowest 100 user IDs are the ones actually given the role; the remainder are held (see [Role Sync Behavior](#role-sync-behavior)). Keep sending your full qualifying set — the overflow activates on upgrade without another upload. On premium the two limits are identical, so nothing is ever held.
-- `GET /users` reports the split as `synced_count` and `pending_count`, alongside `synced_limit` (what is acted on) and `user_limit` (what a write may contain).
+- **Synced vs. stored.** On the free plan these differ deliberately. Writes are accepted up to the *stored* limit, and the lowest 100 user IDs of users who are in the server are the ones actually given the role; the remainder are held (see [Role Sync Behavior](#role-sync-behavior)). Keep sending your full qualifying set — the overflow activates on upgrade without another upload. On premium the two limits are identical, so nothing is ever held.
+- `GET /users` reports the split as `synced_count`, `pending_count` and `absent_count` (users not in the server, who take no slot), alongside `synced_limit` (what is acted on) and `user_limit` (what a write may contain).
 - Exceeding the **stored** limit on **Add User**, **Replace Users**, or **Commit Upload** returns a `400` error with a message indicating the maximum allowed. Exceeding only the *sync* limit is not an error.
 - Role links beyond the server's slot count (e.g. after a downgrade) are **paused**: the bot stops syncing them and all User Management API calls for them return a `403` error (see [Role Sync Behavior](#role-sync-behavior)).
 - The error message includes a hint to upgrade if on the free plan.
@@ -7565,6 +7585,10 @@ Free plan: 100 users **synced** per role link, out of up to 10,000 stored. Premi
 Nothing breaks. Past the **sync** limit the link keeps running — the lowest 100 user IDs get the role and the rest are held until the server upgrades, at which point they activate on their own. Only the **stored** limit rejects a write, with a `400` error on **Add User**, **Replace Users**, or **Commit Upload**.
 
 This is a change from earlier releases, where a single user over the limit stopped the link syncing altogether.
+
+### A user on my list left or was banned. Do I need to remove them?
+
+No. Users who are not in the server do not take one of the synced slots: the bot notices on its next sync and gives the slot to the next user in line. If they come back, they get their slot back. Removing them from your list is still fine if your integration no longer qualifies them. See [Role Sync Behavior](#role-sync-behavior).
 
 ### How do I upload more than 100,000 users at once?
 

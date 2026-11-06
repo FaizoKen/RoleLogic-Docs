@@ -120,6 +120,8 @@ Quotas determine how many rules and integrations you can use per server. The sam
 
 **About held role-link users:** a free role link syncs its lowest 100 user IDs. If an integration qualifies more people than that, the extras are stored and held rather than dropped — the link keeps working for the 100 it syncs, and the held users receive their role automatically the moment you upgrade, with no re-upload and no action from the integration. Which users are held is decided by user ID, so the synced set does not rotate between syncs.
 
+**Users who are not in the server don't take a slot.** Someone on the list who left, was kicked or banned, or never joined is skipped: on its next sync (about every 30 minutes on free) the bot gives their slot to the next user in line, and the role link card shows how many on the list aren't in the server. If they come back, they get their slot back. There is nothing to remove by hand.
+
 The free plan includes everything you need to get started. It's perfect for:
 
 - Small servers testing RoleLogic

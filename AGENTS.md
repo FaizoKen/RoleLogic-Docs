@@ -11,7 +11,10 @@
   past the sync limit and the overflow is held (lowest user IDs sync first),
   activating on upgrade with no re-upload. Only the storage ceiling rejects a
   write. Going over the sync limit no longer disables the link — that was the
-  behavior before 2026-08-11.
+  behavior before 2026-08-11. Since v1.20.1 (2026-11-07) users on the list who
+  are not in the server (left, kicked, banned, never joined) take no synced
+  slot: the bot's sync skips them and the next user in line gets the role.
+  `GET /users` reports them as `absent_count`.
 - Event-driven rule processing is about 10 seconds on Free and 1.5 seconds on
   Premium (Premium is therefore ~6× faster, not the 3× quoted before
   2026-08-11); background sweeps run about every 30 minutes on Free (was 10
