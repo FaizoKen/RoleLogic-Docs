@@ -47,6 +47,7 @@ As a plugin developer, you need to implement **two things**:
   - [Check User](#check-user)
   - [Add User](#add-user)
   - [Remove User](#remove-user)
+  - [Show a Notice to the Owner](#show-a-notice-to-the-owner)
 - [Limits](#limits)
 - [Error Responses](#error-responses)
 - [Examples](#examples)
@@ -1046,6 +1047,8 @@ The User Management API lets your plugin programmatically control which Discord 
 | `GET`    | [`/api/role-link/:guildId/:roleId/users/:userId`](#check-user)                                  | Check if a specific user exists                            |
 | `POST`   | [`/api/role-link/:guildId/:roleId/users/:userId`](#add-user)                                    | Add a single user (idempotent)                             |
 | `DELETE` | [`/api/role-link/:guildId/:roleId/users/:userId`](#remove-user)                                 | Remove a single user (idempotent)                          |
+| `PUT`    | [`/api/role-link/:guildId/:roleId/notice`](#show-a-notice-to-the-owner)                         | Ask the owner to fix something only they can fix           |
+| `DELETE` | [`/api/role-link/:guildId/:roleId/notice`](#clear-the-notice)                                   | Remove that request once it is fixed (idempotent)          |
 
 ### Base URL
 
@@ -1452,6 +1455,71 @@ DELETE /api/role-link/:guildId/:roleId/users/:userId
 | ---------------- | ----------------------------------------- |
 | `removed: true`  | User was removed from the list            |
 | `removed: false` | User was not in the list — no change made |
+
+---
+
+### Show a Notice to the Owner
+
+When your integration can't keep a role up to date until the server owner does something — most often, reconnecting an account whose access was revoked — put a notice on the role link. The dashboard shows it on the role link itself, with a button that opens your integration's settings, so the owner sees it without opening your settings first. It stays until you clear it.
+
+```http
+PUT /api/role-link/:guildId/:roleId/notice
+```
+
+**Headers**
+
+| Header          | Value              |
+| --------------- | ------------------ |
+| `Authorization` | `Token rl_...`     |
+| `Content-Type`  | `application/json` |
+
+**Body**
+
+```json
+{
+  "code": "reconnect_required",
+  "message": "Twitch channel example needs reconnecting. Open the settings and click Reconnect."
+}
+```
+
+| Field     | Type   | Required | Description                                                                                                                                                       |
+| --------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `code`    | string | Yes      | `reconnect_required` (an account your integration reads from must be reconnected) or `action_required` (anything else only the owner can fix). Picks the heading the dashboard shows, in the owner's language. |
+| `message` | string | No       | Your detail, shown under the heading as plain text: which account, what to click. Up to 300 characters; newlines and other control characters become spaces.      |
+
+**Response `200 OK`**
+
+```json
+{
+  "data": {
+    "notice": {
+      "code": "reconnect_required",
+      "message": "Twitch channel example needs reconnecting. Open the settings and click Reconnect.",
+      "at": "2026-11-13T08:00:00.000Z"
+    }
+  }
+}
+```
+
+A new notice replaces the previous one. Sending the same code and message again changes nothing, and `at` keeps the time it was first set, so it is safe to re-send after a restart. Setting a notice doesn't change the user list or trigger a sync.
+
+#### Clear the notice
+
+```http
+DELETE /api/role-link/:guildId/:roleId/notice
+```
+
+**Response `200 OK`**
+
+```json
+{
+  "data": {
+    "cleared": true
+  }
+}
+```
+
+`cleared: false` means there was no notice. Like every User Management API call, both requests are refused with `403` while the role link is disabled or paused; keep the notice pending on your side and send it once the link is back on.
 
 ---
 
