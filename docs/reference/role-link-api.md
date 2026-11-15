@@ -1193,11 +1193,12 @@ HTTP/1.1 409 Conflict
 }
 ```
 
-Three ways forward:
+Four ways forward:
 
 1. **The server owner confirms it in the dashboard.** The attempted removal is shown on the Role Link card with an **Apply removals** button. Confirming opens a one-hour window in which the integration can send the list again and the shrink is accepted without a further prompt. The list itself was not stored, so the integration has to resend it. RoleLogic does not notify your integration of the confirmation, so keep resending a held list on a timer well inside the hour (every 20 minutes, say), and keep that schedule somewhere that survives a restart.
 2. **Retry with the header.** Send the request again with `X-RoleLink-Confirm: <change_id>` within one hour of the `409`. Sending the same list again within that hour is refused with the same `change_id`; a different list, or one sent after the hour, gets a new one. Use the one from the latest response. Use this when the shrink is intentional and driven by your own operator, or when your integration can show the removals are expected (a birthday role emptying once the day is over, say). If the owner was told about the held removal, the activity log then says your integration confirmed it.
 3. **Mark the link as a trusted integration.** The owner can tick **Trusted integration** on the Role Link; shrinks for that link are then never held. Meant for integrations the server operates itself.
+4. **The server owner keeps the members instead.** **Keep them** on the held removal keeps everyone who has the role at that moment on the link for good: your list no longer counts as removing them, and nobody loses the role. See [Kept members](#kept-members) for what that means for your plugin.
 
 Additions are never gated, and neither are removals below the threshold. `DELETE /users/:userId` is unaffected.
 
@@ -1211,6 +1212,21 @@ A role can have members before it is ever linked — a hand-assigned supporter r
 - **Keep the current members.** RoleLogic adds the current holders to the link's user list before it calls [`POST /register`](#post-register), so `GET /users` reports them in `user_count` from the start and the first sync changes nothing. They stay on the list until your plugin removes them or replaces the list, and a replacement that drops them is judged by the shrink check like any other. Offered only when RoleLogic has an exact count of the role's members and the role has no more of them than the plan's synced limit (see [Limits](#limits)).
 
 For a plugin this means: treat users you did not add like any others. A full rebuild with `PUT /users` or a chunked upload replaces them (subject to the confirmation above); incremental `POST` and `DELETE` calls leave them in place. A plugin that only ever adds users keeps those members indefinitely — which is what the admin chose.
+
+If the admin handed the role over, or kept the members and your plugin's list later dropped them, the removal is held as above, and the admin can still answer it with **Keep them**.
+
+#### Kept members
+
+When the server owner answers a held removal with **Keep them**, RoleLogic takes the exact list of everyone who has the role at that moment from Discord and keeps them on the link:
+
+- They are added to the link's user list, so `GET /users` counts them in `user_count`.
+- Every `PUT /users` and chunked-upload commit puts them back after replacing the list. A list that leaves them out stores them anyway, is not a removal of them for the check above, and the response's `user_count` includes them.
+- `DELETE /users/:userId` for a kept member changes nothing and answers `{ "removed": false, "kept": true }`. The owner's choice wins over your integration's.
+- Adding users works as always, and members who join later get the role from your list as usual. Only the members who had the role when the owner kept them are kept.
+
+The owner can **Stop keeping** them later. That removes nobody: they stay on the list until your plugin next replaces it, and that replacement is judged by the shrink check like any other.
+
+Keeping needs an exact list of the role's members. On the free plan it is refused when the link would then have more members than its synced limit (see [Limits](#limits)), because a kept member outside the synced users would lose the role on the next sync anyway.
 
 ---
 
@@ -1451,10 +1467,11 @@ DELETE /api/role-link/:guildId/:roleId/users/:userId
 }
 ```
 
-| Value            | Meaning                                   |
-| ---------------- | ----------------------------------------- |
-| `removed: true`  | User was removed from the list            |
-| `removed: false` | User was not in the list — no change made |
+| Value                        | Meaning                                                                                          |
+| ---------------------------- | ------------------------------------------------------------------------------------------------ |
+| `removed: true`              | User was removed from the list                                                                   |
+| `removed: false`             | User was not in the list — no change made                                                        |
+| `removed: false, kept: true` | The server owner keeps this member on the link ([Kept members](#kept-members)) — no change made |
 
 ---
 
