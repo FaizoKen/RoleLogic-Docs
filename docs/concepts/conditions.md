@@ -23,6 +23,8 @@ Conditions are the "IF" part of your rules. They determine which members a rule 
 | **More Than N**      | Member has more than N roles  |
 | **Less Than N**      | Member has fewer than N roles |
 
+The five count conditions can also count **any** role a member has, not just a list — see [Counting any role](#counting-any-role).
+
 ## Role Presence Conditions
 
 ### Has Some Roles
@@ -109,6 +111,29 @@ Members with 4 or 5 badges (not 3).
 
 Members with 0 or 1 daily roles.
 
+## Counting Any Role
+
+Every count condition has a **Count which roles?** switch. Keep **Only the roles below** to count from a list, as in the examples above. Pick **Any role except the ones below** to count every role the member has, including roles your server creates later. The roles you pick are then the ones **not** counted, and the list can be empty.
+
+**Example:** a club creates a role for each game and deletes it two weeks later. Every member has two permanent roles, Member and Verified.
+
+> IF has fewer than 1 role, not counting [Member, Verified] → add Priority
+> OTHERWISE remove Priority
+
+Members who haven't played recently get Priority. Getting a game role takes it away, and once that game role is deleted they get it back. Nobody has to edit the rule as game roles come and go.
+
+These are never counted, so you don't need to list them:
+
+- **The rule's own roles** (Priority above). Counting them would let adding the role change the very count the rule depends on.
+- **@everyone**
+- **Roles Discord manages**: Server Booster, bot roles, and integration roles such as Twitch or YouTube member roles.
+
+A role on the "not counted" list that later gets deleted changes nothing, and the rule keeps running.
+
+:::note
+When a role is deleted, Discord doesn't tell bots which members had it. Those members are re-counted at their next role change or at the next background check: within about 30 minutes on Free and 2 minutes on Premium.
+:::
+
 ## Combining Conditions (AND)
 
 Add up to 9 additional conditions with AND logic. All must be true.
@@ -130,6 +155,7 @@ Add up to 9 additional conditions with AND logic. All must be true.
 | Any tier role    | Has Some Roles with tier list |
 | Minimum count    | At Least N                    |
 | Exact count      | Exactly N                     |
+| Fewer than N roles in total, as roles come and go | Less Than N, counting any role |
 
 ## Tips
 

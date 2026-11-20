@@ -240,6 +240,46 @@ Members with 0 or 1 daily roles need more activity.
 
 ---
 
+### Counting Any Role
+
+Each threshold condition above can count every role a member has instead of
+a set, with **Count which roles? → Any role except the ones below**. The
+selected roles are then excluded from the count, and may be none.
+
+**Syntax:** `Less Than N Roles → any role except [Role A, ...], Threshold: N`
+
+**Logic:** `Count of the member's roles, minus the excluded roles < N` (and
+likewise `=`, `≥`, `≤`, `>` for the other four)
+
+Never counted, whatever the list says:
+
+- the rule's own action roles (THEN and OTHERWISE), so an action can't change
+  the count its own condition reads
+- @everyone
+- roles Discord manages: Server Booster, bot and integration roles
+
+| Member Has                     | Excluded | Rule's Own Role | Threshold | Counted     | Result              |
+| ------------------------------ | -------- | --------------- | --------- | ----------- | ------------------- |
+| [Member, Game 1]               | [Member] | Priority        | 1         | Game 1      | ❌ No Match (1 = 1) |
+| [Member]                       | [Member] | Priority        | 1         | (none)      | ✅ Match (0 < 1)    |
+| [Member, Priority]             | [Member] | Priority        | 1         | (none)      | ✅ Match (0 < 1)    |
+| [Member, Server Booster]       | [Member] | Priority        | 1         | (none)      | ✅ Match (0 < 1)    |
+| [Member, Game 1, Game 2]       | []       | Priority        | 3         | all three   | ❌ No Match (3 = 3) |
+
+**Example:**
+
+> IF has fewer than 1 role, not counting [Member, Verified] → add Priority
+> OTHERWISE remove Priority
+
+Members with no role besides Member and Verified get Priority, however many
+roles the server creates or deletes later. A deleted role on the excluded list
+changes nothing and does not pause the rule. When a counted role is deleted,
+Discord does not report who had it, so those members are re-counted at their
+next role change or the next background check (about 30 minutes on Free, 2 on
+Premium).
+
+---
+
 ## Combining Conditions (AND)
 
 You can add up to **9 additional conditions** to create complex logic.
@@ -330,6 +370,7 @@ ELSE remove Gold
 | Maximum count allowed   | At Most N Roles       |
 | Over a threshold        | More Than N Roles     |
 | Under a threshold       | Less Than N Roles     |
+| Count roles the server adds later | Any threshold condition, counting any role |
 
 ---
 

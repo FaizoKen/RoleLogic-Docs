@@ -495,6 +495,8 @@ Conditions are the "IF" part of your rules. They determine which members a rule 
 | **More Than N**      | Member has more than N roles  |
 | **Less Than N**      | Member has fewer than N roles |
 
+The five count conditions can also count **any** role a member has, not just a list — see [Counting any role](#counting-any-role).
+
 ## Role Presence Conditions
 
 ### Has Some Roles
@@ -581,6 +583,29 @@ Members with 4 or 5 badges (not 3).
 
 Members with 0 or 1 daily roles.
 
+## Counting Any Role
+
+Every count condition has a **Count which roles?** switch. Keep **Only the roles below** to count from a list, as in the examples above. Pick **Any role except the ones below** to count every role the member has, including roles your server creates later. The roles you pick are then the ones **not** counted, and the list can be empty.
+
+**Example:** a club creates a role for each game and deletes it two weeks later. Every member has two permanent roles, Member and Verified.
+
+> IF has fewer than 1 role, not counting [Member, Verified] → add Priority
+> OTHERWISE remove Priority
+
+Members who haven't played recently get Priority. Getting a game role takes it away, and once that game role is deleted they get it back. Nobody has to edit the rule as game roles come and go.
+
+These are never counted, so you don't need to list them:
+
+- **The rule's own roles** (Priority above). Counting them would let adding the role change the very count the rule depends on.
+- **@everyone**
+- **Roles Discord manages**: Server Booster, bot roles, and integration roles such as Twitch or YouTube member roles.
+
+A role on the "not counted" list that later gets deleted changes nothing, and the rule keeps running.
+
+:::note
+When a role is deleted, Discord doesn't tell bots which members had it. Those members are re-counted at their next role change or at the next background check: within about 30 minutes on Free and 2 minutes on Premium.
+:::
+
 ## Combining Conditions (AND)
 
 Add up to 9 additional conditions with AND logic. All must be true.
@@ -602,6 +627,7 @@ Add up to 9 additional conditions with AND logic. All must be true.
 | Any tier role    | Has Some Roles with tier list |
 | Minimum count    | At Least N                    |
 | Exact count      | Exactly N                     |
+| Fewer than N roles in total, as roles come and go | Less Than N, counting any role |
 
 ## Tips
 
@@ -4839,6 +4865,46 @@ Members with 0 or 1 daily roles need more activity.
 
 ---
 
+### Counting Any Role
+
+Each threshold condition above can count every role a member has instead of
+a set, with **Count which roles? → Any role except the ones below**. The
+selected roles are then excluded from the count, and may be none.
+
+**Syntax:** `Less Than N Roles → any role except [Role A, ...], Threshold: N`
+
+**Logic:** `Count of the member's roles, minus the excluded roles < N` (and
+likewise `=`, `≥`, `≤`, `>` for the other four)
+
+Never counted, whatever the list says:
+
+- the rule's own action roles (THEN and OTHERWISE), so an action can't change
+  the count its own condition reads
+- @everyone
+- roles Discord manages: Server Booster, bot and integration roles
+
+| Member Has                     | Excluded | Rule's Own Role | Threshold | Counted     | Result              |
+| ------------------------------ | -------- | --------------- | --------- | ----------- | ------------------- |
+| [Member, Game 1]               | [Member] | Priority        | 1         | Game 1      | ❌ No Match (1 = 1) |
+| [Member]                       | [Member] | Priority        | 1         | (none)      | ✅ Match (0 < 1)    |
+| [Member, Priority]             | [Member] | Priority        | 1         | (none)      | ✅ Match (0 < 1)    |
+| [Member, Server Booster]       | [Member] | Priority        | 1         | (none)      | ✅ Match (0 < 1)    |
+| [Member, Game 1, Game 2]       | []       | Priority        | 3         | all three   | ❌ No Match (3 = 3) |
+
+**Example:**
+
+> IF has fewer than 1 role, not counting [Member, Verified] → add Priority
+> OTHERWISE remove Priority
+
+Members with no role besides Member and Verified get Priority, however many
+roles the server creates or deletes later. A deleted role on the excluded list
+changes nothing and does not pause the rule. When a counted role is deleted,
+Discord does not report who had it, so those members are re-counted at their
+next role change or the next background check (about 30 minutes on Free, 2 on
+Premium).
+
+---
+
 ## Combining Conditions (AND)
 
 You can add up to **9 additional conditions** to create complex logic.
@@ -4929,6 +4995,7 @@ ELSE remove Gold
 | Maximum count allowed   | At Most N Roles       |
 | Over a threshold        | More Than N Roles     |
 | Under a threshold       | Less Than N Roles     |
+| Count roles the server adds later | Any threshold condition, counting any role |
 
 ---
 
